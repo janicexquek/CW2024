@@ -5,11 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.example.demo.LevelParent;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import com.example.demo.LevelParent;
 
 public class Controller implements Observer {
 
@@ -21,21 +22,29 @@ public class Controller implements Observer {
 	}
 
 	public void launchGame() throws ClassNotFoundException, NoSuchMethodException, SecurityException,
-			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
+			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-			stage.show();
+		stage.show();
+		goToLevel(LEVEL_ONE_CLASS_NAME);
+	}
+
+	public void startGame() {
+		try {
 			goToLevel(LEVEL_ONE_CLASS_NAME);
+		} catch (Exception e) {
+			showAlert(e);
+		}
 	}
 
 	private void goToLevel(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-			Class<?> myClass = Class.forName(className);
-			Constructor<?> constructor = myClass.getConstructor(double.class, double.class);
-			LevelParent myLevel = (LevelParent) constructor.newInstance(stage.getHeight(), stage.getWidth());
-			myLevel.addObserver(this);
-			Scene scene = myLevel.initializeScene();
-			stage.setScene(scene);
-			myLevel.startGame();
+		Class<?> myClass = Class.forName(className);
+		Constructor<?> constructor = myClass.getConstructor(double.class, double.class);
+		LevelParent myLevel = (LevelParent) constructor.newInstance(stage.getHeight(), stage.getWidth());
+		myLevel.addObserver(this);
+		Scene scene = myLevel.initializeScene();
+		stage.setScene(scene);
+		myLevel.startGame();
 
 	}
 
@@ -48,7 +57,15 @@ public class Controller implements Observer {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setContentText(e.getClass().toString());
 			alert.show();
+			// showAlert(e);
+
 		}
+	}
+
+	private void showAlert(Exception e) {
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setContentText(e.getMessage());
+		alert.show();
 	}
 
 }
