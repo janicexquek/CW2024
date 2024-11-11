@@ -12,7 +12,7 @@ public class Boss extends FighterPlane {
 	private static final double BOSS_SHIELD_PROBABILITY = .002;
 	private static final int IMAGE_HEIGHT = 300;
 	private static final int VERTICAL_VELOCITY = 8;
-	private static final int HEALTH = 100;
+	private static final int HEALTH = 10; // initial 100
 	private static final int MOVE_FREQUENCY_PER_CYCLE = 5;
 	private static final int ZERO = 0;
 	private static final int MAX_FRAMES_WITH_SAME_MOVE = 10;
@@ -24,6 +24,8 @@ public class Boss extends FighterPlane {
 	private int consecutiveMovesInSameDirection;
 	private int indexOfCurrentMove;
 	private int framesWithShieldActivated;
+	private ShieldImage shieldImage;
+
 
 	public Boss() {
 		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
@@ -33,8 +35,12 @@ public class Boss extends FighterPlane {
 		framesWithShieldActivated = 0;
 		isShielded = false;
 		initializeMovePattern();
+		shieldImage = new ShieldImage(0, 0); // Position will be updated later
+		shieldImage.setVisible(false); // Initially hidden
 	}
-
+	public ShieldImage getShieldImage() {
+		return shieldImage;
+	}
 	@Override
 	public void updatePosition() {
 		double initialTranslateY = getTranslateY();
@@ -49,6 +55,7 @@ public class Boss extends FighterPlane {
 	public void updateActor() {
 		updatePosition();
 		updateShield();
+		updateShieldPosition();
 	}
 
 	@Override
@@ -61,6 +68,14 @@ public class Boss extends FighterPlane {
 		if (!isShielded) {
 			super.takeDamage();
 		}
+	}
+
+	private void updateShieldPosition() {
+		// Update the shield image position to match the boss's position
+		double bossX = getLayoutX() + getTranslateX();
+		double bossY = getLayoutY() + getTranslateY();
+		shieldImage.setLayoutX(bossX - (shieldImage.getFitWidth() - getBoundsInParent().getWidth()) / 2);
+		shieldImage.setLayoutY(bossY - (shieldImage.getFitHeight() - getBoundsInParent().getHeight()) / 2);
 	}
 
 	private void initializeMovePattern() {
@@ -110,11 +125,15 @@ public class Boss extends FighterPlane {
 
 	private void activateShield() {
 		isShielded = true;
+		shieldImage.showShield(); // Show the shield image
+
 	}
 
 	private void deactivateShield() {
 		isShielded = false;
 		framesWithShieldActivated = 0;
+		shieldImage.hideShield(); // Hide the shield image
+
 	}
 
 }
