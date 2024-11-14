@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.lang.reflect.InvocationTargetException;
 
 import com.example.demo.MainMenu;
+import com.example.demo.MusicManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -21,9 +22,12 @@ public class Main extends Application {
 		stage.setHeight(SCREEN_HEIGHT);
 		stage.setWidth(SCREEN_WIDTH);
 		myController = new Controller(stage);
-//		myController.launchGame();
-		 MainMenu mainMenu = new MainMenu(stage, myController);
-		 mainMenu.show();
+
+		// Start background music
+		MusicManager.getInstance().playMusic();
+
+		MainMenu mainMenu = new MainMenu(stage, myController);
+		mainMenu.show();
 	}
 
 	public static void main(String[] args) {
