@@ -41,6 +41,11 @@ public class MainMenu {
 
         // Set button actions
         startButton.setOnAction(e -> controller.startGame());
+        settingsButton.setOnAction(e -> {
+            // Navigate to the settings page, passing Controller
+            Settings settings = new Settings(stage, controller);
+            settings.show();
+        });
         quitButton.setOnAction(e -> stage.close());
 
         // Arrange buttons in a vertical layout

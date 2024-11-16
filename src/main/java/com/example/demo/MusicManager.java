@@ -3,14 +3,25 @@ package com.example.demo;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import java.net.URL;
+import java.util.prefs.Preferences;
 
 public class MusicManager {
 
     private static MusicManager instance;
     private MediaPlayer mediaPlayer;
-    private double volume = 0.5; // Default volume
+    private double musicVolume; // Default will be loaded from preferences
+    private double soundEffectVolume; // Default will be loaded from preferences
+    private Preferences prefs;
+
+    // Define default volume levels
+    public static final double DEFAULT_MUSIC_VOLUME = 0.5;
+    public static final double DEFAULT_SOUND_EFFECT_VOLUME = 0.5;
 
     private MusicManager() {
+        prefs = Preferences.userNodeForPackage(MusicManager.class);
+        // Load saved volume settings or use defaults
+        musicVolume = prefs.getDouble("musicVolume", DEFAULT_MUSIC_VOLUME);
+        soundEffectVolume = prefs.getDouble("soundEffectVolume", DEFAULT_SOUND_EFFECT_VOLUME);
         initializeBackgroundMusic();
     }
 
@@ -31,33 +42,11 @@ public class MusicManager {
             mediaPlayer = new MediaPlayer(media);
             // Sets the media player to loop the background music indefinitely
             mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            mediaPlayer.setVolume(volume);
+            mediaPlayer.setVolume(musicVolume);
         } else {
             System.err.println("Background music file not found.");
         }
     }
-
-    public double getVolume() {
-        return volume;
-    }
-
-    // Play sound effects
-    public void playSoundEffect(String fileName) {
-        URL soundUrl = getClass().getResource("/com/example/demo/audios/" + fileName);
-        if (soundUrl != null) {
-            // Create a Media object from the sound file
-            Media sound = new Media(soundUrl.toString());
-            // Initialize a new MediaPlayer for the sound effect
-            MediaPlayer soundPlayer = new MediaPlayer(sound);
-            // Set the volume for the sound effect
-            soundPlayer.setVolume(volume); // Adjust volume as needed
-            // Play the sound effect asynchronously
-            soundPlayer.play();
-        } else {
-            System.err.println("Sound effect file not found: " + fileName);
-        }
-    }
-
     // Starts or resumes the background music playback.
     public void playMusic() {
         if (mediaPlayer != null) {
@@ -70,11 +59,44 @@ public class MusicManager {
             mediaPlayer.stop();
         }
     }
-    // Adjusts the volume of the background music.
-    public void setVolume(double volume) {
-        this.volume = volume;
+    // Set the volume for background music and save it
+    public void setMusicVolume(double volume) {
+        this.musicVolume = volume;
         if (mediaPlayer != null) {
             mediaPlayer.setVolume(volume);
+        }
+        prefs.putDouble("musicVolume", volume); // Save the volume setting
+    }
+
+    // Get the current background music volume
+    public double getMusicVolume() {
+        return musicVolume;
+    }
+
+    // Set sound effect volume and save to preferences
+    public void setSoundEffectVolume(double volume) {
+        this.soundEffectVolume = volume;
+        prefs.putDouble("soundEffectVolume", volume);
+    }
+
+    public double getSoundEffectVolume() {
+        return soundEffectVolume;
+    }
+
+    // Play sound effects
+    public void playSoundEffect(String fileName) {
+        URL soundUrl = getClass().getResource("/com/example/demo/audios/" + fileName);
+        if (soundUrl != null) {
+            // Create a Media object from the sound file
+            Media sound = new Media(soundUrl.toString());
+            // Initialize a new MediaPlayer for the sound effect
+            MediaPlayer soundPlayer = new MediaPlayer(sound);
+            // Set the volume for the sound effect
+            soundPlayer.setVolume(soundEffectVolume); // Adjust volume as needed
+            // Play the sound effect asynchronously
+            soundPlayer.play();
+        } else {
+            System.err.println("Sound effect file not found: " + fileName);
         }
     }
 
