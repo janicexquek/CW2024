@@ -59,4 +59,22 @@ public class MusicManager {
     public double getVolume() {
         return volume;
     }
+
+    // Play sound effects
+    public void playSoundEffect(String fileName) {
+        URL soundUrl = getClass().getResource("/com/example/demo/audios/" + fileName);
+        if (soundUrl != null) {
+            // Create a Media object from the sound file
+            Media sound = new Media(soundUrl.toString());
+            // Initialize a new MediaPlayer for the sound effect
+            MediaPlayer soundPlayer = new MediaPlayer(sound);
+            // Set the volume for the sound effect
+            soundPlayer.setVolume(volume); // Adjust volume as needed
+            // Play the sound effect asynchronously
+            soundPlayer.play();
+        } else {
+            System.err.println("Sound effect file not found: " + fileName);
+        }
+    }
+
 }

@@ -104,18 +104,19 @@ public abstract class LevelParent extends Observable {
 		updateLevelView();
 		checkIfGameOver();
 	}
-
+	// Initialize the game timeline (game loop)
 	private void initializeTimeline() {
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		KeyFrame gameLoop = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> updateScene());
 		timeline.getKeyFrames().add(gameLoop);
 	}
-
+	// Initialize background and set up key event handlers
 	private void initializeBackground() {
 		background.setFocusTraversable(true);
 		background.setFitHeight(screenHeight);
 		background.setFitWidth(screenWidth);
 		background.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			// Handle key presses for user movement and firing
 			public void handle(KeyEvent e) {
 				KeyCode kc = e.getCode();
 				if (kc == KeyCode.UP) user.moveUp();
@@ -134,12 +135,27 @@ public abstract class LevelParent extends Observable {
 
 	private void fireProjectile() {
 		ActiveActorDestructible projectile = user.fireProjectile();
-		root.getChildren().add(projectile);
-		userProjectiles.add(projectile);
+		if(projectile != null) {
+			root.getChildren().add(projectile);
+			userProjectiles.add(projectile);
+			// Play user bullet sound
+			MusicManager.getInstance().playSoundEffect("bullet.mp3");
+		}
 	}
 
 	private void generateEnemyFire() {
-		enemyUnits.forEach(enemy -> spawnEnemyProjectile(((FighterPlane) enemy).fireProjectile()));
+	//	enemyUnits.forEach(enemy -> spawnEnemyProjectile(((FighterPlane) enemy).fireProjectile()));
+		// Iterate over each enemy in the enemyUnits list
+		enemyUnits.forEach(enemy -> {
+			// Cast the enemy to FighterPlane and attempt to fire a projectile
+			ActiveActorDestructible projectile = ((FighterPlane) enemy).fireProjectile();
+			// Check if the enemy actually fired a projectile
+			if (projectile != null) {
+				// Add the projectile to the game scene
+				spawnEnemyProjectile(projectile);
+			}
+			// If projectile is null, do nothing (enemy did not fire this frame)
+		});
 	}
 
 	private void spawnEnemyProjectile(ActiveActorDestructible projectile) {
@@ -155,29 +171,29 @@ public abstract class LevelParent extends Observable {
 		userProjectiles.forEach(projectile -> projectile.updateActor());
 		enemyProjectiles.forEach(projectile -> projectile.updateActor());
 	}
-
+	// Remove all destroyed actors from the scene and tracking lists
 	private void removeAllDestroyedActors() {
 		removeDestroyedActors(friendlyUnits);
 		removeDestroyedActors(enemyUnits);
 		removeDestroyedActors(userProjectiles);
 		removeDestroyedActors(enemyProjectiles);
 	}
-
+	// Helper method to remove destroyed actors from a given list
 	private void removeDestroyedActors(List<ActiveActorDestructible> actors) {
 		List<ActiveActorDestructible> destroyedActors = actors.stream().filter(actor -> actor.isDestroyed())
 				.collect(Collectors.toList());
 		root.getChildren().removeAll(destroyedActors);
 		actors.removeAll(destroyedActors);
 	}
-
+	// Handle collisions between planes (user and enemies)
 	private void handlePlaneCollisions() {
 		handleCollisions(friendlyUnits, enemyUnits);
 	}
-
+	// Handle collisions between user projectiles and enemies
 	private void handleUserProjectileCollisions() {
 		handleCollisions(userProjectiles, enemyUnits);
 	}
-
+	// Handle collisions between enemy projectiles and the user
 	private void handleEnemyProjectileCollisions() {
 		handleCollisions(enemyProjectiles, friendlyUnits);
 	}
@@ -193,7 +209,7 @@ public abstract class LevelParent extends Observable {
 			}
 		}
 	}
-
+	// Handle scenarios where enemies penetrate defenses (reach the user)
 	private void handleEnemyPenetration() {
 		for (ActiveActorDestructible enemy : enemyUnits) {
 			if (enemyHasPenetratedDefenses(enemy)) {

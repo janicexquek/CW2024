@@ -21,6 +21,7 @@ public class EnemyPlane extends FighterPlane {
 
 	@Override
 	public ActiveActorDestructible fireProjectile() {
+		// Determine if the enemy fires a projectile based on FIRE_RATE
 		if (Math.random() < FIRE_RATE) {
 			double projectileXPosition = getProjectileXPosition(PROJECTILE_X_POSITION_OFFSET);
 			double projectileYPostion = getProjectileYPosition(PROJECTILE_Y_POSITION_OFFSET);
