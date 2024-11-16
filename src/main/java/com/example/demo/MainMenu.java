@@ -31,11 +31,13 @@ public class MainMenu {
 
         // Create buttons
         Button startButton = new Button("Start Game");
+        Button settingsButton = new Button("Settings");
         Button quitButton = new Button("Quit");
 
         // Style buttons (optional)
         startButton.setStyle("-fx-font-size: 18px; -fx-padding: 10px 20px;");
         quitButton.setStyle("-fx-font-size: 18px; -fx-padding: 10px 20px;");
+        settingsButton.setStyle("-fx-font-size: 18px; -fx-padding: 10px 20px;");
 
         // Set button actions
         startButton.setOnAction(e -> controller.startGame());
@@ -44,7 +46,7 @@ public class MainMenu {
         // Arrange buttons in a vertical layout
         VBox buttonLayout = new VBox(20);
         buttonLayout.setStyle("-fx-alignment: center;");
-        buttonLayout.getChildren().addAll(startButton, quitButton);
+        buttonLayout.getChildren().addAll(startButton,settingsButton,quitButton);
 
         // Create a StackPane to layer the background and buttons
         StackPane root = new StackPane();

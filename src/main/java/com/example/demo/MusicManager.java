@@ -36,25 +36,6 @@ public class MusicManager {
             System.err.println("Background music file not found.");
         }
     }
-    // Starts or resumes the background music playback.
-    public void playMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.play();
-        }
-    }
-    // Stops the background music playback.
-    public void stopMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
-    }
-    // Adjusts the volume of the background music.
-    public void setVolume(double volume) {
-        this.volume = volume;
-        if (mediaPlayer != null) {
-            mediaPlayer.setVolume(volume);
-        }
-    }
 
     public double getVolume() {
         return volume;
@@ -74,6 +55,26 @@ public class MusicManager {
             soundPlayer.play();
         } else {
             System.err.println("Sound effect file not found: " + fileName);
+        }
+    }
+
+    // Starts or resumes the background music playback.
+    public void playMusic() {
+        if (mediaPlayer != null) {
+            mediaPlayer.play();
+        }
+    }
+    // Stops the background music playback.
+    public void stopMusic() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+    }
+    // Adjusts the volume of the background music.
+    public void setVolume(double volume) {
+        this.volume = volume;
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(volume);
         }
     }
 

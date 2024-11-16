@@ -147,14 +147,12 @@ public abstract class LevelParent extends Observable {
 	//	enemyUnits.forEach(enemy -> spawnEnemyProjectile(((FighterPlane) enemy).fireProjectile()));
 		// Iterate over each enemy in the enemyUnits list
 		enemyUnits.forEach(enemy -> {
-			// Cast the enemy to FighterPlane and attempt to fire a projectile
 			ActiveActorDestructible projectile = ((FighterPlane) enemy).fireProjectile();
-			// Check if the enemy actually fired a projectile
 			if (projectile != null) {
-				// Add the projectile to the game scene
 				spawnEnemyProjectile(projectile);
+				// Play enemy bullet sound
+				MusicManager.getInstance().playSoundEffect("bullet_enemy.mp3");
 			}
-			// If projectile is null, do nothing (enemy did not fire this frame)
 		});
 	}
 
