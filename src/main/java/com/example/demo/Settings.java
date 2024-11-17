@@ -10,19 +10,27 @@ import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.text.Font;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Settings {
-    private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg";
+    private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background4.jpeg";
 
     private final Stage stage; // Reference to the primary stage
     private final Controller controller; // Reference to the Controller
+
+    // Map to store loaded fonts for easy access
+    private Map<String, Font> customFonts = new HashMap<>();
 
     // Updated constructor to accept Controller
     public Settings(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
+        // Load custom fonts
+        loadCustomFonts();
     }
 
     public void show() {
@@ -50,12 +58,13 @@ public class Settings {
 
         // --- Settings Title ---
         Label titleLabel = new Label("SETTINGS");
+        titleLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 100));
         titleLabel.getStyleClass().add("settings-title");
 
         // --- Top HBox containing Back Button and Title ---
         HBox topHBox = new HBox();
         topHBox.setAlignment(Pos.TOP_CENTER);
-        topHBox.setPadding(new Insets(10, 20, 10, 20));
+        topHBox.setPadding(new Insets(10, 10, 10, 10));
         topHBox.getChildren().addAll(backButton, titleLabel);
         HBox.setHgrow(titleLabel, Priority.ALWAYS);
         titleLabel.setMaxWidth(Double.MAX_VALUE);
@@ -64,17 +73,21 @@ public class Settings {
         // --- Labels VBox ---
         VBox labelsBox = new VBox(30);
         labelsBox.setAlignment(Pos.CENTER_LEFT);
-        labelsBox.getChildren().addAll(
-                new Label("Background Effects:"),
-                new Label("Sound Effects:")
-        );
 
-        // Style labels
-        for (javafx.scene.Node node : labelsBox.getChildren()) {
-            if (node instanceof Label) {
-                node.getStyleClass().add("settings-label");
-            }
+        // Create labels
+        Label backgroundEffectsLabel = new Label("Background Effects:");
+        Label soundEffectsLabel = new Label("Sound Effects:");
+
+        // Apply custom font to labels
+        Font settingsLabelFont = customFonts.get("Cartoon cookies");
+
+        if (settingsLabelFont != null) {
+            backgroundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
+            soundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
+
         }
+
+        labelsBox.getChildren().addAll(backgroundEffectsLabel, soundEffectsLabel);
 
         // --- Controls VBox ---
         VBox controlsBox = new VBox(30);
@@ -141,11 +154,17 @@ public class Settings {
         bottomHBox.setAlignment(Pos.BOTTOM_CENTER);
         bottomHBox.getChildren().addAll(saveButton, defaultsButton);
 
+        // ---- Second Main VBox contained content box and bottom box
+        VBox secondmainVBox = new VBox(80);
+        secondmainVBox.setAlignment(Pos.CENTER);
+        secondmainVBox.setPadding(new Insets(20));
+        secondmainVBox.getChildren().addAll(contentHBox, bottomHBox);
+
         // --- Main VBox containing everything ---
         VBox mainVBox = new VBox(80);
         mainVBox.setAlignment(Pos.TOP_CENTER);
         mainVBox.setPadding(new Insets(20));
-        mainVBox.getChildren().addAll(topHBox, contentHBox, bottomHBox);
+        mainVBox.getChildren().addAll(topHBox, secondmainVBox);
 
         // Add mainVBox to the root StackPane
         root.getChildren().add(mainVBox);
@@ -214,5 +233,26 @@ public class Settings {
         });
 
         return stackPane;
+    }
+    private void loadCustomFonts() {
+        String[] fontPaths = {
+                "/com/example/demo/fonts/Cartoon cookies.ttf",
+        };
+
+        for (String fontPath : fontPaths) {
+            try {
+                Font font = Font.loadFont(getClass().getResourceAsStream(fontPath), 10);
+                if (font == null) {
+                    System.err.println("Failed to load font: " + fontPath);
+                } else {
+                    // Store the font with its name for later use
+                    customFonts.put(font.getName(), font);
+                    System.out.println("Loaded font: " + font.getName());
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading font: " + fontPath);
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -24,7 +24,6 @@
 
 /* Settings Title */
 .settings-title {
-    -fx-font-size: 55px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 4, 0, 0, 2);
@@ -32,7 +31,6 @@
 
 /* Settings Labels */
 .settings-label {
-    -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
 }

@@ -1,27 +1,36 @@
 package com.example.demo;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import com.example.demo.controller.Controller;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainMenu {
-    private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg";
+    private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background3.jpg";
 
     private final Stage stage;
     private final Controller controller;
 
+    // Map to store loaded fonts for easy access
+    private Map<String, Font> customFonts = new HashMap<>();
+
     public MainMenu(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
+        // Load custom fonts
+        loadCustomFonts();
     }
 
     public void show() {
@@ -31,6 +40,11 @@ public class MainMenu {
         backgroundImageView.setFitHeight(stage.getHeight());
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
+
+        // --- Main Menu Title ---
+        Label titleLabel = new Label("SKY BATTLE");
+        titleLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 100));
+        titleLabel.getStyleClass().add("settings-title");
 
         // Create custom buttons
         StackPane playButton = createCustomButton("Play");
@@ -49,9 +63,23 @@ public class MainMenu {
         VBox buttonLayout = new VBox(20, playButton, settingsButton, quitButton);
         buttonLayout.setAlignment(Pos.CENTER);
 
-        // Create a StackPane to layer the background and buttons
+        // Create a BorderPane for main layout
+        BorderPane mainLayout = new BorderPane();
+
+        // Place the title at the top
+        BorderPane.setAlignment(titleLabel, Pos.CENTER);
+        mainLayout.setTop(titleLabel);
+
+        // Place the buttons at the center with margin
+        mainLayout.setCenter(buttonLayout);
+        BorderPane.setMargin(buttonLayout, new Insets(10, 0, 120, 0)); // Shift buttons downward by 100 pixels
+
+        // Top padding to give space for the title
+        mainLayout.setPadding(new Insets(60, 0, 0, 0));
+
+        // Create a StackPane to layer the background and main layout
         StackPane root = new StackPane();
-        root.getChildren().addAll(backgroundImageView, buttonLayout);
+        root.getChildren().addAll(backgroundImageView, mainLayout);
 
         // Create and set the scene
         Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
@@ -66,6 +94,8 @@ public class MainMenu {
         stage.setScene(scene);
         stage.show();
     }
+
+
 
     private StackPane createCustomButton(String text) {
         // Load the button background image
@@ -113,6 +143,29 @@ public class MainMenu {
         });
 
         return stackPane;
+    }
+
+
+    private void loadCustomFonts() {
+        String[] fontPaths = {
+                "/com/example/demo/fonts/Cartoon cookies.ttf",
+        };
+
+        for (String fontPath : fontPaths) {
+            try {
+                Font font = Font.loadFont(getClass().getResourceAsStream(fontPath), 10);
+                if (font == null) {
+                    System.err.println("Failed to load font: " + fontPath);
+                } else {
+                    // Store the font with its name for later use
+                    customFonts.put(font.getName(), font);
+                    System.out.println("Loaded font: " + font.getName());
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading font: " + fontPath);
+                e.printStackTrace();
+            }
+        }
     }
 
 }
