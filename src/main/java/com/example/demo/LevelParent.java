@@ -150,8 +150,7 @@ public abstract class LevelParent extends Observable {
 			ActiveActorDestructible projectile = ((FighterPlane) enemy).fireProjectile();
 			if (projectile != null) {
 				spawnEnemyProjectile(projectile);
-				// Play enemy bullet sound
-				MusicManager.getInstance().playSoundEffect("bullet_enemy.mp3");
+
 			}
 		});
 	}
