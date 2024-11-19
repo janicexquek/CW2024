@@ -50,7 +50,11 @@ public class LevelTwo extends LevelParent {
 		);
 		return levelView;
 	}
-
+	// **Implement the abstract method from LevelParent**
+	@Override
+	protected String getNextLevelClassName() {
+		return "mainMenu"; // Indicates that the next screen is the Main Menu
+	}
 
 
 }

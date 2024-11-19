@@ -12,15 +12,14 @@ public class LevelView {
 	private static final int WIN_IMAGE_Y_POSITION = 175;
 	private static final int LOSS_SCREEN_X_POSITION = -160;
 	private static final int LOSS_SCREEN_Y_POSISITION = -375;
-	// PauseOverlay dimensions should match the game screen
-//	private static final double PAUSE_OVERLAY_WIDTH = 500; // Adjust as needed
-//	private static final double PAUSE_OVERLAY_HEIGHT = 500;
+
 	private final Group root;
 	private final WinImage winImage;
 	private final GameOverImage gameOverImage;
 	private final HeartDisplay heartDisplay;
 	private final ExitDisplay exitDisplay;
 	private final PauseOverlay pauseOverlay; // New member variable
+	private final WinOverlay winOverlay; // New WinOverlay
 
 
 	public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight) {
@@ -31,8 +30,11 @@ public class LevelView {
 		this.gameOverImage = new GameOverImage(LOSS_SCREEN_X_POSITION, LOSS_SCREEN_Y_POSISITION);
 		// Initialize the PauseOverlay with screen dimensions
 		this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, pauseGameCallback::run);
+		this.winOverlay = new WinOverlay(screenWidth, screenHeight); // Initialize WinOverlay
+
 		// Add the PauseOverlay to the root; it should be on top of other elements
 		this.root.getChildren().add(pauseOverlay);
+		this.root.getChildren().add(winOverlay);
 	}
 
 	public void showHeartDisplay() {
@@ -74,5 +76,16 @@ public class LevelView {
 		pauseOverlay.setVisible(false);
 		pauseOverlay.setMouseTransparent(true); // Disable interactions when not visible
 	}
+	// Method to show the WinOverlay with custom buttons
+	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback) {
+		winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback);
+		winOverlay.showOverlay();
+	}
 
+	// Method to hide the WinOverlay
+	public void hideWinOverlay() {
+		winOverlay.hideOverlay();
+		// Remove buttons from the overlay to prevent duplication
+		// This is handled inside the WinOverlay's hideOverlay method or you can modify as needed
+	}
 }

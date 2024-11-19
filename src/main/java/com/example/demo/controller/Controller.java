@@ -58,38 +58,25 @@ public class Controller implements Observer {
 
 	}
 
-//	@Override
-//	public void update(Observable arg0, Object arg1) {
-//		try {
-//			goToLevel((String) arg1);
-//		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-//				| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//			Alert alert = new Alert(AlertType.ERROR);
-//			alert.setContentText(e.getClass().toString());
-//			alert.show();
-//			// showAlert(e);
-//
-//		}
-//	}
-@Override
-public void update(Observable arg0, Object arg1) {
-	if (arg1 instanceof String) {
-		String action = (String) arg1;
-		if ("mainMenu".equals(action)) {
-			showMainMenu();
-		} else {
-			try {
-				goToLevel(action);
-			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-					 | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("Error loading class: " + e.getMessage());
-				alert.show();
-				e.printStackTrace();
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		if (arg1 instanceof String) {
+			String action = (String) arg1;
+			if ("mainMenu".equals(action)) {
+				showMainMenu();
+			} else {
+				try {
+					goToLevel(action);
+				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+						 | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setContentText("Error loading class: " + e.getMessage());
+					alert.show();
+					e.printStackTrace();
+				}
 			}
 		}
 	}
-}
 
 
 	private void showAlert(Exception e) {

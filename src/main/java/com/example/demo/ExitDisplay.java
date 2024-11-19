@@ -143,7 +143,7 @@ public class ExitDisplay {
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.getChildren().addAll(continueButton, backButton);
 
-//        Second main box
+        //Second main box
         VBox secondmainVBox = new VBox(80);
         secondmainVBox.setAlignment(Pos.CENTER);
         secondmainVBox.setPadding(new Insets(40));

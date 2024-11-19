@@ -18,8 +18,10 @@ public class LevelOne extends LevelParent {
 		if (userIsDestroyed()) {
 			loseGame();
 		} else if (userHasReachedKillTarget())
-			goToNextLevel(NEXT_LEVEL);
+//			goToNextLevel(NEXT_LEVEL);
+			winGame(); // Triggers the WinOverlay
 	}
+
 
 	@Override
 	protected void initializeFriendlyUnits() {
@@ -50,6 +52,10 @@ public class LevelOne extends LevelParent {
 				screenWidth, // Screen width
 				screenHeight // Screen height
 		);
+	}
+	@Override
+	protected String getNextLevelClassName() {
+		return NEXT_LEVEL;
 	}
 
 	private boolean userHasReachedKillTarget() {

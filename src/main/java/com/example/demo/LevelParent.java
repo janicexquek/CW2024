@@ -289,9 +289,28 @@ public abstract class LevelParent extends Observable {
 	}
 
 	protected void winGame() {
-		timeline.stop();
-		levelView.showWinImage();
+	timeline.stop();
+	// Instead of showing winImage, show WinOverlay
+	if (levelView != null) {
+		levelView.showWinOverlay(
+				() -> backToMainMenu(), // Back to Main Menu callback
+				() -> proceedToNextLevel() // Next Level callback
+		);
 	}
+}
+	// New method to handle proceeding to the next level
+	private void proceedToNextLevel() {
+		String nextLevel = getNextLevelClassName();
+		if (nextLevel != null && !nextLevel.isEmpty()) {
+			goToNextLevel(nextLevel);
+		} else {
+			// Handle scenario when there's no next level
+			backToMainMenu();
+		}
+	}
+
+	// Abstract method to get next level class name
+	protected abstract String getNextLevelClassName();
 
 	protected void loseGame() {
 		timeline.stop();
