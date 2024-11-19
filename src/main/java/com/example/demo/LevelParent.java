@@ -31,9 +31,11 @@ public abstract class LevelParent extends Observable {
 	private final List<ActiveActorDestructible> enemyUnits;
 	private final List<ActiveActorDestructible> userProjectiles;
 	private final List<ActiveActorDestructible> enemyProjectiles;
-	
+
 	private int currentNumberOfEnemies;
 	private LevelView levelView;
+	// Flag to track pause state
+	private boolean isPaused = false;
 
 	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
 		this.root = new Group();
@@ -51,7 +53,7 @@ public abstract class LevelParent extends Observable {
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 		this.enemyMaximumYPosition = screenHeight - SCREEN_HEIGHT_ADJUSTMENT;
-		this.levelView = instantiateLevelView();
+		this.levelView = instantiateLevelView(screenWidth, screenHeight); // Pass dimensions
 		this.currentNumberOfEnemies = 0;
 		initializeTimeline();
 		friendlyUnits.add(user);
@@ -63,7 +65,7 @@ public abstract class LevelParent extends Observable {
 
 	protected abstract void spawnEnemyUnits();
 
-	protected abstract LevelView instantiateLevelView();
+	protected abstract LevelView instantiateLevelView(double screenWidth, double screenHeight);
 
 	protected Runnable getBackToMainMenuCallback() {
 		return this::backToMainMenu;
@@ -160,6 +162,10 @@ public abstract class LevelParent extends Observable {
 				if (kc == KeyCode.UP) user.moveUp();
 				if (kc == KeyCode.DOWN) user.moveDown();
 				if (kc == KeyCode.SPACE) fireProjectile();
+				if (kc == KeyCode.ESCAPE) {
+					System.out.println("Esc pressed");
+					togglePause();
+				}
 			}
 		});
 		background.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -169,6 +175,20 @@ public abstract class LevelParent extends Observable {
 			}
 		});
 		root.getChildren().add(background);
+//		background.setOpacity(0.1);
+	}
+
+	 // Toggles the game's pause state.
+	private void togglePause() {
+		if (!isPaused) {
+			pauseGame();
+			levelView.showPauseOverlay();
+			isPaused = true;
+		} else {
+			resumeGame();
+			levelView.hidePauseOverlay();
+			isPaused = false;
+		}
 	}
 
 	private void fireProjectile() {

@@ -38,13 +38,15 @@ public class LevelTwo extends LevelParent {
 	}
 
 	@Override
-	protected LevelView instantiateLevelView() {
+	protected LevelView instantiateLevelView(double screenWidth, double screenHeight) {
 		levelView = new LevelViewLevelTwo(
 				getRoot(),
 				PLAYER_INITIAL_HEALTH,
 				getBackToMainMenuCallback(),
 				this::pauseGame, // Pass the pauseGame callback
-				this::resumeGame  // Pass the resumeGame callback
+				this::resumeGame,  // Pass the resumeGame callback
+				screenWidth, // Screen width
+				screenHeight // Screen height
 		);
 		return levelView;
 	}

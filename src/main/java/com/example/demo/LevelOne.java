@@ -39,19 +39,20 @@ public class LevelOne extends LevelParent {
 	}
 
 	@Override
-	protected LevelView instantiateLevelView() {
+	protected LevelView instantiateLevelView(double screenWidth, double screenHeight) {
 		// Pass the pause and resume callbacks to LevelView
 		return new LevelView(
 				getRoot(),
 				PLAYER_INITIAL_HEALTH,
 				getBackToMainMenuCallback(),
 				this::pauseGame, // Pause callback
-				this::resumeGame // Resume callback
-		);	}
-
+				this::resumeGame, // Resume callback
+				screenWidth, // Screen width
+				screenHeight // Screen height
+		);
+	}
 
 	private boolean userHasReachedKillTarget() {
-
 		return getUser().getNumberOfKills() >= KILLS_TO_ADVANCE && !ChangedState();
 	}
 
