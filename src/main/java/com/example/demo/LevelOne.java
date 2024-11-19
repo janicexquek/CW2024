@@ -40,9 +40,15 @@ public class LevelOne extends LevelParent {
 
 	@Override
 	protected LevelView instantiateLevelView() {
+		// Pass the pause and resume callbacks to LevelView
+		return new LevelView(
+				getRoot(),
+				PLAYER_INITIAL_HEALTH,
+				getBackToMainMenuCallback(),
+				this::pauseGame, // Pause callback
+				this::resumeGame // Resume callback
+		);	}
 
-		return new LevelView(getRoot(), PLAYER_INITIAL_HEALTH);
-	}
 
 	private boolean userHasReachedKillTarget() {
 

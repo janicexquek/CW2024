@@ -6,6 +6,8 @@ public class LevelView {
 	
 	private static final double HEART_DISPLAY_X_POSITION = 5;
 	private static final double HEART_DISPLAY_Y_POSITION = 25;
+	private static final double EXIT_DISPLAY_X_POSITION = 1200; // Adjust based on your screen width
+	private static final double EXIT_DISPLAY_Y_POSITION = 25;
 	private static final int WIN_IMAGE_X_POSITION = 355;
 	private static final int WIN_IMAGE_Y_POSITION = 175;
 	private static final int LOSS_SCREEN_X_POSITION = -160;
@@ -14,16 +16,23 @@ public class LevelView {
 	private final WinImage winImage;
 	private final GameOverImage gameOverImage;
 	private final HeartDisplay heartDisplay;
-	
-	public LevelView(Group root, int heartsToDisplay) {
+	private final ExitDisplay exitDisplay;
+
+
+	public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback) {
 		this.root = root;
 		this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
+		this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION, pauseGameCallback, resumeGameCallback, backToMainMenuCallback);
 		this.winImage = new WinImage(WIN_IMAGE_X_POSITION, WIN_IMAGE_Y_POSITION);
 		this.gameOverImage = new GameOverImage(LOSS_SCREEN_X_POSITION, LOSS_SCREEN_Y_POSISITION);
 	}
 	
 	public void showHeartDisplay() {
 		root.getChildren().add(heartDisplay.getContainer());
+	}
+
+	public void showExitDisplay() {
+		root.getChildren().add(exitDisplay.getContainer());
 	}
 
 	public void showWinImage() {

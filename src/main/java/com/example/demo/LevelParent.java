@@ -65,10 +65,48 @@ public abstract class LevelParent extends Observable {
 
 	protected abstract LevelView instantiateLevelView();
 
+	protected Runnable getBackToMainMenuCallback() {
+		return this::backToMainMenu;
+	}
+
+	public void backToMainMenu() {
+		setChanged();
+		notifyObservers("mainMenu");
+	}
+
+	// Add this method to stop the game
+	public void stopGame() {
+		if (timeline != null) {
+			timeline.stop();
+		}
+		// Perform additional cleanup if necessary
+		removeAllDestroyedActors(); // Clean up any remaining actors
+		// Remove observers if any
+		deleteObservers();
+	}
+
+	// Method to pause the game
+	public void pauseGame() {
+		if (timeline != null) {
+			timeline.pause();
+			System.out.println("Game Paused");
+		}
+	}
+
+	// Method to resume the game
+	public void resumeGame() {
+		if (timeline != null) {
+			timeline.play();
+			System.out.println("Game Resumed");
+		}
+	}
+
+
 	public Scene initializeScene() {
 		initializeBackground();
 		initializeFriendlyUnits();
 		levelView.showHeartDisplay();
+		levelView.showExitDisplay();
 		return scene;
 	}
 
