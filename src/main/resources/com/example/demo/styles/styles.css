@@ -1,52 +1,13 @@
 /* styles.css */
 
 /* Custom Button Style */
-.custom-button {
+.custom-button-hover {
     -fx-cursor: hand;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
-}
-
-/* Remove scaling from CSS to avoid conflicts */
-.custom-button:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 20, 0, 0, 2);
-
 }
 
 /* Button Label Style */
 .button-label {
-    -fx-text-fill: white;
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-font-family: "Arial";
-    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
-}
-
-
-/* Settings Title */
-.settings-title {
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 4, 0, 0, 2);
-}
-
-/* Settings Labels */
-.settings-label {
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-}
-
-/* Custom Settings Button Style */
-.settings-button {
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
-}
-
-.settings-button:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0, 0, 2);
-}
-
-/* Settings Button Label Style */
-.settings-button-label {
     -fx-text-fill: white;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
@@ -54,10 +15,19 @@
     -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
 }
 
-
-
-/* --- Hover Effects for Buttons --- */
-.custom-button:hover, .settings-button:hover {
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
+/* Button Label Style */
+.menu-button-label {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial";
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
 }
+
+/* All Title Text */
+.title-text {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 4, 0, 0, 2);
+}
+

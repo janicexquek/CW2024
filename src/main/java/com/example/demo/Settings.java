@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.text.Font;
@@ -44,10 +45,6 @@ public class Settings {
         // Initialize MusicManager instance
         MusicManager musicManager = MusicManager.getInstance();
 
-        // Create a StackPane as the root layout to layer background and controls
-        StackPane root = new StackPane();
-        root.getChildren().add(backgroundImageView);
-
         // --- Back Button ---
         StackPane backButton = createCustomSettingsButton("Back", 80, 30, "/com/example/demo/images/ButtonText_Small_Round.png");
         backButton.setOnMouseClicked(e -> {
@@ -56,16 +53,22 @@ public class Settings {
             mainMenu.show();
         });
 
-        // --- Settings Title ---
-        Label titleLabel = new Label("SETTINGS");
-        titleLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 100));
-        titleLabel.getStyleClass().add("settings-title");
+        // Position the back button at top-left
+        StackPane.setAlignment(backButton, Pos.TOP_LEFT);
+        StackPane.setMargin(backButton, new Insets(30, 0, 0, 30));
 
-        // --- Top HBox containing Back Button and Title ---
+
+        // --- Settings Title ---
+        // --- Top HBox  Title ---
         HBox topHBox = new HBox();
         topHBox.setAlignment(Pos.TOP_CENTER);
-        topHBox.setPadding(new Insets(10, 10, 10, 10));
-        topHBox.getChildren().addAll(backButton, titleLabel);
+        topHBox.setPadding(new Insets(30, 10, 0, 10));
+
+        Label titleLabel = new Label("SETTINGS");
+        titleLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 100));
+        titleLabel.getStyleClass().add("title-text");
+        topHBox.getChildren().add(titleLabel);
+
         HBox.setHgrow(titleLabel, Priority.ALWAYS);
         titleLabel.setMaxWidth(Double.MAX_VALUE);
         titleLabel.setAlignment(Pos.CENTER);
@@ -80,11 +83,11 @@ public class Settings {
 
         // Apply custom font to labels
         Font settingsLabelFont = customFonts.get("Cartoon cookies");
-
+        backgroundEffectsLabel.setTextFill(Color.WHITE);
+        soundEffectsLabel.setTextFill(Color.WHITE);
         if (settingsLabelFont != null) {
             backgroundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
             soundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
-
         }
 
         labelsBox.getChildren().addAll(backgroundEffectsLabel, soundEffectsLabel);
@@ -128,6 +131,7 @@ public class Settings {
 
 
         // --- Save and Defaults Buttons ---
+        // --- Save Button ---
         StackPane saveButton = createCustomSettingsButton("Save", 120, 40, "/com/example/demo/images/ButtonText_Small_Round.png");
         saveButton.setOnMouseClicked(e -> {
             // Implement save functionality if needed
@@ -158,17 +162,24 @@ public class Settings {
         VBox secondmainVBox = new VBox(80);
         secondmainVBox.setAlignment(Pos.CENTER);
         secondmainVBox.setPadding(new Insets(20));
+        secondmainVBox.setMaxWidth(650);
+        secondmainVBox.setPrefHeight(400); // Set to desired height
+        secondmainVBox.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 10;");
         secondmainVBox.getChildren().addAll(contentHBox, bottomHBox);
 
         // --- Main VBox containing everything ---
-        VBox mainVBox = new VBox(80);
+        VBox mainVBox = new VBox(20);
         mainVBox.setAlignment(Pos.TOP_CENTER);
-        mainVBox.setPadding(new Insets(20));
+        mainVBox.setPadding(new Insets(10));
         mainVBox.getChildren().addAll(topHBox, secondmainVBox);
 
-        // Add mainVBox to the root StackPane
-        root.getChildren().add(mainVBox);
-        StackPane.setAlignment(mainVBox, Pos.CENTER);
+        // --- Main Layout ---
+        BorderPane mainLayout = new BorderPane();
+        mainLayout.setCenter(mainVBox);
+
+        // Create a StackPane as the root layout to layer background and controls
+        StackPane root = new StackPane();
+        root.getChildren().addAll(backgroundImageView, mainLayout, backButton);
 
         // Create the scene with preferred dimensions
         Scene settingsScene = new Scene(root, stage.getWidth(), stage.getHeight()); // Adjust width and height as needed
@@ -196,12 +207,12 @@ public class Settings {
 
         // Create a label for the button text
         Label label = new Label(text);
-        label.getStyleClass().add("settings-button-label");
+        label.getStyleClass().add("button-label");
 
         // Create a StackPane to stack the image and the label
         StackPane stackPane = new StackPane(buttonImageView, label);
         stackPane.setAlignment(Pos.CENTER);
-        stackPane.getStyleClass().add("settings-button");
+        stackPane.getStyleClass().add("custom-button-hover");
 
         // Ensure the StackPane size matches the image size
         stackPane.setMinSize(width, height);

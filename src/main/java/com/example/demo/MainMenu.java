@@ -45,7 +45,7 @@ public class MainMenu {
         // --- Main Menu Title ---
         Label titleLabel = new Label("SKY BATTLE");
         titleLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 100));
-        titleLabel.getStyleClass().add("settings-title");
+        titleLabel.getStyleClass().add("title-text");
 
         // Create custom buttons
         StackPane playButton = createCustomButton("Play");
@@ -128,12 +128,12 @@ public class MainMenu {
 
         // Create a label for the button text
         Label label = new Label(text);
-        label.getStyleClass().add("button-label");
+        label.getStyleClass().add("menu-button-label");
 
         // Create a StackPane to stack the image and the label
         StackPane stackPane = new StackPane(buttonImageView, label);
         stackPane.setAlignment(Pos.CENTER);
-        stackPane.getStyleClass().add("custom-button");
+        stackPane.getStyleClass().add("custom-button-hover");
 
         // Ensure the StackPane size matches the image size
         stackPane.setMinSize(buttonImageView.getFitWidth(), buttonImageView.getFitHeight());

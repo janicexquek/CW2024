@@ -128,12 +128,13 @@ public class InstructionsPage {
 
         // Create a label for the button text
         Label label = new Label(text);
-        label.getStyleClass().add("settings-button-label");
+        label.setFont(Font.font(customFonts.get("Cartoon cookies").getName()));
+        label.getStyleClass().add("button-label");
 
         // Create a StackPane to stack the image and the label
         StackPane stackPane = new StackPane(buttonImageView, label);
         stackPane.setAlignment(Pos.CENTER);
-        stackPane.getStyleClass().add("settings-button");
+        stackPane.getStyleClass().add("custom-button-hover");
 
         // Ensure the StackPane size matches the image size
         stackPane.setMinSize(width, height);
