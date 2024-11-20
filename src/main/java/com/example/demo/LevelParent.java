@@ -190,6 +190,12 @@ public abstract class LevelParent extends Observable {
 
 	 // Toggles the game's pause state.
 	private void togglePause() {
+		// Check if any overlay is active
+		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN) {
+			System.out.println("An overlay is active. Cannot toggle pause.");
+			return;
+		}
+
 		if (!isPaused) {
 			pauseGame();
 			levelView.showPauseOverlay();

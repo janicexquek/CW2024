@@ -36,6 +36,14 @@ public class LevelView {
 		this.root.getChildren().add(pauseOverlay);
 		this.root.getChildren().add(winOverlay);
 	}
+	// New state variable to track active overlay
+	public static enum ActiveOverlay {
+		NONE,
+		PAUSE,
+		WIN
+	}
+
+	private ActiveOverlay activeOverlay = ActiveOverlay.NONE;
 
 	public void showHeartDisplay() {
 		root.getChildren().add(heartDisplay.getContainer());
@@ -64,28 +72,48 @@ public class LevelView {
 
 	// Shows the pause overlay.
 	public void showPauseOverlay() {
+		if (activeOverlay != ActiveOverlay.NONE) {
+			System.out.println("Another overlay is active. Cannot show PauseOverlay.");
+			return;
+		}
 		System.out.println("Showing PauseOverlay");
 		pauseOverlay.setVisible(true);
 		pauseOverlay.setMouseTransparent(false); // Allow interactions with the overlay
 		pauseOverlay.toFront(); // Bring to front explicitly
+		activeOverlay = ActiveOverlay.PAUSE;
 	}
 
 	// Hides the pause overlay.
 	public void hidePauseOverlay() {
+		if (activeOverlay != ActiveOverlay.PAUSE) {
+			return;
+		}
 		System.out.println("Hiding PauseOverlay");
 		pauseOverlay.setVisible(false);
 		pauseOverlay.setMouseTransparent(true); // Disable interactions when not visible
+		activeOverlay = ActiveOverlay.NONE;
 	}
 	// Method to show the WinOverlay with custom buttons
 	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback) {
+		if (activeOverlay != ActiveOverlay.NONE) {
+			System.out.println("Another overlay is active. Cannot show WinOverlay.");
+			return;
+		}
 		winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback);
 		winOverlay.showOverlay();
+		activeOverlay = ActiveOverlay.WIN;
+
 	}
 
 	// Method to hide the WinOverlay
-	public void hideWinOverlay() {
-		winOverlay.hideOverlay();
-		// Remove buttons from the overlay to prevent duplication
-		// This is handled inside the WinOverlay's hideOverlay method or you can modify as needed
+//	public void hideWinOverlay() {
+//		winOverlay.hideOverlay();
+//		activeOverlay = ActiveOverlay.NONE;
+//	}
+
+	// Inside LevelView class
+	public ActiveOverlay getActiveOverlay() {
+		return activeOverlay;
 	}
+
 }

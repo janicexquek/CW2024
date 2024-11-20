@@ -3,6 +3,8 @@ package com.example.demo;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -43,6 +45,14 @@ public class WinOverlay extends StackPane {
 
         // Initially, the overlay is not visible
         setVisible(false);
+
+        // Add a key event handler to consume ESC key when WinOverlay is active
+        addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                // Optionally, ignore or consume the event to prevent underlying handlers
+                event.consume();
+            }
+        });
     }
 
     private StackPane createMessageBox(double screenWidth, double screenHeight) {
