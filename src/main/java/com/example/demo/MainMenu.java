@@ -2,6 +2,7 @@ package com.example.demo;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
@@ -56,11 +57,15 @@ public class MainMenu {
             settings.show();
         });
 
-        StackPane quitButton = createCustomButton("Quit");
-        quitButton.setOnMouseClicked(e -> stage.close());
+        StackPane instructionsButton = createCustomButton("Instructions");
+        instructionsButton.setOnMouseClicked(e -> {
+            // Navigate to the Instructions page
+            InstructionsPage instructionsPage = new InstructionsPage(stage, controller);
+            instructionsPage.show();
+        });
 
         // Arrange buttons in VBox
-        VBox buttonLayout = new VBox(20, playButton, settingsButton, quitButton);
+        VBox buttonLayout = new VBox(20, playButton, settingsButton, instructionsButton);
         buttonLayout.setAlignment(Pos.CENTER);
 
         // Create a BorderPane for main layout
@@ -80,7 +85,24 @@ public class MainMenu {
         // Create a StackPane to layer the background and main layout
         StackPane root = new StackPane();
         root.getChildren().addAll(backgroundImageView, mainLayout);
+        // --- Add the Quit (x.png) Button in Top-Left Corner ---
+        // Load the x.png image
+        ImageView closeImageView = new ImageView(new Image(getClass().getResource("/com/example/demo/images/x.png").toExternalForm()));
+        closeImageView.setFitWidth(30); // Adjust size as needed
+        closeImageView.setFitHeight(30);
+        closeImageView.setPreserveRatio(true);
+        closeImageView.setCursor(Cursor.HAND); // Change cursor to hand on hover
 
+        // Set alignment to top-left and add margin
+        StackPane.setAlignment(closeImageView, Pos.TOP_LEFT);
+        StackPane.setMargin(closeImageView, new Insets(30, 0, 0, 30)); // 10px from top and left
+
+        // Add click handler to close the stage
+        closeImageView.setOnMouseClicked(e -> stage.close());
+
+        // Add the closeImageView to the root StackPane
+        root.getChildren().add(closeImageView);
+        // --- End of Quit Button Addition ---
         // Create and set the scene
         Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
 
