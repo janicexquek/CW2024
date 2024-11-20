@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import javafx.animation.ScaleTransition;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 public class WinOverlay extends StackPane {
 
@@ -190,6 +192,8 @@ public class WinOverlay extends StackPane {
             // Assign the callback
             button.setOnAction(e -> action.run());
 
+            // Apply hover effects
+            applyHoverEffect(stack);
         } catch (Exception e) {
             System.err.println("Failed to load button image: " + BUTTON_IMAGE_NAME);
             e.printStackTrace();
@@ -197,7 +201,59 @@ public class WinOverlay extends StackPane {
             button.setText(buttonText);
             button.setStyle("-fx-background-color: blue; -fx-text-fill: white;");
             button.setOnAction(event -> action.run()); // Assign the callback
+            // Apply hover effects directly to the button
+            applyHoverEffect(button);
         }
         return button;
+    }
+
+    // Method to apply hover effects using ScaleTransition
+    private void applyHoverEffect(StackPane stackPane) {
+        // Create a single ScaleTransition for the StackPane
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
+
+        // Add hover effects
+        stackPane.setOnMouseEntered(e -> {
+            scaleTransition.stop();
+            scaleTransition.setFromX(stackPane.getScaleX());
+            scaleTransition.setFromY(stackPane.getScaleY());
+            scaleTransition.setToX(1.05);
+            scaleTransition.setToY(1.05);
+            scaleTransition.playFromStart();
+        });
+
+        stackPane.setOnMouseExited(e -> {
+            scaleTransition.stop();
+            scaleTransition.setFromX(stackPane.getScaleX());
+            scaleTransition.setFromY(stackPane.getScaleY());
+            scaleTransition.setToX(1.0);
+            scaleTransition.setToY(1.0);
+            scaleTransition.playFromStart();
+        });
+    }
+
+    // Overloaded method to apply hover effects to Buttons directly (for fallback)
+    private void applyHoverEffect(Button button) {
+        // Create a single ScaleTransition for the Button
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), button);
+
+        // Add hover effects
+        button.setOnMouseEntered(e -> {
+            scaleTransition.stop();
+            scaleTransition.setFromX(button.getScaleX());
+            scaleTransition.setFromY(button.getScaleY());
+            scaleTransition.setToX(1.05);
+            scaleTransition.setToY(1.05);
+            scaleTransition.playFromStart();
+        });
+
+        button.setOnMouseExited(e -> {
+            scaleTransition.stop();
+            scaleTransition.setFromX(button.getScaleX());
+            scaleTransition.setFromY(button.getScaleY());
+            scaleTransition.setToX(1.0);
+            scaleTransition.setToY(1.0);
+            scaleTransition.playFromStart();
+        });
     }
 }
