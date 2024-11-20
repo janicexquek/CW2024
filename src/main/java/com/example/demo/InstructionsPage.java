@@ -15,6 +15,7 @@ import com.example.demo.controller.Controller;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,9 @@ import java.util.Map;
 public class InstructionsPage {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background5.jpg";
     private static final String FONT_PATH = "/com/example/demo/fonts/Cartoon cookies.ttf";
+    private static final String TEXT_FONT_PATH = "/com/example/demo/fonts/Pixel Digivolve.otf";
+//    private static final String BUTTON_FONT_PATH = "/com/example/demo/fonts/Sugar Bomb.ttf";
+
 
     private final Stage stage;
     private final Controller controller;
@@ -59,23 +63,23 @@ public class InstructionsPage {
         StackPane.setAlignment(backButton, Pos.TOP_LEFT);
         StackPane.setMargin(backButton, new Insets(30, 0, 0, 30)); // 10px from top and left
 
+        // Instructions Title
+        VBox titleVBox = new VBox();
+        titleVBox.setAlignment(Pos.TOP_CENTER);
+        titleVBox.setPadding(new Insets(30,0,0,0));
+
+        Label instructionsTitle = new Label("Instructions");
+        instructionsTitle.setFont(Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 100));
+        instructionsTitle.getStyleClass().add("title-text");
+        titleVBox.getChildren().add(instructionsTitle);
+
         // --- Instructions Box with Blur Effect ---
         VBox instructionsBox = new VBox(20);
         instructionsBox.setAlignment(Pos.CENTER);
         instructionsBox.setPadding(new Insets(20));
-        instructionsBox.setMaxWidth(500);
-        instructionsBox.setMaxHeight(500);
+        instructionsBox.setMaxWidth(650);
+        instructionsBox.setPrefHeight(400);
         instructionsBox.setStyle("-fx-background-color: rgba(255, 255, 255, 0.8); -fx-background-radius: 10;");
-
-        // Instructions Title
-        VBox titleVBox = new VBox();
-        titleVBox.setAlignment(Pos.TOP_CENTER);
-        titleVBox.setPadding(new Insets(10,0,20,0));
-
-        Label instructionsTitle = new Label("Instructions");
-        instructionsTitle.setTextFill(Color.BLACK);
-        instructionsTitle.setFont(Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 60));
-        titleVBox.getChildren().add(instructionsTitle);
 
         // Instructions Text
         VBox textVBox = new VBox();
@@ -84,21 +88,26 @@ public class InstructionsPage {
         Label instructionsText = new Label(
                 "Welcome to SKY BATTLE!\n\n" +
                         "Use the arrow keys to navigate your spaceship.\n" +
-                        "Press SPACE to shoot enemies.\n\n" +
+                        "Press SPACE to shoot enemies.\n" +
+                        "Press ESC to pause your game.\n\n" +
                         "Avoid incoming fire and destroy all enemies to win.\n\n" +
                         "Good luck and have fun!"
         );
         instructionsText.setTextFill(Color.BLACK);
-        instructionsText.setFont(Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 20));
+        instructionsText.setFont(Font.loadFont(getClass().getResourceAsStream(TEXT_FONT_PATH), 20));
         instructionsText.setWrapText(true);
         textVBox.getChildren().add(instructionsText);
 
         // Add title and text to the box
-        instructionsBox.getChildren().addAll(titleVBox, textVBox);
+        instructionsBox.getChildren().add(textVBox);
+
+        VBox mainBox = new VBox(20);
+        mainBox.setAlignment(Pos.TOP_CENTER);
+        mainBox.getChildren().addAll(titleVBox, instructionsBox);
 
         // --- Main Layout ---
         BorderPane mainLayout = new BorderPane();
-        mainLayout.setCenter(instructionsBox);
+        mainLayout.setCenter(mainBox);
 
         // Create a StackPane to layer the background and main layout
         StackPane root = new StackPane();
@@ -120,6 +129,7 @@ public class InstructionsPage {
     }
 
     private StackPane createCustomButton(String text, String imagePath, double width, double height) {
+
         // Load the button background image
         ImageView buttonImageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
         buttonImageView.setFitWidth(width);
@@ -128,7 +138,15 @@ public class InstructionsPage {
 
         // Create a label for the button text
         Label label = new Label(text);
-        label.setFont(Font.font(customFonts.get("Cartoon cookies").getName()));
+
+        // Set the Sugar Bomb font
+        Font buttonFont = customFonts.get("Sugar Bomb"); // Ensure the font name matches
+        if (buttonFont != null) {
+            label.setFont(Font.font(buttonFont.getName(), 16)); // Adjust size as needed
+        } else {
+            System.err.println("Button font not found! Using default font.");
+            label.setFont(Font.font(16)); // Fallback font
+        }
         label.getStyleClass().add("button-label");
 
         // Create a StackPane to stack the image and the label
@@ -170,18 +188,31 @@ public class InstructionsPage {
 
 
     private void loadCustomFonts() {
-        try {
-            Font font = Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 10);
-            if (font == null) {
-                System.err.println("Failed to load font: " + FONT_PATH);
-            } else {
-                // Store the font with its name for later use
-                customFonts.put(font.getName(), font);
-                System.out.println("Loaded font: " + font.getName());
+        String[] fontPaths = {
+                "/com/example/demo/fonts/Cartoon cookies.ttf",
+                "/com/example/demo/fonts/Pixel Digivolve.otf",
+                "/com/example/demo/fonts/Sugar Bomb.ttf" // Add the new font path here
+        };
+
+        for (String fontPath : fontPaths) {
+            try (InputStream fontStream = getClass().getResourceAsStream(fontPath)) {
+                if (fontStream == null) {
+                    System.err.println("Font not found: " + fontPath);
+                    continue;
+                }
+                Font font = Font.loadFont(fontStream, 10);
+                if (font == null) {
+                    System.err.println("Failed to load font: " + fontPath);
+                } else {
+                    customFonts.put(font.getName(), font);
+                    System.out.println("Loaded font: " + font.getName());
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading font: " + fontPath);
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            System.err.println("Error loading font: " + FONT_PATH);
-            e.printStackTrace();
         }
     }
+
+
 }

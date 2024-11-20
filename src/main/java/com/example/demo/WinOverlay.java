@@ -13,15 +13,23 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 public class WinOverlay extends StackPane {
 
     private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png";
     private static final String BUTTON_IMAGE_NAME = "/com/example/demo/images/ButtonText_Small_Blue_Round.png";
     private static final String FONT_PATH = "/com/example/demo/fonts/Cartoon cookies.ttf";
+    private static final String BUTTON_FONT_PATH = "/com/example/demo/fonts/Sugar Bomb.ttf";
 
     // Dimensions for buttons
     private static final double BUTTON_WIDTH = 180;
     private static final double BUTTON_HEIGHT = 60;
+
+    // Map to store loaded fonts
+    private Map<String, Font> customFonts = new HashMap<>();
 
     // Flags to prevent duplicate button initialization
     private boolean buttonsInitialized = false;
@@ -55,6 +63,38 @@ public class WinOverlay extends StackPane {
                 event.consume();
             }
         });
+    }
+    // New method to load all fonts
+    private void loadCustomFonts() {
+        String[] fontPaths = {
+                FONT_PATH,
+                BUTTON_FONT_PATH
+        };
+
+        for (String fontPath : fontPaths) {
+            try (InputStream fontStream = getClass().getResourceAsStream(fontPath)) {
+                if (fontStream == null) {
+                    System.err.println("Font not found: " + fontPath);
+                    continue;
+                }
+                Font font = Font.loadFont(fontStream, 10); // Initial size; actual size set when applied
+                if (font == null) {
+                    System.err.println("Failed to load font: " + fontPath);
+                } else {
+                    customFonts.put(font.getName(), font);
+                    System.out.println("Loaded font: " + font.getName());
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading font: " + fontPath);
+                e.printStackTrace();
+            }
+        }
+
+        // Optional: Print all loaded font names for verification
+        System.out.println("Available fonts in WinOverlay:");
+        for (String fontName : customFonts.keySet()) {
+            System.out.println("- " + fontName);
+        }
     }
 
     private StackPane createMessageBox(double screenWidth, double screenHeight) {

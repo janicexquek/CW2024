@@ -62,7 +62,7 @@ public class Settings {
         // --- Top HBox  Title ---
         HBox topHBox = new HBox();
         topHBox.setAlignment(Pos.TOP_CENTER);
-        topHBox.setPadding(new Insets(30, 10, 0, 10));
+        topHBox.setPadding(new Insets(30, 0, 0, 0));
 
         Label titleLabel = new Label("SETTINGS");
         titleLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 100));
@@ -83,8 +83,8 @@ public class Settings {
 
         // Apply custom font to labels
         Font settingsLabelFont = customFonts.get("Cartoon cookies");
-        backgroundEffectsLabel.setTextFill(Color.WHITE);
-        soundEffectsLabel.setTextFill(Color.WHITE);
+        backgroundEffectsLabel.setTextFill(Color.DARKGRAY);
+        soundEffectsLabel.setTextFill(Color.DARKGRAY);
         if (settingsLabelFont != null) {
             backgroundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
             soundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
@@ -207,6 +207,14 @@ public class Settings {
 
         // Create a label for the button text
         Label label = new Label(text);
+        // Set the Sugar Bomb font
+        Font buttonFont = customFonts.get("Sugar Bomb"); // Ensure the font name matches
+        if (buttonFont != null) {
+            label.setFont(Font.font(buttonFont.getName(), 16)); // Adjust size as needed
+        } else {
+            System.err.println("Button font not found! Using default font.");
+            label.setFont(Font.font(16)); // Fallback font
+        }
         label.getStyleClass().add("button-label");
 
         // Create a StackPane to stack the image and the label
@@ -248,6 +256,7 @@ public class Settings {
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
+                "/com/example/demo/fonts/Sugar Bomb.ttf" // Add the new font path here
         };
 
         for (String fontPath : fontPaths) {

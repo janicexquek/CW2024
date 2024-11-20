@@ -128,7 +128,15 @@ public class MainMenu {
 
         // Create a label for the button text
         Label label = new Label(text);
-        label.getStyleClass().add("menu-button-label");
+        // Set the Sugar Bomb font
+        Font buttonFont = customFonts.get("Sugar Bomb"); // Ensure the font name matches
+        if (buttonFont != null) {
+            label.setFont(Font.font(buttonFont.getName(), 20)); // Adjust size as needed
+        } else {
+            System.err.println("Button font not found! Using default font.");
+            label.setFont(Font.font(24)); // Fallback font
+        }
+        label.getStyleClass().add("button-label");
 
         // Create a StackPane to stack the image and the label
         StackPane stackPane = new StackPane(buttonImageView, label);
@@ -171,6 +179,7 @@ public class MainMenu {
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
+                "/com/example/demo/fonts/Sugar Bomb.ttf" // Add the new font path here
         };
 
         for (String fontPath : fontPaths) {

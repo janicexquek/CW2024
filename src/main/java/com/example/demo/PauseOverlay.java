@@ -13,7 +13,7 @@ import javafx.scene.image.ImageView;
 public class PauseOverlay extends StackPane {
 
     private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png";
-    private static final String FONT_PATH = "/com/example/demo/fonts/Cartoon cookies.ttf";
+    private static final String FONT_PATH = "/com/example/demo/fonts/Pixel Digivolve.otf";
 
     public PauseOverlay(double screenWidth, double screenHeight, Runnable togglePauseCallback) {
         // Set the size of the overlay to cover the entire screen

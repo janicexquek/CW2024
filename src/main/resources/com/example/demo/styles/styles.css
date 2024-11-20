@@ -9,18 +9,7 @@
 /* Button Label Style */
 .button-label {
     -fx-text-fill: white;
-    -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-font-family: "Arial";
-    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
-}
-
-/* Button Label Style */
-.menu-button-label {
-    -fx-text-fill: white;
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-font-family: "Arial";
     -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
 }
 

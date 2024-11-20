@@ -14,8 +14,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
+import java.net.URL;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExitDisplay {
 
@@ -27,6 +30,7 @@ public class ExitDisplay {
     private static final int EXIT_HEIGHT = 50;
     private static final double ALERT_WIDTH = 500;
     private static final double ALERT_HEIGHT = 500;
+
     private HBox container;
     private double containerXPosition;
     private double containerYPosition;
@@ -36,14 +40,46 @@ public class ExitDisplay {
     private Runnable resumeGameCallback;
     private Runnable backToMainMenuCallback;
 
+    // Map to store loaded fonts for easy access
+    private Map<String, Font> customFonts = new HashMap<>();
+
     public ExitDisplay(double xPosition, double yPosition, Runnable pauseGameCallback, Runnable resumeGameCallback, Runnable backToMainMenuCallback) {
         this.containerXPosition = xPosition;
         this.containerYPosition = yPosition;
         this.backToMainMenuCallback = backToMainMenuCallback;
         this.pauseGameCallback = pauseGameCallback;
         this.resumeGameCallback = resumeGameCallback;
+        loadCustomFonts(); // Load all custom fonts
         initializeContainer();
         initializeExit();
+    }
+
+    private void loadCustomFonts() {
+        String[] fontPaths = {
+                "/com/example/demo/fonts/Cartoon cookies.ttf",
+                "/com/example/demo/fonts/Pixel Digivolve.otf",
+                "/com/example/demo/fonts/SKULL BONES Bold22.otf",
+                "/com/example/demo/fonts/Sugar Bomb.ttf" // Newly added
+        };
+
+        for (String fontPath : fontPaths) {
+            try (InputStream fontStream = getClass().getResourceAsStream(fontPath)) {
+                if (fontStream == null) {
+                    System.err.println("Font not found: " + fontPath);
+                    continue;
+                }
+                Font font = Font.loadFont(fontStream, 10);
+                if (font == null) {
+                    System.err.println("Failed to load font: " + fontPath);
+                } else {
+                    customFonts.put(font.getName(), font);
+                    System.out.println("Loaded font: " + font.getName());
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading font: " + fontPath);
+                e.printStackTrace();
+            }
+        }
     }
 
     private void initializeContainer() {
@@ -67,17 +103,6 @@ public class ExitDisplay {
         return container;
     }
 
-    private Font loadCustomFont(double size) {
-        try {
-            return Font.loadFont(getClass().getResourceAsStream("/com/example/demo/fonts/Cartoon cookies.ttf"), size);
-        } catch (Exception e) {
-            System.err.println("Failed to load custom font.");
-            e.printStackTrace();
-            // Fallback to a default font
-            return Font.font("Arial", size);
-        }
-    }
-
     private void showExitAlert() {
         // Pause the game
         if (pauseGameCallback != null) {
@@ -87,45 +112,47 @@ public class ExitDisplay {
         // Create a new stage for the alert
         Stage alertStage = new Stage();
         alertStage.initModality(Modality.APPLICATION_MODAL);
-//        alertStage.setTitle("Exit Game");
+        // alertStage.setTitle("Exit Game"); // Optional: Set title
 
         // Create the background image
         ImageView background = new ImageView(new Image(getClass().getResource(BOX_IMAGE_NAME).toExternalForm()));
         background.setFitWidth(ALERT_WIDTH);
         background.setFitHeight(ALERT_HEIGHT);
 
-        // Load custom fonts
-        Font titleFont = loadCustomFont(50); // Larger size for title
-        Font messageFont = loadCustomFont(20); // Regular size for message
-
         // Create the title label
         Label titleLabel = new Label("Exit Game");
         titleLabel.setTextFill(Color.BLACK); // Ensure text is visible against the background
-        titleLabel.setFont(titleFont);
+        Font titleFont = customFonts.get("Cartoon cookies");
+        if (titleFont != null) {
+            titleLabel.setFont(Font.font(titleFont.getName(), 50)); // Larger size for title
+        } else {
+            System.err.println("Title font not loaded. Using default font.");
+            titleLabel.setFont(Font.font("Arial", 50)); // Fallback font
+        }
         titleLabel.setAlignment(Pos.TOP_CENTER);
         titleLabel.setWrapText(true);
 
         // Create the message label
-        Label message = new Label("Do you want to CONTINUE your game or \n BACK to Main Menu?");
+        Label message = new Label("Do you want to CONTINUE your game or \nBACK to Main Menu?");
         message.setTextFill(Color.WHITE); // Assuming the box.png allows white text
-        message.setFont(messageFont);
+        Font messageFont = customFonts.get("Pixel Digivolve");
+        if (messageFont != null) {
+            message.setFont(Font.font(messageFont.getName(), 20)); // Regular size for message
+        } else {
+            System.err.println("Message font not loaded. Using default font.");
+            message.setFont(Font.font("Arial", 20)); // Fallback font
+        }
         message.setWrapText(true);
         message.setAlignment(Pos.CENTER);
 
-        // Create the "Back to Main Menu" button
-        Button backButton = createImageButton("Back to Main Menu", BACK_BUTTON_IMAGE_NAME);
+        // Create the "Main Menu" button
+        Button backButton = createImageButton("Main Menu", BACK_BUTTON_IMAGE_NAME);
         backButton.setPrefWidth(150);
         backButton.setOnAction(event -> {
-            // Implement the action to return to the main menu
-            // For example, you might want to close the current level and open the main menu
-            // Here, we'll just exit the application for demonstration
-//            alertStage.close();
-//            backToMainMenuCallback.run(); // Execute the callback to navigate to the main menu
             alertStage.close();
             if (backToMainMenuCallback != null) {
                 backToMainMenuCallback.run();
             }
-
         });
 
         // Create the "Continue" button
@@ -143,16 +170,16 @@ public class ExitDisplay {
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.getChildren().addAll(continueButton, backButton);
 
-        //Second main box
-        VBox secondmainVBox = new VBox(80);
-        secondmainVBox.setAlignment(Pos.CENTER);
-        secondmainVBox.setPadding(new Insets(40));
-        secondmainVBox.getChildren().addAll(message, buttonBox);
+        // Second main box with message and buttons
+        VBox secondMainVBox = new VBox(80); // Spacing between message and buttonBox
+        secondMainVBox.setAlignment(Pos.CENTER);
+        secondMainVBox.setPadding(new Insets(40));
+        secondMainVBox.getChildren().addAll(message, buttonBox);
 
-        // Create a VBox for the message and buttons
+        // Create a VBox for the title and secondMainVBox
         VBox mainVBox = new VBox(20);
         mainVBox.setAlignment(Pos.CENTER);
-        mainVBox.getChildren().addAll(titleLabel, secondmainVBox);
+        mainVBox.getChildren().addAll(titleLabel, secondMainVBox);
 
         // Create a StackPane to hold the background and VBox
         StackPane stackPane = new StackPane();
@@ -169,7 +196,7 @@ public class ExitDisplay {
         Button button = new Button();
 
         try {
-            // Load the button image
+            // Load the button background image
             Image buttonImage = new Image(getClass().getResource(imagePath).toExternalForm());
             ImageView buttonImageView = new ImageView(buttonImage);
             buttonImageView.setFitWidth(180); // Adjust width as needed
@@ -180,8 +207,14 @@ public class ExitDisplay {
             stack.getChildren().add(buttonImageView);
 
             Label label = new Label(text);
-            label.setTextFill(Color.WHITE);
-            label.setFont(loadCustomFont(20)); // Adjust font size as needed
+            Font buttonFont = customFonts.get("Sugar Bomb"); // Use the exact name of the font
+            if (buttonFont != null) {
+                label.setFont(Font.font(buttonFont.getName(), 22)); // Adjust size as needed
+            } else {
+                System.err.println("Button font not loaded. Using default font.");
+                label.setFont(Font.font("Arial", 22)); // Fallback font
+            }
+            label.setTextFill(Color.WHITE); // Ensure text visibility
             stack.getChildren().add(label);
 
             // Set the StackPane as the button's graphic
@@ -195,6 +228,12 @@ public class ExitDisplay {
             e.printStackTrace();
             // Fallback: Style the button without an image
             button.setText(text);
+            Font fallbackFont = customFonts.get("Sugar Bomb");
+            if (fallbackFont != null) {
+                button.setFont(Font.font(fallbackFont.getName(), 14)); // Adjust size as needed
+            } else {
+                button.setFont(Font.font("Arial", 14)); // Fallback font
+            }
             button.setStyle("-fx-background-color: #555555; -fx-text-fill: white; -fx-font-size: 14px;");
         }
 
@@ -203,5 +242,4 @@ public class ExitDisplay {
 
         return button;
     }
-
 }
