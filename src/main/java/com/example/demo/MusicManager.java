@@ -3,6 +3,8 @@ package com.example.demo;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 public class MusicManager {
@@ -13,16 +15,23 @@ public class MusicManager {
     private double soundEffectVolume; // Default will be loaded from preferences
     private Preferences prefs;
 
+    // Track active sound effect players
+    private List<MediaPlayer> activeSoundEffects;
+
     // Define default volume levels
     public static final double DEFAULT_MUSIC_VOLUME = 0.5;
     public static final double DEFAULT_SOUND_EFFECT_VOLUME = 0.5;
+    // To track if sound effects are muted
+    private boolean soundEffectsMuted = false;
 
     private MusicManager() {
         prefs = Preferences.userNodeForPackage(MusicManager.class);
         // Load saved volume settings or use defaults
         musicVolume = prefs.getDouble("musicVolume", DEFAULT_MUSIC_VOLUME);
         soundEffectVolume = prefs.getDouble("soundEffectVolume", DEFAULT_SOUND_EFFECT_VOLUME);
+        activeSoundEffects = new ArrayList<>();
         initializeBackgroundMusic();
+
     }
 
     public static MusicManager getInstance() {
@@ -49,6 +58,19 @@ public class MusicManager {
     }
     // Starts or resumes the background music playback.
     public void playMusic() {
+        if (mediaPlayer != null) {
+            mediaPlayer.play();
+        }
+    }
+    // Pauses the background music playback.
+    public void pauseMusic() {
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+        }
+    }
+
+    // Resumes the background music playback.
+    public void resumeMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.play();
         }
@@ -92,12 +114,37 @@ public class MusicManager {
             // Initialize a new MediaPlayer for the sound effect
             MediaPlayer soundPlayer = new MediaPlayer(sound);
             // Set the volume for the sound effect
-            soundPlayer.setVolume(soundEffectVolume); // Adjust volume as needed
+            soundPlayer.setVolume(soundEffectsMuted ? 0 : soundEffectVolume); // Adjust volume as needed
+            // Add to active sound effects list
+            activeSoundEffects.add(soundPlayer);
+            // Remove from active list once done
+            soundPlayer.setOnEndOfMedia(() -> {
+                activeSoundEffects.remove(soundPlayer);
+                soundPlayer.dispose();
+            });
             // Play the sound effect asynchronously
             soundPlayer.play();
         } else {
             System.err.println("Sound effect file not found: " + fileName);
         }
     }
+
+    // Mute all active sound effects by setting their volume to 0
+    public void muteAllSoundEffects() {
+        soundEffectsMuted = true;
+        for (MediaPlayer soundPlayer : activeSoundEffects) {
+            soundPlayer.setVolume(0);
+        }
+    }
+
+    // Unmute all active sound effects by restoring their original volume
+    public void unmuteAllSoundEffects() {
+        soundEffectsMuted = false;
+        for (MediaPlayer soundPlayer : activeSoundEffects) {
+            soundPlayer.setVolume(soundEffectVolume);
+        }
+    }
+
+
 
 }
