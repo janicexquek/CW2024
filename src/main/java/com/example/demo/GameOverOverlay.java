@@ -17,12 +17,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WinOverlay extends StackPane {
+public class GameOverOverlay extends StackPane {
 
     private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png";
     private static final String BUTTON_IMAGE_NAME = "/com/example/demo/images/ButtonText_Small_Blue_Round.png";
-//    private static final String FONT_PATH = "/com/example/demo/fonts/Cartoon cookies.ttf";
-//    private static final String BUTTON_FONT_PATH = "/com/example/demo/fonts/Sugar Bomb.ttf";
 
     // Dimensions for buttons
     private static final double BUTTON_WIDTH = 200;
@@ -34,7 +32,7 @@ public class WinOverlay extends StackPane {
     // Flags to prevent duplicate button initialization
     private boolean buttonsInitialized = false;
 
-    public WinOverlay(double screenWidth, double screenHeight) {
+    public GameOverOverlay(double screenWidth, double screenHeight) {
         // Set the size of the overlay to cover the entire screen
         setPrefSize(screenWidth, screenHeight);
         setMaxSize(screenWidth, screenHeight);
@@ -56,7 +54,7 @@ public class WinOverlay extends StackPane {
         // Initially, the overlay is not visible
         setVisible(false);
 
-        // Add a key event handler to consume ESC key when WinOverlay is active
+        // Add a key event handler to consume ESC key when GameOverOverlay is active
         addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 // Optionally, ignore or consume the event to prevent underlying handlers
@@ -65,6 +63,7 @@ public class WinOverlay extends StackPane {
         });
         loadCustomFonts();
     }
+
     // Method to load all fonts
     private void loadCustomFonts() {
         String[] fontPaths = {
@@ -104,7 +103,7 @@ public class WinOverlay extends StackPane {
             background.setFitWidth(boxWidth);
             background.setFitHeight(boxHeight);
         } catch (Exception e) {
-            System.err.println("Failed to load WinOverlay background image: " + BOX_IMAGE_NAME);
+            System.err.println("Failed to load GameOverOverlay background image: " + BOX_IMAGE_NAME);
             e.printStackTrace();
             // Fallback to a semi-transparent dark box
             background = new ImageView();
@@ -113,28 +112,28 @@ public class WinOverlay extends StackPane {
             background.setFitHeight(boxHeight);
         }
 
-        // Create the win message label
-        Label winMessage = new Label("You Win!");
-        winMessage.setTextFill(Color.WHITE);
+        // Create the game over message label
+        Label gameOverMessage = new Label("Game Over");
+        gameOverMessage.setTextFill(Color.WHITE);
         Font messageFont = customFonts.get("Cartoon cookies");
         if (messageFont != null) {
-            winMessage.setFont(Font.font(messageFont.getName(), 50)); // Adjust size as needed
+            gameOverMessage.setFont(Font.font(messageFont.getName(), 50)); // Adjust size as needed
         } else {
             System.err.println("Message font 'Cartoon cookies' not loaded. Using default font.");
-            winMessage.setFont(Font.font("Arial", 50)); // Fallback font
+            gameOverMessage.setFont(Font.font("Arial", 50)); // Fallback font
         }
-        winMessage.setWrapText(true);
-        winMessage.setAlignment(Pos.TOP_CENTER);
-        winMessage.setMaxWidth(boxWidth - 40); // Padding inside the box
+        gameOverMessage.setWrapText(true);
+        gameOverMessage.setAlignment(Pos.CENTER);
+        gameOverMessage.setMaxWidth(boxWidth - 40); // Padding inside the box
 
-        // Create a VBox to hold the message
-        VBox vbox = new VBox(20); // Spacing between elements
+        // Create a VBox to hold the message and button
+        VBox vbox = new VBox(30); // Spacing between elements
         vbox.setAlignment(Pos.CENTER);
         vbox.setPrefSize(boxWidth, boxHeight);
         vbox.setMaxSize(boxWidth, boxHeight);
         vbox.setMinSize(boxWidth, boxHeight);
 
-        vbox.getChildren().add(winMessage); // Add the message to VBox
+        vbox.getChildren().add(gameOverMessage); // Add the message to VBox
 
         // Stack the background and the message box
         StackPane messageBox = new StackPane(background, vbox);
@@ -145,7 +144,7 @@ public class WinOverlay extends StackPane {
 
     // Method to display the overlay
     public void showOverlay() {
-        System.out.println("Showing WinOverlay.");
+        System.out.println("Showing GameOverOverlay.");
         setVisible(true);
         setMouseTransparent(false); // Enable interactions
         toFront(); // Bring to front
@@ -153,28 +152,27 @@ public class WinOverlay extends StackPane {
 
     // Method to hide the overlay
     public void hideOverlay() {
-        System.out.println("Hiding WinOverlay.");
+        System.out.println("Hiding GameOverOverlay.");
         setVisible(false);
         setMouseTransparent(true); // Disable interactions
     }
 
     // Combined method to create, assign actions, and add buttons to the overlay
-    public void initializeButtons(Runnable backCallback, Runnable nextCallback) {
+    public void initializeButtons(Runnable backCallback) {
         if (buttonsInitialized) {
             System.out.println("Buttons already initialized. Skipping initialization.");
             return;
         }
 
-        System.out.println("Initializing WinOverlay buttons.");
+        System.out.println("Initializing GameOverOverlay buttons.");
 
-        // Create the buttons with image backgrounds and assign actions
+        // Create the back to main menu button with image background and assign action
         Button backButton = createCustomButton("Main Menu", backCallback);
-        Button nextButton = createCustomButton("Next Level", nextCallback);
 
-        // Create an HBox to hold the buttons horizontally
-        HBox buttonBox = new HBox(20); // 20px spacing between buttons
+        // Create an HBox to hold the button horizontally
+        HBox buttonBox = new HBox(20); // 20px spacing between buttons if more are added
         buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.getChildren().addAll(backButton, nextButton);
+        buttonBox.getChildren().add(backButton);
 
         // Add the buttonBox to the overlay's VBox
         // Assuming the messageBox's VBox is the second child (index 1)
@@ -199,7 +197,7 @@ public class WinOverlay extends StackPane {
             Image buttonImage = new Image(getClass().getResourceAsStream(BUTTON_IMAGE_NAME));
             ImageView buttonImageView = new ImageView(buttonImage);
             buttonImageView.setFitWidth(BUTTON_WIDTH); // Adjust width as needed
-            buttonImageView.setFitHeight(BUTTON_HEIGHT); // Adjust width as needed
+            buttonImageView.setFitHeight(BUTTON_HEIGHT); // Adjust height as needed
             buttonImageView.setPreserveRatio(true);
 
             // Create a StackPane to overlay text on the image
@@ -216,7 +214,6 @@ public class WinOverlay extends StackPane {
                 System.err.println("Button font 'Sugar Bomb' not loaded. Using default font.");
                 label.setFont(Font.font("Arial", 20)); // Fallback font
             }
-//            label.getStyleClass().add("button-label");
             stack.getChildren().add(label);
 
             // Set the StackPane as the button's graphic

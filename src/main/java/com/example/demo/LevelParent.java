@@ -191,7 +191,7 @@ public abstract class LevelParent extends Observable {
 	 // Toggles the game's pause state.
 	private void togglePause() {
 		// Check if any overlay is active
-		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN) {
+		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN || levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER ) {
 			System.out.println("An overlay is active. Cannot toggle pause.");
 			return;
 		}
@@ -307,7 +307,7 @@ public abstract class LevelParent extends Observable {
 	protected void winGame() {
 	timeline.stop();
 		MusicManager.getInstance().muteAllSoundEffects();
-		// Instead of showing winImage, show WinOverlay
+		// Instead of show WinOverlay
 	if (levelView != null) {
 		levelView.showWinOverlay(
 				() -> backToMainMenu(), // Back to Main Menu callback
@@ -332,7 +332,13 @@ public abstract class LevelParent extends Observable {
 
 	protected void loseGame() {
 		timeline.stop();
-		levelView.showGameOverImage();
+		MusicManager.getInstance().muteAllSoundEffects();
+		// Instead of show WinOverlay
+		if (levelView != null) {
+			levelView.showGameOverOverlay(
+					() -> backToMainMenu() // Back to Main Menu callback
+			);
+		}
 	}
 
 	protected UserPlane getUser() {
