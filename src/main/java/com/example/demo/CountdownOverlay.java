@@ -59,7 +59,6 @@ public class CountdownOverlay extends StackPane {
             Font customFont = Font.loadFont(fontStream, 50);
             if (customFont != null) {
                 countdownLabel.setFont(customFont);
-                System.out.println("Custom font loaded successfully.");
             } else {
                 // Fallback font if custom font fails to load
                 countdownLabel.setFont(new Font("Arial", 50));
@@ -76,7 +75,7 @@ public class CountdownOverlay extends StackPane {
         setMouseTransparent(false);
         toFront(); // Ensure the overlay is on top
 
-        System.out.println("Countdown started.");
+        MusicManager.getInstance().playCountdownSound();
 
         // Define countdown messages
         String[] messages = {
@@ -94,6 +93,7 @@ public class CountdownOverlay extends StackPane {
                     Duration.seconds(i),
                     event -> {
                         countdownLabel.setText(messages[index]);
+//                        MusicManager.getInstance().playCountdownSound();
 //                        System.out.println("Countdown message: " + messages[index]);
                     }
             );
@@ -103,7 +103,6 @@ public class CountdownOverlay extends StackPane {
         // After countdown, hide overlay and trigger callback
         timeline.setOnFinished(event -> {
             hideCountdown();
-            System.out.println("Countdown finished.");
             if (onCountdownFinished != null) {
                 onCountdownFinished.run();
             }

@@ -80,17 +80,20 @@ public class Settings {
         // Create labels
         Label backgroundEffectsLabel = new Label("Background Effects:");
         Label soundEffectsLabel = new Label("Sound Effects:");
+        Label countdownSoundEffectsLabel = new Label("Countdown Sound Effects:");
 
         // Apply custom font to labels
         Font settingsLabelFont = customFonts.get("Cartoon cookies");
         backgroundEffectsLabel.setTextFill(Color.DARKGRAY);
         soundEffectsLabel.setTextFill(Color.DARKGRAY);
+        countdownSoundEffectsLabel.setTextFill(Color.DARKGRAY);
         if (settingsLabelFont != null) {
             backgroundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
             soundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
+            countdownSoundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
         }
 
-        labelsBox.getChildren().addAll(backgroundEffectsLabel, soundEffectsLabel);
+        labelsBox.getChildren().addAll(backgroundEffectsLabel, soundEffectsLabel, countdownSoundEffectsLabel);
 
         // --- Controls VBox ---
         VBox controlsBox = new VBox(30);
@@ -122,7 +125,20 @@ public class Settings {
             musicManager.setSoundEffectVolume(newValue.doubleValue());
         });
 
-        controlsBox.getChildren().addAll(musicVolumeSlider, sfxVolumeSlider);
+        // --- Countdown Sound Effects Volume Controls ---
+        Slider countdownSfxVolumeSlider = new Slider(0, 1, musicManager.getCountdownSoundVolume());
+        countdownSfxVolumeSlider.setShowTickLabels(true);
+//        countdownSfxVolumeSlider.setShowTickMarks(true);
+        countdownSfxVolumeSlider.setMajorTickUnit(0.2);
+        countdownSfxVolumeSlider.setBlockIncrement(0.05);
+        countdownSfxVolumeSlider.setPrefWidth(300);
+
+        // Bind the slider value to MusicManager's countdown sound effect volume
+        countdownSfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            musicManager.setCountdownSoundVolume(newValue.doubleValue());
+        });
+
+        controlsBox.getChildren().addAll(musicVolumeSlider, sfxVolumeSlider, countdownSfxVolumeSlider); // Add new slider
 
         // --- Content HBox containing Labels and Controls ---
         HBox contentHBox = new HBox(50);

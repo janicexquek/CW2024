@@ -11,27 +11,33 @@ public class MusicManager {
 
     private static MusicManager instance;
     private MediaPlayer mediaPlayer;
-    private double musicVolume; // Default will be loaded from preferences
-    private double soundEffectVolume; // Default will be loaded from preferences
+    private double musicVolume; // Background music volume
+    private double soundEffectVolume; // General sound effects volume
+    private double countdownSoundVolume; // Countdown sound volume
     private Preferences prefs;
 
     // Track active sound effect players
     private List<MediaPlayer> activeSoundEffects;
+    private List<MediaPlayer> activeCountdownPlayers;
 
     // Define default volume levels
     public static final double DEFAULT_MUSIC_VOLUME = 0.5;
     public static final double DEFAULT_SOUND_EFFECT_VOLUME = 0.5;
+    public static final double DEFAULT_COUNTDOWN_SOUND_VOLUME = 0.6; // New default
+
     // To track if sound effects are muted
     private boolean soundEffectsMuted = false;
+    private boolean countdownSoundMuted = false;
 
     private MusicManager() {
         prefs = Preferences.userNodeForPackage(MusicManager.class);
         // Load saved volume settings or use defaults
         musicVolume = prefs.getDouble("musicVolume", DEFAULT_MUSIC_VOLUME);
         soundEffectVolume = prefs.getDouble("soundEffectVolume", DEFAULT_SOUND_EFFECT_VOLUME);
+        countdownSoundVolume = prefs.getDouble("countdownSoundVolume", DEFAULT_COUNTDOWN_SOUND_VOLUME); // Load countdown volume
         activeSoundEffects = new ArrayList<>();
+        activeCountdownPlayers = new ArrayList<>();
         initializeBackgroundMusic();
-
     }
 
     public static MusicManager getInstance() {
@@ -42,20 +48,21 @@ public class MusicManager {
     }
 
     private void initializeBackgroundMusic() {
-        // search the audio file
+        // Search the audio file
         URL resource = getClass().getResource("/com/example/demo/audios/backgroundmusic1.mp3");
         if (resource != null) {
-            // Creates a Media object from the audio file's URL
+            // Create a Media object from the audio file's URL
             Media media = new Media(resource.toString());
-            // Initializes the MediaPlayer
+            // Initialize the MediaPlayer
             mediaPlayer = new MediaPlayer(media);
-            // Sets the media player to loop the background music indefinitely
+            // Set the MediaPlayer to loop the background music indefinitely
             mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
             mediaPlayer.setVolume(musicVolume);
         } else {
             System.err.println("Background music file not found.");
         }
     }
+
     // Starts or resumes the background music playback.
     public void playMusic() {
         if (mediaPlayer != null) {
@@ -105,7 +112,17 @@ public class MusicManager {
         return soundEffectVolume;
     }
 
-    // Play sound effects
+    // Set countdown sound effect volume and save to preferences
+    public void setCountdownSoundVolume(double volume) {
+        this.countdownSoundVolume = volume;
+        prefs.putDouble("countdownSoundVolume", volume);
+    }
+
+    public double getCountdownSoundVolume() {
+        return countdownSoundVolume;
+    }
+
+    // Play general sound effects
     public void playSoundEffect(String fileName) {
         URL soundUrl = getClass().getResource("/com/example/demo/audios/" + fileName);
         if (soundUrl != null) {
@@ -129,6 +146,25 @@ public class MusicManager {
         }
     }
 
+    // Play countdown sound effect
+    public void playCountdownSound() {
+        URL soundUrl = getClass().getResource("/com/example/demo/audios/countdown.mp3");
+        if (soundUrl != null) {
+            Media sound = new Media(soundUrl.toString());
+            MediaPlayer countdownPlayer = new MediaPlayer(sound);
+            countdownPlayer.setVolume(countdownSoundMuted ? 0 : countdownSoundVolume);
+            // Add to activeCountdownPlayers list to maintain reference
+            activeCountdownPlayers.add(countdownPlayer);
+            countdownPlayer.setOnEndOfMedia(() -> {
+                countdownPlayer.dispose();
+                activeCountdownPlayers.remove(countdownPlayer);
+            });
+            countdownPlayer.play();
+        } else {
+            System.err.println("Countdown sound file not found: /com/example/demo/audios/countdown.mp3");
+        }
+    }
+
     // Mute all active sound effects by setting their volume to 0
     public void muteAllSoundEffects() {
         soundEffectsMuted = true;
@@ -145,6 +181,19 @@ public class MusicManager {
         }
     }
 
-
-
+    // Optional: Mute countdown sound effects separately if needed
+//    public void muteCountdownSoundEffects() {
+//        countdownSoundMuted = true;
+//        for (MediaPlayer countdownPlayer : activeCountdownPlayers) {
+//            countdownPlayer.setVolume(0);
+//        }
+//    }
+//
+//    public void unmuteCountdownSoundEffects() {
+//        countdownSoundMuted = false;
+//        for (MediaPlayer countdownPlayer : activeCountdownPlayers) {
+//            countdownPlayer.setVolume(countdownSoundVolume);
+//        }
+//        System.out.println("Countdown sound effects unmuted.");
+//    }
 }
