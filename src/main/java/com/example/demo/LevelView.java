@@ -156,7 +156,7 @@ public class LevelView {
 			return;
 		}
 		winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback, levelName);
-		winOverlay.showOverlay();
+		winOverlay.showWInOverlay();
 		activeOverlay = ActiveOverlay.WIN;
 	}
 
@@ -176,7 +176,7 @@ public class LevelView {
 		if (activeOverlay != ActiveOverlay.WIN) {
 			return;
 		}
-		winOverlay.hideOverlay();
+		winOverlay.hideWinOverlay();
 		activeOverlay = ActiveOverlay.NONE;
 	}
 

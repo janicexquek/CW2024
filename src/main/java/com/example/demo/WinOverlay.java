@@ -144,14 +144,14 @@ public class WinOverlay extends StackPane {
     }
 
     // Method to display the overlay
-    public void showOverlay() {
+    public void showWInOverlay() {
         setVisible(true);
         setMouseTransparent(false); // Enable interactions
         toFront(); // Bring to front
     }
 
     // Method to hide the overlay
-    public void hideOverlay() {
+    public void hideWinOverlay() {
         setVisible(false);
         setMouseTransparent(true); // Disable interactions
     }

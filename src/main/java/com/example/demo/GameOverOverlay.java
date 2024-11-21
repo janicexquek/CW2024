@@ -22,10 +22,6 @@ public class GameOverOverlay extends StackPane {
     private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png";
     private static final String BUTTON_IMAGE_NAME = "/com/example/demo/images/ButtonText_Small_Blue_Round.png";
 
-    // Dimensions for buttons
-    private static final double BUTTON_WIDTH = 200;
-    private static final double BUTTON_HEIGHT = 80;
-
     // Map to store loaded fonts
     private Map<String, Font> customFonts = new HashMap<>();
 
@@ -118,30 +114,21 @@ public class GameOverOverlay extends StackPane {
         // Create the game over message label
         Label gameOverMessage = new Label("DEFEAT");
         gameOverMessage.setTextFill(Color.WHITE);
-        Font messageFont = customFonts.get("Cartoon cookies");
-        if (messageFont != null) {
-            gameOverMessage.setFont(Font.font(messageFont.getName(), 50)); // Adjust size as needed
-        } else {
-            System.err.println("Message font 'Cartoon cookies' not loaded. Using default font.");
-            gameOverMessage.setFont(Font.font("Arial", 50)); // Fallback font
-        }
+        // Use 'Cartoon cookies' or fallback
+        gameOverMessage.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies", Font.font("Arial")).getName(), 50));
         gameOverMessage.setWrapText(true);
         gameOverMessage.setAlignment(Pos.TOP_CENTER);
         gameOverMessage.setMaxWidth(boxWidth - 40); // Padding inside the box
 
+
         // Create the level info label
         levelInfoLabel = new Label("TRY AGAIN LEVEL X"); // Placeholder text
         levelInfoLabel.setTextFill(Color.WHITE);
-        Font levelFont = customFonts.get("Sugar Bomb");
-        if (levelFont != null) {
-            levelInfoLabel.setFont(Font.font(levelFont.getName(), 20)); // Adjust size as needed
-        } else {
-            System.err.println("Level font 'Sugar Bomb' not loaded. Using default font.");
-            levelInfoLabel.setFont(Font.font("Arial", 30)); // Fallback font
-        }
+        levelInfoLabel.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20)); // Use 'Sugar Bomb' or fallback
         levelInfoLabel.setWrapText(true);
         levelInfoLabel.setAlignment(Pos.CENTER);
         levelInfoLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
+
 
         // Create a VBox to hold the message and button
         VBox vbox = new VBox(30); // Spacing between elements
@@ -161,7 +148,6 @@ public class GameOverOverlay extends StackPane {
 
     // Method to display the overlay
     public void showOverlay() {
-        System.out.println("Showing GameOverOverlay.");
         setVisible(true);
         setMouseTransparent(false); // Enable interactions
         toFront(); // Bring to front
@@ -169,7 +155,6 @@ public class GameOverOverlay extends StackPane {
 
     // Method to hide the overlay
     public void hideOverlay() {
-        System.out.println("Hiding GameOverOverlay.");
         setVisible(false);
         setMouseTransparent(true); // Disable interactions
     }
@@ -177,11 +162,8 @@ public class GameOverOverlay extends StackPane {
     // Combined method to create, assign actions, and add buttons to the overlay
     public void initializeButtons(Runnable backCallback, Runnable restartCallback, String levelName) {
         if (buttonsInitialized) {
-            System.out.println("Buttons already initialized. Skipping initialization.");
             return;
         }
-
-        System.out.println("Initializing GameOverOverlay buttons.");
 
         // Create the back to main menu button with image background and assign action
         Button backButton = createCustomButton("Main Menu", backCallback);
@@ -222,33 +204,23 @@ public class GameOverOverlay extends StackPane {
             // Load the button image
             Image buttonImage = new Image(getClass().getResourceAsStream(BUTTON_IMAGE_NAME));
             ImageView buttonImageView = new ImageView(buttonImage);
-            buttonImageView.setFitWidth(BUTTON_WIDTH); // Adjust width as needed
-            buttonImageView.setFitHeight(BUTTON_HEIGHT); // Adjust height as needed
+            buttonImageView.setFitWidth(200); // Adjust width as needed
+            buttonImageView.setFitHeight(80); // Adjust height as needed
             buttonImageView.setPreserveRatio(true);
-
-            // Create a StackPane to overlay text on the image
-            StackPane stack = new StackPane();
-            stack.getChildren().add(buttonImageView);
 
             // Create label for button text
             Label label = new Label(buttonText);
             label.setTextFill(Color.WHITE);
-            Font buttonFont = customFonts.get("Sugar Bomb"); // Use the exact name of the font
-            if (buttonFont != null) {
-                label.setFont(Font.font(buttonFont.getName(), 20)); // Adjust size as needed
-            } else {
-                System.err.println("Button font 'Sugar Bomb' not loaded. Using default font.");
-                label.setFont(Font.font("Arial", 20)); // Fallback font
-            }
-            stack.getChildren().add(label);
+            label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20)); // Font or fallback
+
+            // Create a StackPane to overlay text on the image
+            StackPane stack = new StackPane(buttonImageView, label);
 
             // Set the StackPane as the button's graphic
             button.setGraphic(stack);
 
-            // Remove default button styling
+            // Remove default button styling and assign the action
             button.setStyle("-fx-background-color: transparent;");
-
-            // Assign the callback
             button.setOnAction(e -> action.run());
 
             // Apply hover effects
