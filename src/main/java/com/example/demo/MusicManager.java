@@ -29,15 +29,27 @@ public class MusicManager {
     private boolean soundEffectsMuted = false;
     private boolean countdownSoundMuted = false;
 
+    // track if all sounds are muted
+    private boolean allMuted = false;
+
     private MusicManager() {
         prefs = Preferences.userNodeForPackage(MusicManager.class);
         // Load saved volume settings or use defaults
         musicVolume = prefs.getDouble("musicVolume", DEFAULT_MUSIC_VOLUME);
         soundEffectVolume = prefs.getDouble("soundEffectVolume", DEFAULT_SOUND_EFFECT_VOLUME);
         countdownSoundVolume = prefs.getDouble("countdownSoundVolume", DEFAULT_COUNTDOWN_SOUND_VOLUME); // Load countdown volume
+        // Load the saved mute state
+        allMuted = prefs.getBoolean("allMuted", false);
         activeSoundEffects = new ArrayList<>();
         activeCountdownPlayers = new ArrayList<>();
         initializeBackgroundMusic();
+
+        if (allMuted) {
+            muteAllSounds(); // This will set all volumes to 0
+        } else {
+            // Ensure background music is playing if not muted
+            playMusic();
+        }
     }
 
     public static MusicManager getInstance() {
@@ -57,7 +69,7 @@ public class MusicManager {
             mediaPlayer = new MediaPlayer(media);
             // Set the MediaPlayer to loop the background music indefinitely
             mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            mediaPlayer.setVolume(musicVolume);
+            mediaPlayer.setVolume(allMuted ? 0 : musicVolume);
         } else {
             System.err.println("Background music file not found.");
         }
@@ -131,7 +143,7 @@ public class MusicManager {
             // Initialize a new MediaPlayer for the sound effect
             MediaPlayer soundPlayer = new MediaPlayer(sound);
             // Set the volume for the sound effect
-            soundPlayer.setVolume(soundEffectsMuted ? 0 : soundEffectVolume); // Adjust volume as needed
+            soundPlayer.setVolume(allMuted ? 0 : (soundEffectsMuted ? 0 : soundEffectVolume));
             // Add to active sound effects list
             activeSoundEffects.add(soundPlayer);
             // Remove from active list once done
@@ -152,7 +164,7 @@ public class MusicManager {
         if (soundUrl != null) {
             Media sound = new Media(soundUrl.toString());
             MediaPlayer countdownPlayer = new MediaPlayer(sound);
-            countdownPlayer.setVolume(countdownSoundMuted ? 0 : countdownSoundVolume);
+            countdownPlayer.setVolume(allMuted ? 0 : (countdownSoundMuted ? 0 : countdownSoundVolume));
             // Add to activeCountdownPlayers list to maintain reference
             activeCountdownPlayers.add(countdownPlayer);
             countdownPlayer.setOnEndOfMedia(() -> {
@@ -163,6 +175,61 @@ public class MusicManager {
         } else {
             System.err.println("Countdown sound file not found: /com/example/demo/audios/countdown.mp3");
         }
+    }
+    // Mute all sounds
+    public void muteAllSounds() {
+        if (!allMuted) {
+            allMuted = true;
+            prefs.putBoolean("allMuted", true); // Save the mute state
+            // Mute background music
+            if (mediaPlayer != null) {
+                mediaPlayer.setVolume(0);
+            }
+            // Mute all active sound effects
+            for (MediaPlayer soundPlayer : activeSoundEffects) {
+                soundPlayer.setVolume(0);
+            }
+            // Mute all active countdown sounds
+            for (MediaPlayer countdownPlayer : activeCountdownPlayers) {
+                countdownPlayer.setVolume(0);
+            }
+            System.out.println("All sounds have been muted.");
+        }
+    }
+
+    // Unmute all sounds
+    public void unmuteAllSounds() {
+        if (allMuted) {
+            allMuted = false;
+            prefs.putBoolean("allMuted", false); // Save the mute state
+            // Restore background music volume
+            if (mediaPlayer != null) {
+                mediaPlayer.setVolume(musicVolume);
+            }
+            // Restore sound effects volume
+            for (MediaPlayer soundPlayer : activeSoundEffects) {
+                soundPlayer.setVolume(soundEffectsMuted ? 0 : soundEffectVolume);
+            }
+            // Restore countdown sounds volume
+            for (MediaPlayer countdownPlayer : activeCountdownPlayers) {
+                countdownPlayer.setVolume(countdownSoundMuted ? 0 : countdownSoundVolume);
+            }
+            System.out.println("All sounds have been unmuted.");
+        }
+    }
+
+    // Toggle mute all sounds
+    public void toggleMuteAll() {
+        if (allMuted) {
+            unmuteAllSounds();
+        } else {
+            muteAllSounds();
+        }
+    }
+
+    // Check if all sounds are muted
+    public boolean isAllMuted() {
+        return allMuted;
     }
 
     // Mute all active sound effects by setting their volume to 0

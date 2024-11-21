@@ -19,12 +19,19 @@ import java.util.Map;
 
 public class Settings {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background4.jpeg";
+    private static final String AUDIO_ON_IMAGE = "/com/example/demo/images/Audio_ON.png";
+    private static final String AUDIO_OFF_IMAGE = "/com/example/demo/images/Audio_Off.png";
 
     private final Stage stage; // Reference to the primary stage
     private final Controller controller; // Reference to the Controller
 
     // Map to store loaded fonts for easy access
     private Map<String, Font> customFonts = new HashMap<>();
+
+    // Instance variables for sliders to enable/disable them based on mute state
+    private Slider musicVolumeSlider;
+    private Slider sfxVolumeSlider;
+    private Slider countdownSfxVolumeSlider;
 
     // Updated constructor to accept Controller
     public Settings(Stage stage, Controller controller) {
@@ -65,7 +72,12 @@ public class Settings {
         topHBox.setPadding(new Insets(30, 0, 0, 0));
 
         Label titleLabel = new Label("SETTINGS");
-        titleLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 100));
+        Font cartoonCookiesFont = customFonts.get("Cartoon cookies");
+        if (cartoonCookiesFont != null) {
+            titleLabel.setFont(Font.font(cartoonCookiesFont.getName(), 100));
+        } else {
+            titleLabel.setFont(new Font("Arial", 100)); // Fallback font
+        }
         titleLabel.getStyleClass().add("title-text");
         topHBox.getChildren().add(titleLabel);
 
@@ -78,9 +90,9 @@ public class Settings {
         labelsBox.setAlignment(Pos.CENTER_LEFT);
 
         // Create labels
-        Label backgroundEffectsLabel = new Label("Background Effects:");
+        Label backgroundEffectsLabel = new Label("Background Music:");
         Label soundEffectsLabel = new Label("Sound Effects:");
-        Label countdownSoundEffectsLabel = new Label("Countdown Sound Effects:");
+        Label countdownSoundEffectsLabel = new Label("Countdown Music:");
 
         // Apply custom font to labels
         Font settingsLabelFont = customFonts.get("Cartoon cookies");
@@ -100,7 +112,7 @@ public class Settings {
         controlsBox.setAlignment(Pos.CENTER_RIGHT);
 
         // --- Background Music Volume Controls ---
-        Slider musicVolumeSlider = new Slider(0, 1, musicManager.getMusicVolume());
+        musicVolumeSlider = new Slider(0, 1, musicManager.getMusicVolume());
         musicVolumeSlider.setShowTickLabels(true);
 //        musicVolumeSlider.setShowTickMarks(true);
         musicVolumeSlider.setMajorTickUnit(0.2);
@@ -113,7 +125,7 @@ public class Settings {
         });
 
         // --- Sound Effects Volume Controls ---
-        Slider sfxVolumeSlider = new Slider(0, 1, musicManager.getSoundEffectVolume());
+        sfxVolumeSlider = new Slider(0, 1, musicManager.getSoundEffectVolume());
         sfxVolumeSlider.setShowTickLabels(true);
 //        sfxVolumeSlider.setShowTickMarks(true);
         sfxVolumeSlider.setMajorTickUnit(0.2);
@@ -126,7 +138,7 @@ public class Settings {
         });
 
         // --- Countdown Sound Effects Volume Controls ---
-        Slider countdownSfxVolumeSlider = new Slider(0, 1, musicManager.getCountdownSoundVolume());
+        countdownSfxVolumeSlider = new Slider(0, 1, musicManager.getCountdownSoundVolume());
         countdownSfxVolumeSlider.setShowTickLabels(true);
 //        countdownSfxVolumeSlider.setShowTickMarks(true);
         countdownSfxVolumeSlider.setMajorTickUnit(0.2);
@@ -138,25 +150,83 @@ public class Settings {
             musicManager.setCountdownSoundVolume(newValue.doubleValue());
         });
 
-        controlsBox.getChildren().addAll(musicVolumeSlider, sfxVolumeSlider, countdownSfxVolumeSlider); // Add new slider
+        // --- Mute All Toggle Button ---
+        ImageView muteToggleImageView = new ImageView();
+        updateMuteToggleImage(muteToggleImageView, musicManager.isAllMuted());
+
+        // Set initial size for the toggle button
+        muteToggleImageView.setFitWidth(50);
+        muteToggleImageView.setFitHeight(50);
+        muteToggleImageView.setPreserveRatio(true);
+
+        // Create a StackPane to hold the ImageView
+        StackPane muteToggleButton = new StackPane(muteToggleImageView);
+        muteToggleButton.setAlignment(Pos.CENTER);
+        muteToggleButton.setPrefSize(50, 50);
+        muteToggleButton.setMaxSize(50, 50);
+        muteToggleButton.setMinSize(50, 50);
+        muteToggleButton.getStyleClass().add("custom-button-hover");
+
+        // Add hover effects
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), muteToggleButton);
+
+        muteToggleButton.setOnMouseEntered(e -> {
+            scaleTransition.stop();
+            scaleTransition.setFromX(muteToggleButton.getScaleX());
+            scaleTransition.setFromY(muteToggleButton.getScaleY());
+            scaleTransition.setToX(1.05);
+            scaleTransition.setToY(1.05);
+            scaleTransition.playFromStart();
+        });
+
+        muteToggleButton.setOnMouseExited(e -> {
+            scaleTransition.stop();
+            scaleTransition.setFromX(muteToggleButton.getScaleX());
+            scaleTransition.setFromY(muteToggleButton.getScaleY());
+            scaleTransition.setToX(1.0);
+            scaleTransition.setToY(1.0);
+            scaleTransition.playFromStart();
+        });
+
+        // Handle click event to toggle mute
+        muteToggleButton.setOnMouseClicked(e -> {
+            musicManager.toggleMuteAll();
+            updateMuteToggleImage(muteToggleImageView, musicManager.isAllMuted());
+            updateSlidersState();
+        });
+
+        // Create an HBox for the "Mute All" label and toggle button
+        HBox muteAllHBox = new HBox(135);
+        muteAllHBox.setAlignment(Pos.CENTER_LEFT);
+        muteAllHBox.setPadding(new Insets(0, 0, 0, 40)); // top, right, bottom, left
+
+        // Create the "Mute All" label
+        Label muteAllLabel = new Label("Mute All:");
+        muteAllLabel.setTextFill(Color.DARKGRAY);
+        if (customFonts.get("Cartoon cookies") != null) {
+            muteAllLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 25));
+        } else {
+            muteAllLabel.setFont(new Font("Arial", 25)); // Fallback font
+        }
+
+        // Add the label and toggle button to the HBox
+        muteAllHBox.getChildren().addAll(muteAllLabel, muteToggleButton);
+
+        // Add the "Mute All" HBox to controlsBox
+        controlsBox.getChildren().addAll(musicVolumeSlider, sfxVolumeSlider, countdownSfxVolumeSlider);
 
         // --- Content HBox containing Labels and Controls ---
         HBox contentHBox = new HBox(50);
         contentHBox.setAlignment(Pos.CENTER);
         contentHBox.getChildren().addAll(labelsBox, controlsBox);
 
+        // --- Content all boxes containing conentHBox and muteAllHBox
+        VBox allVBox = new VBox(10);
+        allVBox.setAlignment(Pos.CENTER);
+        allVBox.getChildren().addAll(contentHBox, muteAllHBox);
 
-        // --- Save and Defaults Buttons ---
-        // --- Save Button ---
-        StackPane saveButton = createCustomSettingsButton("Save", 120, 40, "/com/example/demo/images/ButtonText_Small_Round.png");
-        saveButton.setOnMouseClicked(e -> {
-            // Implement save functionality if needed
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Settings Saved");
-            alert.setHeaderText(null);
-            alert.setContentText("Your settings have been saved successfully!");
-            alert.showAndWait();
-        });
+        // --- Defaults Buttons ---
+
 
         // --- Defaults Button ---
         StackPane defaultsButton = createCustomSettingsButton("Defaults", 120, 40, "/com/example/demo/images/ButtonText_Small_Round.png");
@@ -164,15 +234,17 @@ public class Settings {
             // Reset to default settings
             musicManager.setMusicVolume(MusicManager.DEFAULT_MUSIC_VOLUME);
             musicManager.setSoundEffectVolume(MusicManager.DEFAULT_SOUND_EFFECT_VOLUME);
+            musicManager.setCountdownSoundVolume(MusicManager.DEFAULT_COUNTDOWN_SOUND_VOLUME);
             musicVolumeSlider.setValue(MusicManager.DEFAULT_MUSIC_VOLUME);
             sfxVolumeSlider.setValue(MusicManager.DEFAULT_SOUND_EFFECT_VOLUME);
+            countdownSfxVolumeSlider.setValue(MusicManager.DEFAULT_COUNTDOWN_SOUND_VOLUME);
         });
 
 
         // --- Bottom HBox containing Save and Defaults Buttons ---
         HBox bottomHBox = new HBox(20);
         bottomHBox.setAlignment(Pos.BOTTOM_CENTER);
-        bottomHBox.getChildren().addAll(saveButton, defaultsButton);
+        bottomHBox.getChildren().addAll(defaultsButton);
 
         // ---- Second Main VBox contained content box and bottom box
         VBox secondmainVBox = new VBox(80);
@@ -181,7 +253,7 @@ public class Settings {
         secondmainVBox.setMaxWidth(650);
         secondmainVBox.setPrefHeight(400); // Set to desired height
         secondmainVBox.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 10;");
-        secondmainVBox.getChildren().addAll(contentHBox, bottomHBox);
+        secondmainVBox.getChildren().addAll(allVBox, bottomHBox);
 
         // --- Main VBox containing everything ---
         VBox mainVBox = new VBox(20);
@@ -211,6 +283,9 @@ public class Settings {
         // Set the scene on the stage
         stage.setScene(settingsScene);
         stage.show();
+
+        // Initialize sliders state based on current mute state
+        updateSlidersState();
     }
 
     // Private method to create custom settings buttons
@@ -269,6 +344,25 @@ public class Settings {
 
         return stackPane;
     }
+
+    // Private method to update the mute toggle image based on the mute state
+    private void updateMuteToggleImage(ImageView imageView, boolean isMuted) {
+        String imagePath = isMuted ? AUDIO_OFF_IMAGE : AUDIO_ON_IMAGE;
+        Image muteImage = new Image(getClass().getResource(imagePath).toExternalForm());
+        imageView.setImage(muteImage);
+    }
+
+    // Private method to enable or disable sliders based on mute state
+    private void updateSlidersState() {
+        MusicManager musicManager = MusicManager.getInstance();
+        boolean isMuted = musicManager.isAllMuted();
+
+        // Disable sliders if muted, enable if not
+        musicVolumeSlider.setDisable(isMuted);
+        sfxVolumeSlider.setDisable(isMuted);
+        countdownSfxVolumeSlider.setDisable(isMuted);
+    }
+
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
