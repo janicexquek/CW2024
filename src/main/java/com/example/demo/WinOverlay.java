@@ -33,6 +33,8 @@ public class WinOverlay extends StackPane {
 
     // Flags to prevent duplicate button initialization
     private boolean buttonsInitialized = false;
+    // New Label to display level information
+    private Label levelInfoLabel;
 
     public WinOverlay(double screenWidth, double screenHeight) {
         // Set the size of the overlay to cover the entire screen
@@ -115,7 +117,7 @@ public class WinOverlay extends StackPane {
         }
 
         // Create the win message label
-        Label winMessage = new Label("You Win!");
+        Label winMessage = new Label("VICTORY!");
         winMessage.setTextFill(Color.WHITE);
         Font messageFont = customFonts.get("Cartoon cookies");
         if (messageFont != null) {
@@ -128,14 +130,30 @@ public class WinOverlay extends StackPane {
         winMessage.setAlignment(Pos.TOP_CENTER);
         winMessage.setMaxWidth(boxWidth - 40); // Padding inside the box
 
+
+        // Create the level info label
+        levelInfoLabel = new Label("LEVEL X COMPLETED"); // Placeholder text
+        levelInfoLabel.setTextFill(Color.WHITE);
+        Font levelFont = customFonts.get("Sugar Bomb");
+        if (levelFont != null) {
+            levelInfoLabel.setFont(Font.font(levelFont.getName(), 20)); // Adjust size as needed
+        } else {
+            System.err.println("Level font 'Sugar Bomb' not loaded. Using default font.");
+            levelInfoLabel.setFont(Font.font("Arial", 30)); // Fallback font
+        }
+        levelInfoLabel.setWrapText(true);
+        levelInfoLabel.setAlignment(Pos.CENTER);
+        levelInfoLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
+
+
         // Create a VBox to hold the message
-        VBox vbox = new VBox(20); // Spacing between elements
+        VBox vbox = new VBox(50); // Spacing between elements
         vbox.setAlignment(Pos.CENTER);
         vbox.setPrefSize(boxWidth, boxHeight);
         vbox.setMaxSize(boxWidth, boxHeight);
         vbox.setMinSize(boxWidth, boxHeight);
 
-        vbox.getChildren().add(winMessage); // Add the message to VBox
+        vbox.getChildren().addAll(winMessage, levelInfoLabel); // Add messages to VBox
 
         // Stack the background and the message box
         StackPane messageBox = new StackPane(background, vbox);
@@ -160,7 +178,7 @@ public class WinOverlay extends StackPane {
     }
 
     // Combined method to create, assign actions, and add buttons to the overlay
-    public void initializeButtons(Runnable backCallback, Runnable nextCallback) {
+    public void initializeButtons(Runnable backCallback, Runnable nextCallback, String levelName) {
         if (buttonsInitialized) {
             System.out.println("Buttons already initialized. Skipping initialization.");
             return;
@@ -174,7 +192,7 @@ public class WinOverlay extends StackPane {
 
         // Create an HBox to hold the buttons horizontally
         HBox buttonBox = new HBox(20); // 20px spacing between buttons
-        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setAlignment(Pos.BOTTOM_CENTER);
         buttonBox.getChildren().addAll(backButton, nextButton);
 
         // Add the buttonBox to the overlay's VBox
@@ -189,6 +207,14 @@ public class WinOverlay extends StackPane {
                 vbox.getChildren().add(buttonBox);
                 buttonsInitialized = true;
             }
+        }
+        // Set the level information
+        setLevelInfo(levelName);
+    }
+
+    public void setLevelInfo(String levelName) {
+        if (levelInfoLabel != null) {
+            levelInfoLabel.setText(levelName + " COMPLETED");
         }
     }
 

@@ -333,7 +333,8 @@ public abstract class LevelParent extends Observable {
 	if (levelView != null) {
 		levelView.showWinOverlay(
 				() -> backToMainMenu(), // Back to Main Menu callback
-				() -> proceedToNextLevel() // Next Level callback
+				() -> proceedToNextLevel(), // Next Level callback
+				getLevelDisplayName()   // Current level display name
 		);
 	}
 }

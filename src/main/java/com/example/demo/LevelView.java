@@ -99,12 +99,12 @@ public class LevelView {
 	}
 
 	// Method to show the WinOverlay with custom buttons
-	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback) {
+	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback, String levelName) {
 		if (activeOverlay != ActiveOverlay.NONE) {
 			System.out.println("Another overlay is active. Cannot show WinOverlay.");
 			return;
 		}
-		winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback);
+		winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback, levelName);
 		winOverlay.showOverlay();
 		activeOverlay = ActiveOverlay.WIN;
 	}
