@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import javafx.animation.Timeline;
 import javafx.scene.Group;
 
 public class LevelViewLevelTwo extends LevelView {
@@ -9,8 +10,8 @@ public class LevelViewLevelTwo extends LevelView {
 	private final Group root;
 	private final ShieldImage shieldImage;
 
-	public LevelViewLevelTwo(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback,double screenWidth, double screenHeight) {
-		super(root, heartsToDisplay, backToMainMenuCallback, pauseGameCallback, resumeGameCallback, screenWidth, screenHeight);
+	public LevelViewLevelTwo(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight, Timeline timeline) {
+		super(root, heartsToDisplay, backToMainMenuCallback, pauseGameCallback, resumeGameCallback, screenWidth, screenHeight, timeline);
 		this.root = root;
 		this.shieldImage = new ShieldImage(SHIELD_X_POSITION, SHIELD_Y_POSITION);
 		addImagesToRoot();

@@ -55,12 +55,11 @@ public abstract class LevelParent extends Observable {
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 		this.enemyMaximumYPosition = screenHeight - SCREEN_HEIGHT_ADJUSTMENT;
-		this.levelView = instantiateLevelView(screenWidth, screenHeight); // Pass dimensions
+		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
 		initializeTimeline();
 		friendlyUnits.add(user);
 		MusicManager.getInstance().resumeMusic();
-
 	}
 	protected abstract String getLevelDisplayName();
 
@@ -72,7 +71,7 @@ public abstract class LevelParent extends Observable {
 
 	protected abstract void spawnEnemyUnits();
 
-	protected abstract LevelView instantiateLevelView(double screenWidth, double screenHeight);
+	protected abstract LevelView instantiateLevelView(double screenWidth, double screenHeight, Timeline timeline);
 
 	protected Runnable getBackToMainMenuCallback() {
 		return this::backToMainMenu;
@@ -141,7 +140,14 @@ public abstract class LevelParent extends Observable {
 		initializeFriendlyUnits();
 		levelView.showHeartDisplay();
 		levelView.showExitDisplay();
+		// Start the countdown before starting the game
+		levelView.startCountdown(this::startGameAfterCountdown);
 		return scene;
+	}
+
+	// New method to start the game after countdown
+	private void startGameAfterCountdown() {
+		// Start the game timeline
 	}
 
 	public void startGame() {
@@ -213,7 +219,8 @@ public abstract class LevelParent extends Observable {
 	 // Toggles the game's pause state.
 	private void togglePause() {
 		// Check if any overlay is active
-		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN || levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER ) {
+		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN || levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER
+				||  levelView.getActiveOverlay() == LevelView.ActiveOverlay.COUNTDOWN) {
 			System.out.println("An overlay is active. Cannot toggle pause.");
 			return;
 		}

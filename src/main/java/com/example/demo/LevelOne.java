@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import javafx.animation.Timeline;
+
 public class LevelOne extends LevelParent {
 
 	private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg";
@@ -41,7 +43,7 @@ public class LevelOne extends LevelParent {
 	}
 
 	@Override
-	protected LevelView instantiateLevelView(double screenWidth, double screenHeight) {
+	protected LevelView instantiateLevelView(double screenWidth, double screenHeight, Timeline timeline) {
 		// Pass the pause and resume callbacks to LevelView
 		return new LevelView(
 				getRoot(),
@@ -50,7 +52,8 @@ public class LevelOne extends LevelParent {
 				this::pauseGame, // Pause callback
 				this::resumeGame, // Resume callback
 				screenWidth, // Screen width
-				screenHeight // Screen height
+				screenHeight, // Screen height
+				timeline // Pass the game loop timeline
 		);
 	}
 	@Override

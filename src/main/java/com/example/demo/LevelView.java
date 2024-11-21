@@ -1,6 +1,8 @@
 package com.example.demo;
 
+import javafx.animation.Timeline;
 import javafx.scene.Group;
+import javafx.scene.effect.GaussianBlur;
 
 public class LevelView {
 
@@ -8,23 +10,23 @@ public class LevelView {
 	private static final double HEART_DISPLAY_Y_POSITION = 25;
 	private static final double EXIT_DISPLAY_X_POSITION = 1200; // Adjust based on your screen width
 	private static final double EXIT_DISPLAY_Y_POSITION = 25;
-	private static final int WIN_IMAGE_X_POSITION = 355;
-	private static final int WIN_IMAGE_Y_POSITION = 175;
-	private static final int LOSS_SCREEN_X_POSITION = -160;
-	private static final int LOSS_SCREEN_Y_POSISITION = -375;
 
 	private final Group root;
-//	private final WinImage winImage;
-//	private final GameOverImage gameOverImage;
 	private final HeartDisplay heartDisplay;
 	private final ExitDisplay exitDisplay;
 	private final PauseOverlay pauseOverlay; // New member variable
 	private final WinOverlay winOverlay; // New WinOverlay
 	private final GameOverOverlay gameOverOverlay;
+	private CountdownOverlay countdownOverlay;
+
+	private Runnable startGameCallback;
+	private Timeline timeline; // Reference to the game loop timeline
+	private ActiveOverlay activeOverlay = ActiveOverlay.NONE;
 
 
-	public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight) {
+	public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight, Timeline timeline) {
 		this.root = root;
+		this.timeline = timeline;
 		this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
 		this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION, pauseGameCallback, resumeGameCallback, backToMainMenuCallback);
 //		this.winImage = new WinImage(WIN_IMAGE_X_POSITION, WIN_IMAGE_Y_POSITION);
@@ -33,21 +35,78 @@ public class LevelView {
 		this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, pauseGameCallback::run);
 		this.winOverlay = new WinOverlay(screenWidth, screenHeight); // Initialize WinOverlay
 		this.gameOverOverlay = new GameOverOverlay(screenWidth, screenHeight); // Initialize WinOverlay
+		// Initialize the CountdownOverlay
+		this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
 
 		// Add the PauseOverlay to the root; it should be on top of other elements
-		this.root.getChildren().add(pauseOverlay);
-		this.root.getChildren().add(winOverlay);
-		this.root.getChildren().add(gameOverOverlay);
+//		this.root.getChildren().add(pauseOverlay);
+//		this.root.getChildren().add(winOverlay);
+//		this.root.getChildren().add(gameOverOverlay);
+		root.getChildren().addAll(pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
 	}
+
 	// New state variable to track active overlay
 	public static enum ActiveOverlay {
 		NONE,
 		PAUSE,
 		WIN,
-		GAME_OVER
+		GAME_OVER,
+		COUNTDOWN
 	}
 
-	private ActiveOverlay activeOverlay = ActiveOverlay.NONE;
+	// Method to start the countdown
+	public void startCountdown(Runnable startGameCallback) {
+		if (activeOverlay != ActiveOverlay.NONE) {
+			return;
+		}
+
+		this.startGameCallback = startGameCallback;
+
+		// Pause the game loop
+		if (timeline != null) {
+			timeline.pause();
+			System.out.println("Game loop paused for countdown.");
+		}
+
+		// Apply blur effect to all nodes except the countdownOverlay
+		root.getChildren().forEach(node -> {
+			if (node != countdownOverlay) {
+				node.setEffect(new GaussianBlur(10));
+			}
+		});
+
+		// Start the countdown
+		countdownOverlay.startCountdown();
+		activeOverlay = ActiveOverlay.COUNTDOWN;
+		MusicManager.getInstance().muteAllSoundEffects();
+
+	}
+
+	// Callback when countdown finishes
+	private void onCountdownFinished() {
+			if (activeOverlay != ActiveOverlay.COUNTDOWN) {
+			return;
+		}
+		// Remove blur effect
+		root.getChildren().forEach(node -> {
+			if (node != countdownOverlay) {
+				node.setEffect(null);
+			}
+		});
+
+		// Resume the game loop
+		if (timeline != null) {
+			timeline.play();
+			System.out.println("Game loop resumed after countdown.");
+		}
+
+		// Execute the game start callback
+		if (startGameCallback != null) {
+			startGameCallback.run();
+		}
+		MusicManager.getInstance().unmuteAllSoundEffects();
+		activeOverlay = ActiveOverlay.NONE;
+	}
 
 	public void showHeartDisplay() {
 		root.getChildren().add(heartDisplay.getContainer());
@@ -57,14 +116,6 @@ public class LevelView {
 		root.getChildren().add(exitDisplay.getContainer());
 	}
 
-//	public void showWinImage() {
-//		root.getChildren().add(winImage);
-//		winImage.showWinImage();
-//	}
-
-//	public void showGameOverImage() {
-//		root.getChildren().add(gameOverImage);
-//	}
 
 	public void removeHearts(int heartsRemaining) {
 		int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
