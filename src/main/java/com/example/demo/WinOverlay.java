@@ -47,6 +47,8 @@ public class WinOverlay extends StackPane {
         // Semi-transparent background
         setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);"); // 50% opacity
 
+        loadCustomFonts();
+
         // Create the message box
         StackPane messageBox = createMessageBox(screenWidth, screenHeight);
 
@@ -63,7 +65,6 @@ public class WinOverlay extends StackPane {
                 event.consume();
             }
         });
-        loadCustomFonts();
     }
     // Method to load all fonts
     private void loadCustomFonts() {

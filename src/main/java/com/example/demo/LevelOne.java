@@ -58,6 +58,15 @@ public class LevelOne extends LevelParent {
 		return NEXT_LEVEL;
 	}
 
+	@Override
+	protected String getClassName() {
+		return this.getClass().getName();
+	}
+	@Override
+	protected String getLevelDisplayName() {
+		return "LEVEL ONE";
+	}
+
 	private boolean userHasReachedKillTarget() {
 		return getUser().getNumberOfKills() >= KILLS_TO_ADVANCE && !ChangedState();
 	}

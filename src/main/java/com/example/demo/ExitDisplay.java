@@ -58,7 +58,6 @@ public class ExitDisplay {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
                 "/com/example/demo/fonts/Pixel Digivolve.otf",
-                "/com/example/demo/fonts/SKULL BONES Bold22.otf",
                 "/com/example/demo/fonts/Sugar Bomb.ttf" // Newly added
         };
 
@@ -73,7 +72,7 @@ public class ExitDisplay {
                     System.err.println("Failed to load font: " + fontPath);
                 } else {
                     customFonts.put(font.getName(), font);
-                    System.out.println("Loaded font: " + font.getName());
+                    //System.out.println("Loaded font: " + font.getName());
                 }
             } catch (Exception e) {
                 System.err.println("Error loading font: " + fontPath);

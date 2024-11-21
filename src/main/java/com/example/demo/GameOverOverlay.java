@@ -31,6 +31,8 @@ public class GameOverOverlay extends StackPane {
 
     // Flags to prevent duplicate button initialization
     private boolean buttonsInitialized = false;
+    // New Label to display level information
+    private Label levelInfoLabel;
 
     public GameOverOverlay(double screenWidth, double screenHeight) {
         // Set the size of the overlay to cover the entire screen
@@ -44,6 +46,8 @@ public class GameOverOverlay extends StackPane {
 
         // Semi-transparent background
         setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);"); // 50% opacity
+
+        loadCustomFonts();
 
         // Create the message box
         StackPane messageBox = createMessageBox(screenWidth, screenHeight);
@@ -61,7 +65,6 @@ public class GameOverOverlay extends StackPane {
                 event.consume();
             }
         });
-        loadCustomFonts();
     }
 
     // Method to load all fonts
@@ -113,7 +116,7 @@ public class GameOverOverlay extends StackPane {
         }
 
         // Create the game over message label
-        Label gameOverMessage = new Label("Game Over");
+        Label gameOverMessage = new Label("DEFEAT");
         gameOverMessage.setTextFill(Color.WHITE);
         Font messageFont = customFonts.get("Cartoon cookies");
         if (messageFont != null) {
@@ -123,8 +126,22 @@ public class GameOverOverlay extends StackPane {
             gameOverMessage.setFont(Font.font("Arial", 50)); // Fallback font
         }
         gameOverMessage.setWrapText(true);
-        gameOverMessage.setAlignment(Pos.CENTER);
+        gameOverMessage.setAlignment(Pos.TOP_CENTER);
         gameOverMessage.setMaxWidth(boxWidth - 40); // Padding inside the box
+
+        // Create the level info label
+        levelInfoLabel = new Label("TRY AGAIN LEVEL X"); // Placeholder text
+        levelInfoLabel.setTextFill(Color.WHITE);
+        Font levelFont = customFonts.get("Sugar Bomb");
+        if (levelFont != null) {
+            levelInfoLabel.setFont(Font.font(levelFont.getName(), 20)); // Adjust size as needed
+        } else {
+            System.err.println("Level font 'Sugar Bomb' not loaded. Using default font.");
+            levelInfoLabel.setFont(Font.font("Arial", 30)); // Fallback font
+        }
+        levelInfoLabel.setWrapText(true);
+        levelInfoLabel.setAlignment(Pos.CENTER);
+        levelInfoLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
 
         // Create a VBox to hold the message and button
         VBox vbox = new VBox(30); // Spacing between elements
@@ -133,7 +150,7 @@ public class GameOverOverlay extends StackPane {
         vbox.setMaxSize(boxWidth, boxHeight);
         vbox.setMinSize(boxWidth, boxHeight);
 
-        vbox.getChildren().add(gameOverMessage); // Add the message to VBox
+        vbox.getChildren().addAll(gameOverMessage, levelInfoLabel); // Add messages to VBox
 
         // Stack the background and the message box
         StackPane messageBox = new StackPane(background, vbox);
@@ -158,7 +175,7 @@ public class GameOverOverlay extends StackPane {
     }
 
     // Combined method to create, assign actions, and add buttons to the overlay
-    public void initializeButtons(Runnable backCallback) {
+    public void initializeButtons(Runnable backCallback, Runnable restartCallback, String levelName) {
         if (buttonsInitialized) {
             System.out.println("Buttons already initialized. Skipping initialization.");
             return;
@@ -168,11 +185,13 @@ public class GameOverOverlay extends StackPane {
 
         // Create the back to main menu button with image background and assign action
         Button backButton = createCustomButton("Main Menu", backCallback);
+        // Create the "Restart" button
+        Button restartButton = createCustomButton("Restart", restartCallback);
 
         // Create an HBox to hold the button horizontally
         HBox buttonBox = new HBox(20); // 20px spacing between buttons if more are added
         buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.getChildren().add(backButton);
+        buttonBox.getChildren().addAll(backButton, restartButton);
 
         // Add the buttonBox to the overlay's VBox
         // Assuming the messageBox's VBox is the second child (index 1)
@@ -187,8 +206,15 @@ public class GameOverOverlay extends StackPane {
                 buttonsInitialized = true;
             }
         }
+        // Set the level information
+        setLevelInfo(levelName);
     }
 
+    public void setLevelInfo(String levelName) {
+        if (levelInfoLabel != null) {
+            levelInfoLabel.setText("TRY AGAIN " + levelName);
+        }
+    }
     // Factory method to create a custom button with image and assign its action
     private Button createCustomButton(String buttonText, Runnable action) {
         Button button = new Button();

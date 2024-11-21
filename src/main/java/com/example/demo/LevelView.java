@@ -110,25 +110,48 @@ public class LevelView {
 	}
 
 	// Method to show the WinOverlay with custom buttons
-	public void showGameOverOverlay(Runnable backToMainMenuCallback) {
+	public void showGameOverOverlay(Runnable backToMainMenuCallback, Runnable restartCallback, String levelName) {
 		if (activeOverlay != ActiveOverlay.NONE) {
 			System.out.println("Another overlay is active. Cannot show WinOverlay.");
 			return;
 		}
-		gameOverOverlay.initializeButtons(backToMainMenuCallback);
+		gameOverOverlay.initializeButtons(backToMainMenuCallback, restartCallback, levelName);
 		gameOverOverlay.showOverlay();
 		activeOverlay = ActiveOverlay.GAME_OVER;
 	}
 
 	// Method to hide the WinOverlay
-//	public void hideWinOverlay() {
-//		winOverlay.hideOverlay();
-//		activeOverlay = ActiveOverlay.NONE;
-//	}
+	public void hideWinOverlay() {
+		if (activeOverlay != ActiveOverlay.WIN) {
+			return;
+		}
+		winOverlay.hideOverlay();
+		activeOverlay = ActiveOverlay.NONE;
+	}
+
+	// Method to hide the WinOverlay
+	public void hideGameOverOverlay() {
+		if (activeOverlay != ActiveOverlay.GAME_OVER) {
+			return;
+		}
+		gameOverOverlay.hideOverlay();
+		activeOverlay = ActiveOverlay.NONE;
+	}
 
 	// Inside LevelView class
 	public ActiveOverlay getActiveOverlay() {
 		return activeOverlay;
+	}
+	public PauseOverlay getPauseOverlay() {
+		return pauseOverlay;
+	}
+
+	public WinOverlay getWinOverlay() {
+		return winOverlay;
+	}
+
+	public GameOverOverlay getGameOverOverlay() {
+		return gameOverOverlay;
 	}
 
 }

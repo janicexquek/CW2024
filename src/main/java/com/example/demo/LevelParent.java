@@ -11,6 +11,8 @@ import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.util.Duration;
 
+//import static sun.management.MonitorInfoCompositeData.getClassName;
+
 public abstract class LevelParent extends Observable {
 
 	private static final double SCREEN_HEIGHT_ADJUSTMENT = 150;
@@ -60,6 +62,9 @@ public abstract class LevelParent extends Observable {
 		MusicManager.getInstance().resumeMusic();
 
 	}
+	protected abstract String getLevelDisplayName();
+
+	protected abstract String getClassName();
 
 	protected abstract void initializeFriendlyUnits();
 
@@ -80,6 +85,13 @@ public abstract class LevelParent extends Observable {
 		MusicManager.getInstance().unmuteAllSoundEffects();
 	}
 
+	  // Method to restart the current level.
+	  // Notifies the controller with the current level's class name.
+	public void restartGame() {
+		setChanged();
+		notifyObservers(getClassName());
+	}
+
 	// Add this method to stop the game
 	public void stopGame() {
 		if (timeline != null) {
@@ -89,6 +101,16 @@ public abstract class LevelParent extends Observable {
 		removeAllDestroyedActors(); // Clean up any remaining actors
 		// Remove observers if any
 		deleteObservers();
+		// Hide overlays to prevent stacking
+		if (levelView != null) {
+			levelView.hideGameOverOverlay();
+			levelView.hideWinOverlay();
+			levelView.hidePauseOverlay();
+			// Remove overlays from the scene graph
+			root.getChildren().remove(levelView.getPauseOverlay());
+			root.getChildren().remove(levelView.getWinOverlay());
+			root.getChildren().remove(levelView.getGameOverOverlay());
+		}
 	}
 
 	// Method to pause the game
@@ -335,8 +357,11 @@ public abstract class LevelParent extends Observable {
 		MusicManager.getInstance().muteAllSoundEffects();
 		// Instead of show WinOverlay
 		if (levelView != null) {
+			String levelName = getLevelDisplayName();
 			levelView.showGameOverOverlay(
-					() -> backToMainMenu() // Back to Main Menu callback
+					() -> backToMainMenu(), // Back to Main Menu callback
+					() -> restartGame(), // Restart callback
+					getLevelDisplayName()   // Current level display name
 			);
 		}
 	}

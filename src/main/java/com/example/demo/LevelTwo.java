@@ -55,6 +55,15 @@ public class LevelTwo extends LevelParent {
 	protected String getNextLevelClassName() {
 		return "mainMenu"; // Indicates that the next screen is the Main Menu
 	}
+	@Override
+	protected String getClassName() {
+		return this.getClass().getName();
+
+	}
+	@Override
+	protected String getLevelDisplayName() {
+		return "LEVEL TWO";
+	}
 
 
 }
