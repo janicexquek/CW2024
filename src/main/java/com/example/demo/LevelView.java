@@ -29,8 +29,7 @@ public class LevelView {
 		this.timeline = timeline;
 		this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
 		this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION, pauseGameCallback, resumeGameCallback, backToMainMenuCallback);
-//		this.winImage = new WinImage(WIN_IMAGE_X_POSITION, WIN_IMAGE_Y_POSITION);
-//		this.gameOverImage = new GameOverImage(LOSS_SCREEN_X_POSITION, LOSS_SCREEN_Y_POSISITION);
+
 		// Initialize the PauseOverlay with screen dimensions
 		this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, pauseGameCallback::run);
 		this.winOverlay = new WinOverlay(screenWidth, screenHeight); // Initialize WinOverlay
@@ -38,10 +37,6 @@ public class LevelView {
 		// Initialize the CountdownOverlay
 		this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
 
-		// Add the PauseOverlay to the root; it should be on top of other elements
-//		this.root.getChildren().add(pauseOverlay);
-//		this.root.getChildren().add(winOverlay);
-//		this.root.getChildren().add(gameOverOverlay);
 		root.getChildren().addAll(pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
 	}
 
@@ -59,13 +54,11 @@ public class LevelView {
 		if (activeOverlay != ActiveOverlay.NONE) {
 			return;
 		}
-
 		this.startGameCallback = startGameCallback;
 
 		// Pause the game loop
 		if (timeline != null) {
 			timeline.pause();
-			System.out.println("Game loop paused for countdown.");
 		}
 
 		// Apply blur effect to all nodes except the countdownOverlay
@@ -97,7 +90,6 @@ public class LevelView {
 		// Resume the game loop
 		if (timeline != null) {
 			timeline.play();
-			System.out.println("Game loop resumed after countdown.");
 		}
 
 		// Execute the game start callback
@@ -124,69 +116,57 @@ public class LevelView {
 		}
 	}
 
-
 	// Shows the pause overlay.
 	public void showPauseOverlay() {
-		if (activeOverlay != ActiveOverlay.NONE) {
-			System.out.println("Another overlay is active. Cannot show PauseOverlay.");
-			return;
+		if (activeOverlay == ActiveOverlay.NONE) {
+			pauseOverlay.setVisible(true);
+			pauseOverlay.setMouseTransparent(false); // Allow interactions with the overlay
+			pauseOverlay.toFront(); // Bring to front
+			activeOverlay = ActiveOverlay.PAUSE;
 		}
-		System.out.println("Showing PauseOverlay");
-		pauseOverlay.setVisible(true);
-		pauseOverlay.setMouseTransparent(false); // Allow interactions with the overlay
-		pauseOverlay.toFront(); // Bring to front explicitly
-		activeOverlay = ActiveOverlay.PAUSE;
 	}
 
 	// Hides the pause overlay.
 	public void hidePauseOverlay() {
 		if (activeOverlay != ActiveOverlay.PAUSE) {
-			return;
+			pauseOverlay.setVisible(false);
+			pauseOverlay.setMouseTransparent(true); // Disable interactions when not visible
+			activeOverlay = ActiveOverlay.NONE;
 		}
-		System.out.println("Hiding PauseOverlay");
-		pauseOverlay.setVisible(false);
-		pauseOverlay.setMouseTransparent(true); // Disable interactions when not visible
-		activeOverlay = ActiveOverlay.NONE;
 	}
 
 	// Method to show the WinOverlay with custom buttons
 	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback, String levelName) {
 		if (activeOverlay != ActiveOverlay.NONE) {
-			System.out.println("Another overlay is active. Cannot show WinOverlay.");
-			return;
+			winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback, levelName);
+			winOverlay.showWInOverlay();
+			activeOverlay = ActiveOverlay.WIN;
 		}
-		winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback, levelName);
-		winOverlay.showWInOverlay();
-		activeOverlay = ActiveOverlay.WIN;
-	}
-
-	// Method to show the WinOverlay with custom buttons
-	public void showGameOverOverlay(Runnable backToMainMenuCallback, Runnable restartCallback, String levelName) {
-		if (activeOverlay != ActiveOverlay.NONE) {
-			System.out.println("Another overlay is active. Cannot show WinOverlay.");
-			return;
-		}
-		gameOverOverlay.initializeButtons(backToMainMenuCallback, restartCallback, levelName);
-		gameOverOverlay.showOverlay();
-		activeOverlay = ActiveOverlay.GAME_OVER;
 	}
 
 	// Method to hide the WinOverlay
 	public void hideWinOverlay() {
 		if (activeOverlay != ActiveOverlay.WIN) {
-			return;
+			winOverlay.hideWinOverlay();
+			activeOverlay = ActiveOverlay.NONE;
 		}
-		winOverlay.hideWinOverlay();
-		activeOverlay = ActiveOverlay.NONE;
+	}
+
+	// Method to show the GameOverOverlay with custom buttons
+	public void showGameOverOverlay(Runnable backToMainMenuCallback, Runnable restartCallback, String levelName) {
+		if (activeOverlay == ActiveOverlay.NONE) {
+			gameOverOverlay.initializeButtons(backToMainMenuCallback, restartCallback, levelName);
+			gameOverOverlay.showOverlay();
+			activeOverlay = ActiveOverlay.GAME_OVER;
+		}
 	}
 
 	// Method to hide the WinOverlay
 	public void hideGameOverOverlay() {
 		if (activeOverlay != ActiveOverlay.GAME_OVER) {
-			return;
+			gameOverOverlay.hideOverlay();
+			activeOverlay = ActiveOverlay.NONE;
 		}
-		gameOverOverlay.hideOverlay();
-		activeOverlay = ActiveOverlay.NONE;
 	}
 
 	// Inside LevelView class
@@ -196,11 +176,9 @@ public class LevelView {
 	public PauseOverlay getPauseOverlay() {
 		return pauseOverlay;
 	}
-
 	public WinOverlay getWinOverlay() {
 		return winOverlay;
 	}
-
 	public GameOverOverlay getGameOverOverlay() {
 		return gameOverOverlay;
 	}
