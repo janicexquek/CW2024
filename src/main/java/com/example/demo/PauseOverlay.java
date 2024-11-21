@@ -49,7 +49,7 @@ public class PauseOverlay extends StackPane {
     private StackPane createMessageBox(double screenWidth, double screenHeight) {
         // Fixed size for the message box
         double boxWidth = 500;
-        double boxHeight = 500;
+        double boxHeight = 200;
 
         // Load box1.png as the background for the message box
         ImageView background = null;
