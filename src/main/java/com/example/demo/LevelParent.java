@@ -22,6 +22,8 @@ public abstract class LevelParent extends Observable {
 	private final double enemyMaximumYPosition;
 	private boolean Updated = false;
 	private boolean ChangedState = false ;
+	private boolean isPaused = false;
+	private int currentNumberOfEnemies;
 
 	private final Group root;
 	private final Timeline timeline;
@@ -34,10 +36,7 @@ public abstract class LevelParent extends Observable {
 	private final List<ActiveActorDestructible> userProjectiles;
 	private final List<ActiveActorDestructible> enemyProjectiles;
 
-	private int currentNumberOfEnemies;
 	private LevelView levelView;
-	// Flag to track pause state
-	private boolean isPaused = false;
 
 	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
 		this.root = new Group();
@@ -85,7 +84,6 @@ public abstract class LevelParent extends Observable {
 	}
 
 	  // Method to restart the current level.
-	  // Notifies the controller with the current level's class name.
 	public void restartGame() {
 		setChanged();
 		notifyObservers(getClassName());
@@ -116,7 +114,6 @@ public abstract class LevelParent extends Observable {
 	public void pauseGame() {
 		if (timeline != null) {
 			timeline.pause();
-			System.out.println("Game Paused");
 		}
 		// Pause all active sound effects
 		SettingsManager.getInstance().pauseMusic();
@@ -128,7 +125,6 @@ public abstract class LevelParent extends Observable {
 	public void resumeGame() {
 		if (timeline != null) {
 			timeline.play();
-			System.out.println("Game Resumed");
 		}
 		SettingsManager.getInstance().resumeMusic();
 		SettingsManager.getInstance().unmuteAllSoundEffects();
@@ -201,7 +197,6 @@ public abstract class LevelParent extends Observable {
 				if (kc == KeyCode.DOWN) user.moveDown();
 				if (kc == KeyCode.SPACE) fireProjectile();
 				if (kc == KeyCode.ESCAPE) {
-					System.out.println("Esc pressed");
 					togglePause();
 				}
 			}
@@ -221,7 +216,6 @@ public abstract class LevelParent extends Observable {
 		// Check if any overlay is active
 		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN || levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER
 				||  levelView.getActiveOverlay() == LevelView.ActiveOverlay.COUNTDOWN) {
-			System.out.println("An overlay is active. Cannot toggle pause.");
 			return;
 		}
 
