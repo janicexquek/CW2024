@@ -59,7 +59,7 @@ public abstract class LevelParent extends Observable {
 		this.currentNumberOfEnemies = 0;
 		initializeTimeline();
 		friendlyUnits.add(user);
-		MusicManager.getInstance().resumeMusic();
+		SettingsManager.getInstance().resumeMusic();
 	}
 	protected abstract String getLevelDisplayName();
 
@@ -80,8 +80,8 @@ public abstract class LevelParent extends Observable {
 	public void backToMainMenu() {
 		setChanged();
 		notifyObservers("mainMenu");
-		MusicManager.getInstance().resumeMusic();
-		MusicManager.getInstance().unmuteAllSoundEffects();
+		SettingsManager.getInstance().resumeMusic();
+		SettingsManager.getInstance().unmuteAllSoundEffects();
 	}
 
 	  // Method to restart the current level.
@@ -119,8 +119,8 @@ public abstract class LevelParent extends Observable {
 			System.out.println("Game Paused");
 		}
 		// Pause all active sound effects
-		MusicManager.getInstance().pauseMusic();
-		MusicManager.getInstance().muteAllSoundEffects();
+		SettingsManager.getInstance().pauseMusic();
+		SettingsManager.getInstance().muteAllSoundEffects();
 
 	}
 
@@ -130,8 +130,8 @@ public abstract class LevelParent extends Observable {
 			timeline.play();
 			System.out.println("Game Resumed");
 		}
-		MusicManager.getInstance().resumeMusic();
-		MusicManager.getInstance().unmuteAllSoundEffects();
+		SettingsManager.getInstance().resumeMusic();
+		SettingsManager.getInstance().unmuteAllSoundEffects();
 	}
 
 
@@ -242,7 +242,7 @@ public abstract class LevelParent extends Observable {
 			root.getChildren().add(projectile);
 			userProjectiles.add(projectile);
 			// Play user bullet sound
-			MusicManager.getInstance().playSoundEffect("bullet.mp3");
+			SettingsManager.getInstance().playSoundEffect("bullet.mp3");
 		}
 	}
 
@@ -335,7 +335,7 @@ public abstract class LevelParent extends Observable {
 
 	protected void winGame() {
 	timeline.stop();
-		MusicManager.getInstance().muteAllSoundEffects();
+		SettingsManager.getInstance().muteAllSoundEffects();
 		// Instead of show WinOverlay
 	if (levelView != null) {
 		levelView.showWinOverlay(
@@ -347,7 +347,7 @@ public abstract class LevelParent extends Observable {
 }
 	// New method to handle proceeding to the next level
 	private void proceedToNextLevel() {
-		MusicManager.getInstance().unmuteAllSoundEffects();
+		SettingsManager.getInstance().unmuteAllSoundEffects();
 		String nextLevel = getNextLevelClassName();
 		if (nextLevel != null && !nextLevel.isEmpty()) {
 			goToNextLevel(nextLevel);
@@ -362,7 +362,7 @@ public abstract class LevelParent extends Observable {
 
 	protected void loseGame() {
 		timeline.stop();
-		MusicManager.getInstance().muteAllSoundEffects();
+		SettingsManager.getInstance().muteAllSoundEffects();
 		// Instead of show WinOverlay
 		if (levelView != null) {
 			String levelName = getLevelDisplayName();

@@ -75,7 +75,7 @@ public class CountdownOverlay extends StackPane {
         setMouseTransparent(false);
         toFront(); // Ensure the overlay is on top
 
-        MusicManager.getInstance().playCountdownSound();
+        SettingsManager.getInstance().playCountdownSound();
 
         // Define countdown messages
         String[] messages = {

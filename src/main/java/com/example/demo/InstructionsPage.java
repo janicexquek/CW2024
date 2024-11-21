@@ -49,7 +49,7 @@ public class InstructionsPage {
         backgroundImageView.setSmooth(true);
 
         // Initialize MusicManager instance
-        MusicManager musicManager = MusicManager.getInstance();
+        SettingsManager settingsManager = SettingsManager.getInstance();
 
         // --- Back Button ---
         StackPane backButton = createCustomButton("Back", "/com/example/demo/images/ButtonText_Small_Round.png", 80, 30);

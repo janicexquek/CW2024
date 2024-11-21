@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-public class MusicManager {
+public class SettingsManager {
 
-    private static MusicManager instance;
+    private static SettingsManager instance;
     private MediaPlayer mediaPlayer;
     private double musicVolume; // Background music volume
     private double soundEffectVolume; // General sound effects volume
@@ -32,8 +32,8 @@ public class MusicManager {
     // track if all sounds are muted
     private boolean allMuted = false;
 
-    private MusicManager() {
-        prefs = Preferences.userNodeForPackage(MusicManager.class);
+    private SettingsManager() {
+        prefs = Preferences.userNodeForPackage(SettingsManager.class);
         // Load saved volume settings or use defaults
         musicVolume = prefs.getDouble("musicVolume", DEFAULT_MUSIC_VOLUME);
         soundEffectVolume = prefs.getDouble("soundEffectVolume", DEFAULT_SOUND_EFFECT_VOLUME);
@@ -52,9 +52,9 @@ public class MusicManager {
         }
     }
 
-    public static MusicManager getInstance() {
+    public static SettingsManager getInstance() {
         if (instance == null) {
-            instance = new MusicManager();
+            instance = new SettingsManager();
         }
         return instance;
     }

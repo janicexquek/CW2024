@@ -78,7 +78,7 @@ public class LevelView {
 		// Start the countdown
 		countdownOverlay.startCountdown();
 		activeOverlay = ActiveOverlay.COUNTDOWN;
-		MusicManager.getInstance().muteAllSoundEffects();
+		SettingsManager.getInstance().muteAllSoundEffects();
 
 	}
 
@@ -104,7 +104,7 @@ public class LevelView {
 		if (startGameCallback != null) {
 			startGameCallback.run();
 		}
-		MusicManager.getInstance().unmuteAllSoundEffects();
+		SettingsManager.getInstance().unmuteAllSoundEffects();
 		activeOverlay = ActiveOverlay.NONE;
 	}
 

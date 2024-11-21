@@ -50,7 +50,7 @@ public class Settings {
         backgroundImageView.setPreserveRatio(false); // Stretch to fill
 
         // Initialize MusicManager instance
-        MusicManager musicManager = MusicManager.getInstance();
+        SettingsManager settingsManager = SettingsManager.getInstance();
 
         // --- Back Button ---
         StackPane backButton = createCustomSettingsButton("Back", 80, 30, "/com/example/demo/images/ButtonText_Small_Round.png");
@@ -112,7 +112,7 @@ public class Settings {
         controlsBox.setAlignment(Pos.CENTER_RIGHT);
 
         // --- Background Music Volume Controls ---
-        musicVolumeSlider = new Slider(0, 1, musicManager.getMusicVolume());
+        musicVolumeSlider = new Slider(0, 1, settingsManager.getMusicVolume());
         musicVolumeSlider.setShowTickLabels(true);
 //        musicVolumeSlider.setShowTickMarks(true);
         musicVolumeSlider.setMajorTickUnit(0.2);
@@ -121,11 +121,11 @@ public class Settings {
 
         // Bind the slider value to MusicManager's music volume
         musicVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            musicManager.setMusicVolume(newValue.doubleValue());
+            settingsManager.setMusicVolume(newValue.doubleValue());
         });
 
         // --- Sound Effects Volume Controls ---
-        sfxVolumeSlider = new Slider(0, 1, musicManager.getSoundEffectVolume());
+        sfxVolumeSlider = new Slider(0, 1, settingsManager.getSoundEffectVolume());
         sfxVolumeSlider.setShowTickLabels(true);
 //        sfxVolumeSlider.setShowTickMarks(true);
         sfxVolumeSlider.setMajorTickUnit(0.2);
@@ -134,11 +134,11 @@ public class Settings {
 
         // Bind the slider value to MusicManager's sound effect volume
         sfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            musicManager.setSoundEffectVolume(newValue.doubleValue());
+            settingsManager.setSoundEffectVolume(newValue.doubleValue());
         });
 
         // --- Countdown Sound Effects Volume Controls ---
-        countdownSfxVolumeSlider = new Slider(0, 1, musicManager.getCountdownSoundVolume());
+        countdownSfxVolumeSlider = new Slider(0, 1, settingsManager.getCountdownSoundVolume());
         countdownSfxVolumeSlider.setShowTickLabels(true);
 //        countdownSfxVolumeSlider.setShowTickMarks(true);
         countdownSfxVolumeSlider.setMajorTickUnit(0.2);
@@ -147,12 +147,12 @@ public class Settings {
 
         // Bind the slider value to MusicManager's countdown sound effect volume
         countdownSfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            musicManager.setCountdownSoundVolume(newValue.doubleValue());
+            settingsManager.setCountdownSoundVolume(newValue.doubleValue());
         });
 
         // --- Mute All Toggle Button ---
         ImageView muteToggleImageView = new ImageView();
-        updateMuteToggleImage(muteToggleImageView, musicManager.isAllMuted());
+        updateMuteToggleImage(muteToggleImageView, settingsManager.isAllMuted());
 
         // Set initial size for the toggle button
         muteToggleImageView.setFitWidth(50);
@@ -190,8 +190,8 @@ public class Settings {
 
         // Handle click event to toggle mute
         muteToggleButton.setOnMouseClicked(e -> {
-            musicManager.toggleMuteAll();
-            updateMuteToggleImage(muteToggleImageView, musicManager.isAllMuted());
+            settingsManager.toggleMuteAll();
+            updateMuteToggleImage(muteToggleImageView, settingsManager.isAllMuted());
             updateSlidersState();
         });
 
@@ -232,12 +232,12 @@ public class Settings {
         StackPane defaultsButton = createCustomSettingsButton("Defaults", 120, 40, "/com/example/demo/images/ButtonText_Small_Round.png");
         defaultsButton.setOnMouseClicked(e -> {
             // Reset to default settings
-            musicManager.setMusicVolume(MusicManager.DEFAULT_MUSIC_VOLUME);
-            musicManager.setSoundEffectVolume(MusicManager.DEFAULT_SOUND_EFFECT_VOLUME);
-            musicManager.setCountdownSoundVolume(MusicManager.DEFAULT_COUNTDOWN_SOUND_VOLUME);
-            musicVolumeSlider.setValue(MusicManager.DEFAULT_MUSIC_VOLUME);
-            sfxVolumeSlider.setValue(MusicManager.DEFAULT_SOUND_EFFECT_VOLUME);
-            countdownSfxVolumeSlider.setValue(MusicManager.DEFAULT_COUNTDOWN_SOUND_VOLUME);
+            settingsManager.setMusicVolume(SettingsManager.DEFAULT_MUSIC_VOLUME);
+            settingsManager.setSoundEffectVolume(SettingsManager.DEFAULT_SOUND_EFFECT_VOLUME);
+            settingsManager.setCountdownSoundVolume(SettingsManager.DEFAULT_COUNTDOWN_SOUND_VOLUME);
+            musicVolumeSlider.setValue(SettingsManager.DEFAULT_MUSIC_VOLUME);
+            sfxVolumeSlider.setValue(SettingsManager.DEFAULT_SOUND_EFFECT_VOLUME);
+            countdownSfxVolumeSlider.setValue(SettingsManager.DEFAULT_COUNTDOWN_SOUND_VOLUME);
         });
 
 
@@ -354,8 +354,8 @@ public class Settings {
 
     // Private method to enable or disable sliders based on mute state
     private void updateSlidersState() {
-        MusicManager musicManager = MusicManager.getInstance();
-        boolean isMuted = musicManager.isAllMuted();
+        SettingsManager settingsManager = SettingsManager.getInstance();
+        boolean isMuted = settingsManager.isAllMuted();
 
         // Disable sliders if muted, enable if not
         musicVolumeSlider.setDisable(isMuted);
