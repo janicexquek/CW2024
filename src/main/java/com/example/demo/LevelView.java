@@ -129,15 +129,16 @@ public class LevelView {
 	// Hides the pause overlay.
 	public void hidePauseOverlay() {
 		if (activeOverlay != ActiveOverlay.PAUSE) {
+			return;
+		}
 			pauseOverlay.setVisible(false);
 			pauseOverlay.setMouseTransparent(true); // Disable interactions when not visible
 			activeOverlay = ActiveOverlay.NONE;
-		}
 	}
 
 	// Method to show the WinOverlay with custom buttons
 	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback, String levelName) {
-		if (activeOverlay != ActiveOverlay.NONE) {
+		if (activeOverlay == ActiveOverlay.NONE) {
 			winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback, levelName);
 			winOverlay.showWInOverlay();
 			activeOverlay = ActiveOverlay.WIN;
@@ -147,9 +148,10 @@ public class LevelView {
 	// Method to hide the WinOverlay
 	public void hideWinOverlay() {
 		if (activeOverlay != ActiveOverlay.WIN) {
+			return;
+		}
 			winOverlay.hideWinOverlay();
 			activeOverlay = ActiveOverlay.NONE;
-		}
 	}
 
 	// Method to show the GameOverOverlay with custom buttons
@@ -164,9 +166,10 @@ public class LevelView {
 	// Method to hide the WinOverlay
 	public void hideGameOverOverlay() {
 		if (activeOverlay != ActiveOverlay.GAME_OVER) {
+			return;
+		}
 			gameOverOverlay.hideOverlay();
 			activeOverlay = ActiveOverlay.NONE;
-		}
 	}
 
 	// Inside LevelView class
