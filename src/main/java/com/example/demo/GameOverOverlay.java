@@ -67,7 +67,7 @@ public class GameOverOverlay extends StackPane {
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf" // Add the new font path here
+                "/com/example/demo/fonts/Sugar Bomb.ttf"
         };
 
         for (String fontPath : fontPaths) {
@@ -76,13 +76,9 @@ public class GameOverOverlay extends StackPane {
                     System.err.println("Font not found: " + fontPath);
                     continue;
                 }
+
                 Font font = Font.loadFont(fontStream, 10); // Initial size; actual size set when applied
-                if (font == null) {
-                    System.err.println("Failed to load font: " + fontPath);
-                } else {
-                    customFonts.put(font.getName(), font);
-                    System.out.println("Loaded font: " + font.getName());
-                }
+                customFonts.put(font != null ? font.getName() : "Unknown", font);
             } catch (Exception e) {
                 System.err.println("Error loading font: " + fontPath);
                 e.printStackTrace();

@@ -66,7 +66,7 @@ public class WinOverlay extends StackPane {
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf" // Add the new font path here
+                "/com/example/demo/fonts/Sugar Bomb.ttf"
         };
 
         for (String fontPath : fontPaths) {
@@ -75,13 +75,9 @@ public class WinOverlay extends StackPane {
                     System.err.println("Font not found: " + fontPath);
                     continue;
                 }
+
                 Font font = Font.loadFont(fontStream, 10); // Initial size; actual size set when applied
-                if (font == null) {
-                    System.err.println("Failed to load font: " + fontPath);
-                } else {
-                    customFonts.put(font.getName(), font);
-                    System.out.println("Loaded font: " + font.getName());
-                }
+                customFonts.put(font != null ? font.getName() : "Unknown", font);
             } catch (Exception e) {
                 System.err.println("Error loading font: " + fontPath);
                 e.printStackTrace();
@@ -122,7 +118,8 @@ public class WinOverlay extends StackPane {
         // Create the level info label
         levelInfoLabel = new Label("LEVEL X COMPLETED"); // Placeholder text
         levelInfoLabel.setTextFill(Color.WHITE);
-        levelInfoLabel.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20)); // Use 'Sugar Bomb' or fallback
+        // Use 'Sugar Bomb' or fallback
+        levelInfoLabel.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20));
         levelInfoLabel.setWrapText(true);
         levelInfoLabel.setAlignment(Pos.CENTER);
         levelInfoLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
