@@ -23,6 +23,7 @@ public abstract class LevelParent extends Observable {
 	private boolean Updated = false;
 	private boolean ChangedState = false ;
 	private boolean isPaused = false;
+	private boolean gameOver = false;
 	private int currentNumberOfEnemies;
 
 	private final Group root;
@@ -165,6 +166,9 @@ public abstract class LevelParent extends Observable {
 	}
 
 	private void updateScene() {
+		if (gameOver) return;
+		updateKillCount();
+		checkIfGameOver();
 		spawnEnemyUnits();
 		updateActors();
 		generateEnemyFire();
@@ -174,9 +178,7 @@ public abstract class LevelParent extends Observable {
 		handleEnemyProjectileCollisions();
 		handlePlaneCollisions();
 		removeAllDestroyedActors();
-		updateKillCount();
 		updateLevelView();
-		checkIfGameOver();
 	}
 	// Initialize the game timeline (game loop)
 	private void initializeTimeline() {
@@ -294,6 +296,7 @@ public abstract class LevelParent extends Observable {
 
 	private void handleCollisions(List<ActiveActorDestructible> actors1,
 			List<ActiveActorDestructible> actors2) {
+		if (gameOver) return;
 		for (ActiveActorDestructible actor : actors2) {
 			for (ActiveActorDestructible otherActor : actors1) {
 				if (actor.getBoundsInParent().intersects(otherActor.getBoundsInParent())) {
@@ -305,6 +308,7 @@ public abstract class LevelParent extends Observable {
 	}
 	// Handle scenarios where enemies penetrate defenses (reach the user)
 	private void handleEnemyPenetration() {
+		if (gameOver) return;
 		for (ActiveActorDestructible enemy : enemyUnits) {
 			if (enemyHasPenetratedDefenses(enemy)) {
 				user.takeDamage();
@@ -328,7 +332,9 @@ public abstract class LevelParent extends Observable {
 	}
 
 	protected void winGame() {
-	timeline.stop();
+		if (gameOver) return;
+		gameOver = true;
+		timeline.stop();
 		SettingsManager.getInstance().muteAllSoundEffects();
 		// Instead of show WinOverlay
 	if (levelView != null) {
@@ -356,6 +362,8 @@ public abstract class LevelParent extends Observable {
 	protected abstract String getNextLevelClassName();
 
 	protected void loseGame() {
+		if (gameOver) return;
+		gameOver = true;
 		timeline.stop();
 		SettingsManager.getInstance().muteAllSoundEffects();
 		// Instead of show WinOverlay
