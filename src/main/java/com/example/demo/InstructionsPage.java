@@ -22,10 +22,6 @@ import java.util.Map;
 
 public class InstructionsPage {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background5.jpg";
-    private static final String FONT_PATH = "/com/example/demo/fonts/Cartoon cookies.ttf";
-    private static final String TEXT_FONT_PATH = "/com/example/demo/fonts/Pixel Digivolve.otf";
-//    private static final String BUTTON_FONT_PATH = "/com/example/demo/fonts/Sugar Bomb.ttf";
-
 
     private final Stage stage;
     private final Controller controller;
@@ -52,7 +48,8 @@ public class InstructionsPage {
         SettingsManager settingsManager = SettingsManager.getInstance();
 
         // --- Back Button ---
-        StackPane backButton = createCustomButton("Back", "/com/example/demo/images/ButtonText_Small_Round.png", 80, 30);
+        StackPane backButton = createCustomButton("Back",
+                "/com/example/demo/images/ButtonText_Small_Round.png", 80, 30);
         backButton.setOnMouseClicked(e -> {
             // Navigate back to the main menu
             MainMenu mainMenu = new MainMenu(stage, controller);
@@ -69,7 +66,9 @@ public class InstructionsPage {
         titleVBox.setPadding(new Insets(30,0,0,0));
 
         Label instructionsTitle = new Label("Instructions");
-        instructionsTitle.setFont(Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 100));
+        instructionsTitle.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
+                Font.font("Arial", 100)).getName(), 100));
+
         instructionsTitle.getStyleClass().add("title-text");
         titleVBox.getChildren().add(instructionsTitle);
 
@@ -94,7 +93,8 @@ public class InstructionsPage {
                         "Good luck and have fun!"
         );
         instructionsText.setTextFill(Color.BLACK);
-        instructionsText.setFont(Font.loadFont(getClass().getResourceAsStream(TEXT_FONT_PATH), 20));
+        instructionsText.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+                Font.font("Arial", 20)).getName(), 20));
         instructionsText.setWrapText(true);
         textVBox.getChildren().add(instructionsText);
 
@@ -140,13 +140,9 @@ public class InstructionsPage {
         Label label = new Label(text);
 
         // Set the Sugar Bomb font
-        Font buttonFont = customFonts.get("Sugar Bomb"); // Ensure the font name matches
-        if (buttonFont != null) {
-            label.setFont(Font.font(buttonFont.getName(), 16)); // Adjust size as needed
-        } else {
-            System.err.println("Button font not found! Using default font.");
-            label.setFont(Font.font(16)); // Fallback font
-        }
+        label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
+                Font.font("Arial", 16)).getName(), 16));
+
         label.getStyleClass().add("button-label");
 
         // Create a StackPane to stack the image and the label
@@ -205,7 +201,6 @@ public class InstructionsPage {
                     System.err.println("Failed to load font: " + fontPath);
                 } else {
                     customFonts.put(font.getName(), font);
-                    System.out.println("Loaded font: " + font.getName());
                 }
             } catch (Exception e) {
                 System.err.println("Error loading font: " + fontPath);

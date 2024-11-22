@@ -72,13 +72,10 @@ public class Settings {
         topHBox.setPadding(new Insets(30, 0, 0, 0));
 
         Label titleLabel = new Label("SETTINGS");
-        Font cartoonCookiesFont = customFonts.get("Cartoon cookies");
-        if (cartoonCookiesFont != null) {
-            titleLabel.setFont(Font.font(cartoonCookiesFont.getName(), 100));
-        } else {
-            titleLabel.setFont(new Font("Arial", 100)); // Fallback font
-        }
+        titleLabel.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
+                Font.font("Arial", 100)).getName(), 100));
         titleLabel.getStyleClass().add("title-text");
+
         topHBox.getChildren().add(titleLabel);
 
         HBox.setHgrow(titleLabel, Priority.ALWAYS);
@@ -203,11 +200,8 @@ public class Settings {
         // Create the "Mute All" label
         Label muteAllLabel = new Label("Mute All:");
         muteAllLabel.setTextFill(Color.DARKGRAY);
-        if (customFonts.get("Cartoon cookies") != null) {
-            muteAllLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 25));
-        } else {
-            muteAllLabel.setFont(new Font("Arial", 25)); // Fallback font
-        }
+        muteAllLabel.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
+                Font.font("Arial", 25)).getName(), 25));
 
         // Add the label and toggle button to the HBox
         muteAllHBox.getChildren().addAll(muteAllLabel, muteToggleButton);
@@ -224,9 +218,6 @@ public class Settings {
         VBox allVBox = new VBox(10);
         allVBox.setAlignment(Pos.CENTER);
         allVBox.getChildren().addAll(contentHBox, muteAllHBox);
-
-        // --- Defaults Buttons ---
-
 
         // --- Defaults Button ---
         StackPane defaultsButton = createCustomSettingsButton("Defaults", 120, 40, "/com/example/demo/images/ButtonText_Small_Round.png");
@@ -299,13 +290,8 @@ public class Settings {
         // Create a label for the button text
         Label label = new Label(text);
         // Set the Sugar Bomb font
-        Font buttonFont = customFonts.get("Sugar Bomb"); // Ensure the font name matches
-        if (buttonFont != null) {
-            label.setFont(Font.font(buttonFont.getName(), 16)); // Adjust size as needed
-        } else {
-            System.err.println("Button font not found! Using default font.");
-            label.setFont(Font.font(16)); // Fallback font
-        }
+        label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
+                Font.font("Arial", 16)).getName(), 16));
         label.getStyleClass().add("button-label");
 
         // Create a StackPane to stack the image and the label
@@ -377,7 +363,6 @@ public class Settings {
                 } else {
                     // Store the font with its name for later use
                     customFonts.put(font.getName(), font);
-                    System.out.println("Loaded font: " + font.getName());
                 }
             } catch (Exception e) {
                 System.err.println("Error loading font: " + fontPath);

@@ -44,7 +44,8 @@ public class MainMenu {
 
         // --- Main Menu Title ---
         Label titleLabel = new Label("SKY BATTLE");
-        titleLabel.setFont(Font.font(customFonts.get("Cartoon cookies").getName(), 100));
+        titleLabel.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
+                Font.font("Arial", 100)).getName(), 100));
         titleLabel.getStyleClass().add("title-text");
 
         // Create custom buttons
@@ -117,8 +118,6 @@ public class MainMenu {
         stage.show();
     }
 
-
-
     private StackPane createCustomButton(String text) {
         // Load the button background image
         ImageView buttonImageView = new ImageView(new Image(getClass().getResource("/com/example/demo/images/ButtonText_Large_Round.png").toExternalForm()));
@@ -129,13 +128,9 @@ public class MainMenu {
         // Create a label for the button text
         Label label = new Label(text);
         // Set the Sugar Bomb font
-        Font buttonFont = customFonts.get("Sugar Bomb"); // Ensure the font name matches
-        if (buttonFont != null) {
-            label.setFont(Font.font(buttonFont.getName(), 20)); // Adjust size as needed
-        } else {
-            System.err.println("Button font not found! Using default font.");
-            label.setFont(Font.font(24)); // Fallback font
-        }
+        label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
+                Font.font("Arial", 20)).getName(), 20));
+
         label.getStyleClass().add("button-label");
 
         // Create a StackPane to stack the image and the label
@@ -190,7 +185,6 @@ public class MainMenu {
                 } else {
                     // Store the font with its name for later use
                     customFonts.put(font.getName(), font);
-                    System.out.println("Loaded font: " + font.getName());
                 }
             } catch (Exception e) {
                 System.err.println("Error loading font: " + fontPath);
