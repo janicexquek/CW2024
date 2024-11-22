@@ -154,7 +154,7 @@ public class WinOverlay extends StackPane {
     }
 
     // Combined method to create, assign actions, and add buttons to the overlay
-    public void initializeButtons(Runnable backCallback, Runnable nextCallback, String levelName) {
+    public void initializeButtons(Runnable backCallback, Runnable nextCallback, Runnable restartCallback, String levelName) {
         if (buttonsInitialized) {
             return;
         }
@@ -162,11 +162,16 @@ public class WinOverlay extends StackPane {
         // Create the buttons with image backgrounds and assign actions
         Button backButton = createCustomButton("Main Menu", backCallback);
         Button nextButton = createCustomButton("Next Level", nextCallback);
+        Button restartButton = createCustomButton("Restart", restartCallback);
 
         // Create an HBox to hold the buttons horizontally
         HBox buttonBox = new HBox(20); // 20px spacing between buttons
         buttonBox.setAlignment(Pos.BOTTOM_CENTER);
         buttonBox.getChildren().addAll(backButton, nextButton);
+        // Create an VBox to hold the buttons vertically
+        VBox allButtonBox = new VBox(10);
+        allButtonBox.setAlignment(Pos.BOTTOM_CENTER);
+        allButtonBox.getChildren().addAll(buttonBox,restartButton);
 
         // Add the buttonBox to the overlay's VBox
         // Assuming the messageBox's VBox is the second child (index 1)
@@ -176,8 +181,8 @@ public class WinOverlay extends StackPane {
                 VBox vbox = (VBox) messageBox.getChildren().get(1);
                 // Remove existing HBox if any to prevent duplication
                 vbox.getChildren().removeIf(node -> node instanceof HBox);
-                // Add the new buttonBox
-                vbox.getChildren().add(buttonBox);
+                // Add the new allButtonBox
+                vbox.getChildren().add(allButtonBox);
                 buttonsInitialized = true;
             }
         }
@@ -198,14 +203,14 @@ public class WinOverlay extends StackPane {
             // Load the button image
             Image buttonImage = new Image(getClass().getResourceAsStream(BUTTON_IMAGE_NAME));
             ImageView buttonImageView = new ImageView(buttonImage);
-            buttonImageView.setFitWidth(200); // Adjust width as needed
-            buttonImageView.setFitHeight(80); // Adjust width as needed
+            buttonImageView.setFitWidth(180); // Adjust width as needed
+            buttonImageView.setFitHeight(60); // Adjust width as needed
             buttonImageView.setPreserveRatio(true);
 
             // Create label for button text
             Label label = new Label(buttonText);
             label.setTextFill(Color.WHITE);
-            label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20)); // Font or fallback
+            label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 16)); // Font or fallback
 
             // Create a StackPane to overlay text on the image
             StackPane stack = new StackPane(buttonImageView, label);

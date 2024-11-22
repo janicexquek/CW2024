@@ -335,6 +335,7 @@ public abstract class LevelParent extends Observable {
 		levelView.showWinOverlay(
 				() -> backToMainMenu(), // Back to Main Menu callback
 				() -> proceedToNextLevel(), // Next Level callback
+				() -> restartGame(), // Restart callback
 				getLevelDisplayName()   // Current level display name
 		);
 	}
