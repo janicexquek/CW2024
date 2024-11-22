@@ -200,14 +200,14 @@ public class GameOverOverlay extends StackPane {
             // Load the button image
             Image buttonImage = new Image(getClass().getResourceAsStream(BUTTON_IMAGE_NAME));
             ImageView buttonImageView = new ImageView(buttonImage);
-            buttonImageView.setFitWidth(200); // Adjust width as needed
-            buttonImageView.setFitHeight(80); // Adjust height as needed
+            buttonImageView.setFitWidth(180); // Adjust width as needed
+            buttonImageView.setFitHeight(60); // Adjust height as needed
             buttonImageView.setPreserveRatio(true);
 
             // Create label for button text
             Label label = new Label(buttonText);
             label.setTextFill(Color.WHITE);
-            label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20)); // Font or fallback
+            label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 16)); // Font or fallback
 
             // Create a StackPane to overlay text on the image
             StackPane stack = new StackPane(buttonImageView, label);
