@@ -15,16 +15,19 @@ import javafx.util.Duration;
 
 public abstract class LevelParent extends Observable {
 
-	private static final double SCREEN_HEIGHT_ADJUSTMENT = 150;
+	private static final double SCREEN_HEIGHT_ADJUSTMENT = 400;
 	private static final int MILLISECOND_DELAY = 50;
 	private final double screenHeight;
 	private final double screenWidth;
-	private final double enemyMaximumYPosition;
+//	private final double enemyMaximumYPosition;
 	private boolean Updated = false;
 	private boolean ChangedState = false ;
 	private boolean isPaused = false;
 	private boolean gameOver = false;
 	private int currentNumberOfEnemies;
+	// Centralized Y boundaries
+	protected static final double Y_UPPER_BOUND = 80;
+	protected static final double Y_LOWER_BOUND = 675.0;
 
 	private final Group root;
 	private final Timeline timeline;
@@ -54,7 +57,7 @@ public abstract class LevelParent extends Observable {
 		this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
-		this.enemyMaximumYPosition = screenHeight - SCREEN_HEIGHT_ADJUSTMENT;
+//		this.enemyMaximumYPosition = Y_LOWER_BOUND ;
 		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
 		initializeTimeline();
@@ -75,6 +78,14 @@ public abstract class LevelParent extends Observable {
 
 	protected Runnable getBackToMainMenuCallback() {
 		return this::backToMainMenu;
+	}
+	// Ensure getter methods for Y bounds if needed
+	public double getYUpperBound() {
+		return Y_UPPER_BOUND;
+	}
+
+	public double getYLowerBound() {
+		return Y_LOWER_BOUND;
 	}
 
 	public void backToMainMenu() {
@@ -394,9 +405,9 @@ public abstract class LevelParent extends Observable {
 		root.getChildren().add(enemy);
 	}
 
-	protected double getEnemyMaximumYPosition() {
-		return enemyMaximumYPosition;
-	}
+//	protected double getEnemyMaximumYPosition() {
+//		return enemyMaximumYPosition;
+//	}
 
 	protected double getScreenWidth() {
 		return screenWidth;
