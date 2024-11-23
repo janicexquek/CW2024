@@ -249,7 +249,9 @@ public class LevelView {
 			this.infoDisplay.setText("Boss Health: " + currentHealth);
 		});
 	}
-
+	public void bringInfoDisplayToFront() {
+		infoDisplay.toFront();
+	}
 
 	// Inside LevelView class
 	public ActiveOverlay getActiveOverlay() {

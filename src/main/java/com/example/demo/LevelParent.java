@@ -58,7 +58,6 @@ public abstract class LevelParent extends Observable {
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 //		this.enemyMaximumYPosition = Y_LOWER_BOUND ;
-		initializeBackground();
 		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
 		initializeTimeline();
@@ -148,7 +147,7 @@ public abstract class LevelParent extends Observable {
 
 
 	public Scene initializeScene() {
-//		initializeBackground();
+		initializeBackground();
 		initializeFriendlyUnits();
 		levelView.showHeartDisplay();
 		levelView.showExitDisplay();
@@ -225,6 +224,7 @@ public abstract class LevelParent extends Observable {
 			}
 		});
 		root.getChildren().add(background);
+		levelView.bringInfoDisplayToFront();
 //		background.setOpacity(0.5);
 	}
 
