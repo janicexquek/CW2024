@@ -50,6 +50,9 @@ public class Boss extends FighterPlane {
 			setTranslateY(initialTranslateY);
 		}
 	}
+	public int getHealth() {
+		return HEALTH;
+	}
 	
 	@Override
 	public void updateActor() {
@@ -134,6 +137,13 @@ public class Boss extends FighterPlane {
 		framesWithShieldActivated = 0;
 		shieldImage.hideShield(); // Hide the shield image
 
+	}
+	public void showShield() {
+		this.setVisible(true);
+	}
+
+	public void hideShield() {
+		this.setVisible(false);
 	}
 
 }

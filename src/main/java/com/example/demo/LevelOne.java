@@ -23,6 +23,10 @@ public class LevelOne extends LevelParent {
 //			goToNextLevel(NEXT_LEVEL);
 			winGame(); // Triggers the WinOverlay
 	}
+	@Override
+	protected void updateCustomDisplay() {
+		levelView.updateKillCount(getUser().getNumberOfKills(), KILLS_TO_ADVANCE);
+	}
 
 
 	@Override
@@ -35,7 +39,8 @@ public class LevelOne extends LevelParent {
 		int currentNumberOfEnemies = getCurrentNumberOfEnemies();
 		for (int i = 0; i < TOTAL_ENEMIES - currentNumberOfEnemies; i++) {
 			if (Math.random() < ENEMY_SPAWN_PROBABILITY) {
-				double newEnemyInitialYPosition = LevelParent.Y_UPPER_BOUND + Math.random() * (LevelParent.Y_LOWER_BOUND - LevelParent.Y_UPPER_BOUND);ActiveActorDestructible newEnemy = new EnemyPlane(getScreenWidth(), newEnemyInitialYPosition);
+				double newEnemyInitialYPosition = LevelParent.Y_UPPER_BOUND + Math.random() * (LevelParent.Y_LOWER_BOUND - LevelParent.Y_UPPER_BOUND);
+				ActiveActorDestructible newEnemy = new EnemyPlane(getScreenWidth(), newEnemyInitialYPosition);
 				addEnemyUnit(newEnemy);
 			}
 		}

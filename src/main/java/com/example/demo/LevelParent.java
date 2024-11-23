@@ -40,7 +40,7 @@ public abstract class LevelParent extends Observable {
 	private final List<ActiveActorDestructible> userProjectiles;
 	private final List<ActiveActorDestructible> enemyProjectiles;
 
-	private LevelView levelView;
+	protected LevelView levelView;
 
 	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
 		this.root = new Group();
@@ -58,6 +58,7 @@ public abstract class LevelParent extends Observable {
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 //		this.enemyMaximumYPosition = Y_LOWER_BOUND ;
+		initializeBackground();
 		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
 		initializeTimeline();
@@ -79,6 +80,8 @@ public abstract class LevelParent extends Observable {
 	protected Runnable getBackToMainMenuCallback() {
 		return this::backToMainMenu;
 	}
+
+	protected abstract void updateCustomDisplay();
 
 	// Ensure getter methods for Y bounds if needed
 	public double getYUpperBound() {
@@ -145,7 +148,7 @@ public abstract class LevelParent extends Observable {
 
 
 	public Scene initializeScene() {
-		initializeBackground();
+//		initializeBackground();
 		initializeFriendlyUnits();
 		levelView.showHeartDisplay();
 		levelView.showExitDisplay();
@@ -222,7 +225,7 @@ public abstract class LevelParent extends Observable {
 			}
 		});
 		root.getChildren().add(background);
-//		background.setOpacity(0.1);
+//		background.setOpacity(0.5);
 	}
 
 	 // Toggles the game's pause state.
@@ -339,6 +342,7 @@ public abstract class LevelParent extends Observable {
 
 	private void updateLevelView() {
 		levelView.removeHearts(user.getHealth());
+		updateCustomDisplay(); // Call the abstract method
 	}
 
 	private void updateKillCount() {

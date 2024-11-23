@@ -35,7 +35,9 @@ public class LevelTwo extends LevelParent {
 	protected void spawnEnemyUnits() {
 		if (getCurrentNumberOfEnemies() == 0) {
 			addEnemyUnit(boss);
-			getRoot().getChildren().add(boss.getShieldImage()); // Add the shield image to the scene graph
+			if (!getRoot().getChildren().contains(boss.getShieldImage())) {
+				getRoot().getChildren().add(boss.getShieldImage()); // Add the shield image to the scene graph
+			}
 		}
 	}
 
@@ -66,6 +68,10 @@ public class LevelTwo extends LevelParent {
 	@Override
 	protected String getLevelDisplayName() {
 		return "LEVEL TWO";
+	}
+	@Override
+	protected void updateCustomDisplay() {
+		levelView.updateBossHealth(boss.getHealth());
 	}
 
 

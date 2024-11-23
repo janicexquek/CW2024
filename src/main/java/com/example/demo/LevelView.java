@@ -1,8 +1,14 @@
 package com.example.demo;
 
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
+import java.io.InputStream;
 
 public class LevelView {
 
@@ -23,6 +29,7 @@ public class LevelView {
 	private Runnable startGameCallback;
 	private Timeline timeline; // Reference to the game loop timeline
 	private ActiveOverlay activeOverlay = ActiveOverlay.NONE;
+	private Text infoDisplay; // New Text node for displaying information
 
 
 	public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight, Timeline timeline) {
@@ -39,9 +46,49 @@ public class LevelView {
 		this.gameOverOverlay = new GameOverOverlay(screenWidth, screenHeight); // Initialize WinOverlay
 		// Initialize the CountdownOverlay
 		this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
-
+		// Initialize the infoDisplay Text node
+		this.infoDisplay = new Text();
+		// Load the custom font
+		loadCustomFont();
 		root.getChildren().addAll(exitOverlay,pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
+		root.getChildren().add(infoDisplay);
+		infoDisplay.toFront(); // Bring infoDisplay to the front
+		positionInfoDisplay();
 	}
+	private void loadCustomFont() {
+		// Adjusted font loading code to handle spaces in file name
+		String fontPath = "/com/example/demo/fonts/Pixel Digivolve.otf";
+		InputStream fontStream = getClass().getResourceAsStream(fontPath);
+
+		if (fontStream == null) {
+			System.out.println("Font file not found at: " + fontPath);
+		} else {
+			Font font = Font.loadFont(fontStream, 20);
+			if (font == null) {
+				System.out.println("Failed to load font from: " + fontPath);
+			} else {
+				System.out.println("Loaded font: " + font.getName());
+				this.infoDisplay.setFont(font);
+			}
+		}
+
+		// Set default font if custom font fails to load
+		if (this.infoDisplay.getFont() == null) {
+			this.infoDisplay.setFont(Font.font("Verdana", 20));
+		}
+	}
+
+	private void positionInfoDisplay() {
+		Platform.runLater(() -> {
+			Bounds heartBounds = heartDisplay.getContainer().getBoundsInParent();
+			double heartRightX = heartBounds.getMaxX();
+			double heartY = heartBounds.getMinY();
+
+			infoDisplay.setX(heartRightX + 10); // Adjust as needed
+			infoDisplay.setY(heartY + 40); // Align vertically with the heart display
+		});
+	}
+
 
 	// New state variable to track active overlay
 	public static enum ActiveOverlay {
@@ -188,6 +235,21 @@ public class LevelView {
 			gameOverOverlay.hideOverlay();
 			activeOverlay = ActiveOverlay.NONE;
 	}
+
+//	// Method to update kill count for Level One
+	public void updateKillCount(int currentKills, int killsToAdvance) {
+		Platform.runLater(() -> {
+			this.infoDisplay.setText("Kills: " + currentKills + " / " + killsToAdvance);
+		});
+	}
+//
+//	// Method to update boss health for Level Two
+	public void updateBossHealth(int currentHealth) {
+		Platform.runLater(() -> {
+			this.infoDisplay.setText("Boss Health: " + currentHealth);
+		});
+	}
+
 
 	// Inside LevelView class
 	public ActiveOverlay getActiveOverlay() {
