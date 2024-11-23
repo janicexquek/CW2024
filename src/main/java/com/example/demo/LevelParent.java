@@ -228,8 +228,10 @@ public abstract class LevelParent extends Observable {
 	 // Toggles the game's pause state.
 	private void togglePause() {
 		// Check if any overlay is active
-		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN || levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER
-				||  levelView.getActiveOverlay() == LevelView.ActiveOverlay.COUNTDOWN) {
+		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN ||
+				levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER ||
+				levelView.getActiveOverlay() == LevelView.ActiveOverlay.COUNTDOWN ||
+				levelView.getActiveOverlay() == LevelView.ActiveOverlay.EXIT) { // Add EXIT state
 			return;
 		}
 
@@ -245,7 +247,7 @@ public abstract class LevelParent extends Observable {
 	}
 
 	private boolean canFireProjectiles() {
-		return !gameOver && !isPaused && levelView.getActiveOverlay() != LevelView.ActiveOverlay.COUNTDOWN;
+		return !gameOver && !isPaused && levelView.getActiveOverlay() == LevelView.ActiveOverlay.NONE;
 	}
 
 

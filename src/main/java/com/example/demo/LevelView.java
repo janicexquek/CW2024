@@ -14,6 +14,7 @@ public class LevelView {
 	private final Group root;
 	private final HeartDisplay heartDisplay;
 	private final ExitDisplay exitDisplay;
+	private final ExitOverlay exitOverlay; // New WinOverlay
 	private final PauseOverlay pauseOverlay; // New member variable
 	private final WinOverlay winOverlay; // New WinOverlay
 	private final GameOverOverlay gameOverOverlay;
@@ -28,7 +29,9 @@ public class LevelView {
 		this.root = root;
 		this.timeline = timeline;
 		this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
-		this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION, pauseGameCallback, resumeGameCallback, backToMainMenuCallback);
+		this.exitOverlay = new ExitOverlay(screenWidth, screenHeight, resumeGameCallback, backToMainMenuCallback, this::hideExitOverlay);
+		this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION,
+				pauseGameCallback, resumeGameCallback, backToMainMenuCallback, this::showExitOverlay);
 
 		// Initialize the PauseOverlay with screen dimensions
 		this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, pauseGameCallback::run);
@@ -37,7 +40,7 @@ public class LevelView {
 		// Initialize the CountdownOverlay
 		this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
 
-		root.getChildren().addAll(pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
+		root.getChildren().addAll(exitOverlay,pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
 	}
 
 	// New state variable to track active overlay
@@ -46,7 +49,8 @@ public class LevelView {
 		PAUSE,
 		WIN,
 		GAME_OVER,
-		COUNTDOWN
+		COUNTDOWN,
+		EXIT
 	}
 
 	// Method to start the countdown
@@ -104,10 +108,23 @@ public class LevelView {
 		root.getChildren().add(heartDisplay.getContainer());
 	}
 
+	public void showExitOverlay() {
+		if (activeOverlay == ActiveOverlay.NONE) {
+			exitOverlay.showExitOverlay();
+			activeOverlay = ActiveOverlay.EXIT;
+		}
+	}
+
+	public void hideExitOverlay() {
+		if (activeOverlay == ActiveOverlay.EXIT) {
+			exitOverlay.hideExitOverlay();
+			activeOverlay = ActiveOverlay.NONE;
+		}
+	}
+
 	public void showExitDisplay() {
 		root.getChildren().add(exitDisplay.getContainer());
 	}
-
 
 	public void removeHearts(int heartsRemaining) {
 		int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
