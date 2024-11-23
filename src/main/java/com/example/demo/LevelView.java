@@ -236,14 +236,14 @@ public class LevelView {
 			activeOverlay = ActiveOverlay.NONE;
 	}
 
-//	// Method to update kill count for Level One
+	// Method to update kill count for Level One
 	public void updateKillCount(int currentKills, int killsToAdvance) {
 		Platform.runLater(() -> {
 			this.infoDisplay.setText("Kills: " + currentKills + " / " + killsToAdvance);
 		});
 	}
-//
-//	// Method to update boss health for Level Two
+
+	// Method to update boss health for Level Two
 	public void updateBossHealth(int currentHealth) {
 		Platform.runLater(() -> {
 			this.infoDisplay.setText("Boss Health: " + currentHealth);

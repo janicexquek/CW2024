@@ -13,6 +13,7 @@ public class Boss extends FighterPlane {
 	private static final int IMAGE_HEIGHT = 40;
 	private static final int VERTICAL_VELOCITY = 8;
 	private static final int HEALTH = 10; // initial 100
+	private int health = HEALTH;
 	private static final int MOVE_FREQUENCY_PER_CYCLE = 5;
 	private static final int ZERO = 0;
 	private static final int MAX_FRAMES_WITH_SAME_MOVE = 10;
@@ -50,8 +51,8 @@ public class Boss extends FighterPlane {
 			setTranslateY(initialTranslateY);
 		}
 	}
-	public int getHealth() {
-		return HEALTH;
+	public int getBossHealth() {
+		return health;
 	}
 	
 	@Override
@@ -70,6 +71,7 @@ public class Boss extends FighterPlane {
 	public void takeDamage() {
 		if (!isShielded) {
 			super.takeDamage();
+			health--;
 		}
 	}
 

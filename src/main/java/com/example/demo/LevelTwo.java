@@ -71,7 +71,7 @@ public class LevelTwo extends LevelParent {
 	}
 	@Override
 	protected void updateCustomDisplay() {
-		levelView.updateBossHealth(boss.getHealth());
+		levelView.updateBossHealth(boss.getBossHealth());
 	}
 
 
