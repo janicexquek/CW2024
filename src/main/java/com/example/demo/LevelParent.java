@@ -2,7 +2,8 @@ package com.example.demo;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.animation.*;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -25,6 +26,9 @@ public abstract class LevelParent extends Observable {
 	private boolean isPaused = false;
 	private boolean gameOver = false;
 	private int currentNumberOfEnemies;
+	private long elapsedSeconds = 0;
+	private Timeline timerTimeline;
+	private String levelName;
 	// Centralized Y boundaries
 	protected static final double Y_UPPER_BOUND = 80;
 	protected static final double Y_LOWER_BOUND = 675.0;
@@ -42,7 +46,7 @@ public abstract class LevelParent extends Observable {
 
 	protected LevelView levelView;
 
-	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
+	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth, String levelName) {
 		this.root = new Group();
 		this.scene = new Scene(root, screenWidth, screenHeight);
 		this.timeline = new Timeline();
@@ -60,6 +64,8 @@ public abstract class LevelParent extends Observable {
 //		this.enemyMaximumYPosition = Y_LOWER_BOUND ;
 		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
+		this.levelName = levelName;
+		initializeTimer();
 		initializeTimeline();
 		friendlyUnits.add(user);
 		SettingsManager.getInstance().resumeMusic();
@@ -90,6 +96,44 @@ public abstract class LevelParent extends Observable {
 	public double getYLowerBound() {
 		return Y_LOWER_BOUND;
 	}
+	public String getLevelName() {
+		return levelName;
+	}
+
+
+	private void initializeTimer() {
+		timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> elapsedSeconds++));
+		timerTimeline.setCycleCount(Timeline.INDEFINITE);
+	}
+
+	public long getElapsedSeconds() {
+		return elapsedSeconds;
+	}
+
+	public void startTimer() {
+		if (timerTimeline != null) {
+			timerTimeline.play();
+		}
+	}
+
+	public void pauseTimer() {
+		if (timerTimeline != null) {
+			timerTimeline.pause();
+		}
+	}
+
+	public void resumeTimer() {
+		if (timerTimeline != null) {
+			timerTimeline.play();
+		}
+	}
+
+	public void stopTimer() {
+		if (timerTimeline != null) {
+			timerTimeline.stop();
+		}
+	}
+
 
 	public void backToMainMenu() {
 		setChanged();
@@ -159,6 +203,8 @@ public abstract class LevelParent extends Observable {
 	// New method to start the game after countdown
 	private void startGameAfterCountdown() {
 		// Start the game timeline
+		 startTimer();
+		 startGame(); // Existing game start logic
 	}
 
 	public void startGame() {
@@ -223,8 +269,10 @@ public abstract class LevelParent extends Observable {
 				if (kc == KeyCode.UP || kc == KeyCode.DOWN) user.stop();
 			}
 		});
-		root.getChildren().add(background);
-		levelView.bringInfoDisplayToFront();
+// Check if background is already added
+		if (!root.getChildren().contains(background)) {
+			root.getChildren().add(background);
+		}		levelView.bringInfoDisplayToFront();
 //		background.setOpacity(0.5);
 	}
 
@@ -240,10 +288,12 @@ public abstract class LevelParent extends Observable {
 
 		if (!isPaused) {
 			pauseGame();
+			pauseTimer();
 			levelView.showPauseOverlay();
 			isPaused = true;
 		} else {
 			resumeGame();
+			resumeTimer();
 			levelView.hidePauseOverlay();
 			isPaused = false;
 		}
@@ -359,6 +409,9 @@ public abstract class LevelParent extends Observable {
 		if (gameOver) return;
 		gameOver = true;
 		timeline.stop();
+		timerTimeline.stop();
+		setChanged();
+		notifyObservers("win:" + getLevelName() + ":" + elapsedSeconds);
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		// Instead of show WinOverlay
 	if (levelView != null) {
@@ -390,6 +443,9 @@ public abstract class LevelParent extends Observable {
 		if (gameOver) return;
 		gameOver = true;
 		timeline.stop();
+		timerTimeline.stop();
+		setChanged();
+		notifyObservers("lose:" + getLevelName() + ":" + elapsedSeconds);
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		// Instead of show WinOverlay
 		if (levelView != null) {

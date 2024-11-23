@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -8,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import com.example.demo.controller.Controller;
@@ -49,6 +52,13 @@ public class MainMenu {
         titleLabel.getStyleClass().add("title-text");
 
         // Create custom buttons
+        StackPane statButton = createStickerButton();
+        statButton.setOnMouseClicked(e -> {
+            System.out.println("Sticker Button Clicked! Navigating to Scoreboard.");
+            ScoreboardPage scoreboardPage = new ScoreboardPage(stage, controller);
+            scoreboardPage.show();
+        });
+
         StackPane playButton = createCustomButton("Play");
         playButton.setOnMouseClicked(e -> controller.startGame());
 
@@ -66,7 +76,7 @@ public class MainMenu {
         });
 
         // Arrange buttons in VBox
-        VBox buttonLayout = new VBox(20, playButton, settingsButton, instructionsButton);
+        VBox buttonLayout = new VBox(20, statButton,playButton, settingsButton, instructionsButton);
         buttonLayout.setAlignment(Pos.CENTER);
 
         // Create a BorderPane for main layout
@@ -78,10 +88,10 @@ public class MainMenu {
 
         // Place the buttons at the center with margin
         mainLayout.setCenter(buttonLayout);
-        BorderPane.setMargin(buttonLayout, new Insets(10, 0, 120, 0)); // Shift buttons downward by 100 pixels
+        BorderPane.setMargin(buttonLayout, new Insets(10, 0, 190, 0)); // Shift buttons downward by 100 pixels
 
         // Top padding to give space for the title
-        mainLayout.setPadding(new Insets(60, 0, 0, 0));
+        mainLayout.setPadding(new Insets(50, 0, 0, 0));
 
         // Create a StackPane to layer the background and main layout
         StackPane root = new StackPane();
@@ -96,7 +106,7 @@ public class MainMenu {
 
         // Set alignment to top-left and add margin
         StackPane.setAlignment(closeImageView, Pos.TOP_LEFT);
-        StackPane.setMargin(closeImageView, new Insets(30, 0, 0, 30)); // 10px from top and left
+        StackPane.setMargin(closeImageView, new Insets(40, 0, 160, 40)); // 10px from top and left
 
         // Add click handler to close the stage
         closeImageView.setOnMouseClicked(e -> stage.close());
@@ -117,6 +127,106 @@ public class MainMenu {
         stage.setScene(scene);
         stage.show();
     }
+
+    private StackPane createStickerButton(){
+        // Load the button background image
+        Image buttonImage;
+        try {
+            URL imageUrl = getClass().getResource("/com/example/demo/images/statistic.png");
+            if (imageUrl == null) {
+                throw new IllegalArgumentException("Image not found: /com/example/demo/images/statistic.png");
+            }
+            buttonImage = new Image(imageUrl.toExternalForm());
+        } catch (Exception e) {
+            System.err.println("Failed to load sticker button image.");
+            e.printStackTrace();
+            // Optionally, use a placeholder or return null
+            buttonImage = null;
+        }
+
+        ImageView buttonImageView = new ImageView(buttonImage);
+        if (buttonImage != null) {
+            buttonImageView.setFitWidth(50); // Set desired width
+            buttonImageView.setFitHeight(50); // Set desired height
+            buttonImageView.setPreserveRatio(false);
+        }
+
+        // Create a Circle around the ImageView
+        Circle hoverCircle = new Circle();
+        hoverCircle.setStroke(Color.web ("#5b6980")); // Set desired circle color
+        hoverCircle.setStrokeWidth(3);       // Set desired stroke width
+        hoverCircle.setFill(Color.web("#5b6980")); // Set fill to specific color
+        hoverCircle.setOpacity(0);           // Initially invisible
+
+        // Bind the Circle's radius to the ImageView's size for responsiveness
+        hoverCircle.radiusProperty().bind(
+                buttonImageView.fitWidthProperty().divide(2).add(5) // Adjust the "+5" for padding
+        );
+        // Center the Circle relative to the ImageView
+        hoverCircle.centerXProperty().bind(buttonImageView.fitWidthProperty().divide(2));
+        hoverCircle.centerYProperty().bind(buttonImageView.fitHeightProperty().divide(2));
+
+        // Create a StackPane to layer the Circle and the ImageView
+        // Add the Circle first so it's behind the ImageView
+        StackPane stackPane = new StackPane(hoverCircle, buttonImageView);
+        stackPane.setAlignment(Pos.CENTER);
+        stackPane.getStyleClass().add("custom-button-hover");
+        stackPane.setPickOnBounds(false); // Prevent mouse events on transparent areas
+
+        // Create a ScaleTransition for enlarging the button on hover
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
+
+        // Create FadeTransitions for the Circle
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(150), hoverCircle);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(150), hoverCircle);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        // Add hover event handlers
+        stackPane.setOnMouseEntered(e -> {
+            // Stop any ongoing transitions
+            scaleTransition.stop();
+            fadeOut.stop();
+
+            // Start the scale (enlarge) transition
+            scaleTransition.setFromX(stackPane.getScaleX());
+            scaleTransition.setFromY(stackPane.getScaleY());
+            scaleTransition.setToX(1.05);
+            scaleTransition.setToY(1.05);
+            scaleTransition.playFromStart();
+
+            // Start the fade-in transition for the Circle
+            fadeIn.playFromStart();
+        });
+
+        stackPane.setOnMouseExited(e -> {
+            // Stop any ongoing transitions
+            scaleTransition.stop();
+            fadeIn.stop();
+
+            // Start the scale (shrink) transition
+            scaleTransition.setFromX(stackPane.getScaleX());
+            scaleTransition.setFromY(stackPane.getScaleY());
+            scaleTransition.setToX(1.0);
+            scaleTransition.setToY(1.0);
+            scaleTransition.playFromStart();
+
+            // Start the fade-out transition for the Circle
+            fadeOut.playFromStart();
+        });
+
+        // Optional: Add a click event handler to test the button
+//        stackPane.setOnMouseClicked(e -> {
+//            System.out.println("Sticker Button Clicked!");
+//            // Future: Navigate to the desired page
+//        });
+
+        return stackPane;
+    }
+
 
     private StackPane createCustomButton(String text) {
         // Load the button background image

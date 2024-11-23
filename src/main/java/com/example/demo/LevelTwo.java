@@ -11,7 +11,7 @@ public class LevelTwo extends LevelParent {
 
 
 	public LevelTwo(double screenHeight, double screenWidth) {
-		super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH);
+		super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH, "LEVEL TWO");
 		boss = new Boss();
 	}
 
@@ -60,6 +60,7 @@ public class LevelTwo extends LevelParent {
 	protected String getNextLevelClassName() {
 		return "mainMenu"; // Indicates that the next screen is the Main Menu
 	}
+
 	@Override
 	protected String getClassName() {
 		return this.getClass().getName();
