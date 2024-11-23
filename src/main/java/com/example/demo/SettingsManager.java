@@ -21,9 +21,9 @@ public class SettingsManager {
     private List<MediaPlayer> activeCountdownPlayers;
 
     // Define default volume levels
-    public static final double DEFAULT_MUSIC_VOLUME = 0.5;
+    public static final double DEFAULT_MUSIC_VOLUME = 0.3;
     public static final double DEFAULT_SOUND_EFFECT_VOLUME = 0.5;
-    public static final double DEFAULT_COUNTDOWN_SOUND_VOLUME = 0.6; // New default
+    public static final double DEFAULT_COUNTDOWN_SOUND_VOLUME = 0.5; // New default
 
     // To track if sound effects are muted
     private boolean soundEffectsMuted = false;
@@ -136,22 +136,17 @@ public class SettingsManager {
 
     // Play general sound effects
     public void playSoundEffect(String fileName) {
+        if (allMuted || soundEffectsMuted) return; // Do not play if muted
         URL soundUrl = getClass().getResource("/com/example/demo/audios/" + fileName);
         if (soundUrl != null) {
-            // Create a Media object from the sound file
             Media sound = new Media(soundUrl.toString());
-            // Initialize a new MediaPlayer for the sound effect
             MediaPlayer soundPlayer = new MediaPlayer(sound);
-            // Set the volume for the sound effect
-            soundPlayer.setVolume(allMuted ? 0 : (soundEffectsMuted ? 0 : soundEffectVolume));
-            // Add to active sound effects list
+            soundPlayer.setVolume(soundEffectVolume);
             activeSoundEffects.add(soundPlayer);
-            // Remove from active list once done
             soundPlayer.setOnEndOfMedia(() -> {
                 activeSoundEffects.remove(soundPlayer);
                 soundPlayer.dispose();
             });
-            // Play the sound effect asynchronously
             soundPlayer.play();
         } else {
             System.err.println("Sound effect file not found: " + fileName);
@@ -193,7 +188,6 @@ public class SettingsManager {
             for (MediaPlayer countdownPlayer : activeCountdownPlayers) {
                 countdownPlayer.setVolume(0);
             }
-            System.out.println("All sounds have been muted.");
         }
     }
 
@@ -214,9 +208,25 @@ public class SettingsManager {
             for (MediaPlayer countdownPlayer : activeCountdownPlayers) {
                 countdownPlayer.setVolume(countdownSoundMuted ? 0 : countdownSoundVolume);
             }
-            System.out.println("All sounds have been unmuted.");
         }
     }
+    // Play victory sound effect
+    public void playVictorySound() {
+        playSoundEffect("victory.mp3");
+    }
+    // Play defeat sound effect
+    public void playDefeatSound() {
+        playSoundEffect("defeat.mp3");
+    }
+    // Stop and clear all active sound effects
+    public void stopAllSoundEffects() {
+        for (MediaPlayer soundPlayer : activeSoundEffects) {
+            soundPlayer.stop();
+            soundPlayer.dispose();
+        }
+        activeSoundEffects.clear();
+    }
+
 
     // Toggle mute all sounds
     public void toggleMuteAll() {
@@ -232,11 +242,15 @@ public class SettingsManager {
         return allMuted;
     }
 
-    // Mute all active sound effects by setting their volume to 0
+    // Mute all active sound effects except victory sound
     public void muteAllSoundEffects() {
         soundEffectsMuted = true;
         for (MediaPlayer soundPlayer : activeSoundEffects) {
-            soundPlayer.setVolume(0);
+            // Check if the soundPlayer is playing victory.mp3
+            String source = soundPlayer.getMedia().getSource();
+            if (!source.contains("victory.mp3")) {
+                soundPlayer.setVolume(0);
+            }
         }
     }
 

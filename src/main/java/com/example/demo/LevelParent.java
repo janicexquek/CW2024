@@ -79,6 +79,7 @@ public abstract class LevelParent extends Observable {
 	protected Runnable getBackToMainMenuCallback() {
 		return this::backToMainMenu;
 	}
+
 	// Ensure getter methods for Y bounds if needed
 	public double getYUpperBound() {
 		return Y_UPPER_BOUND;
@@ -243,7 +244,13 @@ public abstract class LevelParent extends Observable {
 		}
 	}
 
+	private boolean canFireProjectiles() {
+		return !gameOver && !isPaused && levelView.getActiveOverlay() != LevelView.ActiveOverlay.COUNTDOWN;
+	}
+
+
 	private void fireProjectile() {
+		if (!canFireProjectiles()) return; // Prevent firing when not allowed
 		ActiveActorDestructible projectile = user.fireProjectile();
 		if(projectile != null) {
 			root.getChildren().add(projectile);
@@ -346,7 +353,7 @@ public abstract class LevelParent extends Observable {
 		if (gameOver) return;
 		gameOver = true;
 		timeline.stop();
-		SettingsManager.getInstance().muteAllSoundEffects();
+		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		// Instead of show WinOverlay
 	if (levelView != null) {
 		levelView.showWinOverlay(
@@ -356,7 +363,8 @@ public abstract class LevelParent extends Observable {
 				getLevelDisplayName()   // Current level display name
 		);
 	}
-}
+		SettingsManager.getInstance().playVictorySound(); // Play victory sound
+	}
 	// New method to handle proceeding to the next level
 	private void proceedToNextLevel() {
 		SettingsManager.getInstance().unmuteAllSoundEffects();
@@ -376,7 +384,7 @@ public abstract class LevelParent extends Observable {
 		if (gameOver) return;
 		gameOver = true;
 		timeline.stop();
-		SettingsManager.getInstance().muteAllSoundEffects();
+		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		// Instead of show WinOverlay
 		if (levelView != null) {
 			String levelName = getLevelDisplayName();
@@ -386,6 +394,7 @@ public abstract class LevelParent extends Observable {
 					getLevelDisplayName()   // Current level display name
 			);
 		}
+		SettingsManager.getInstance().playDefeatSound(); // Play defeat sound
 	}
 
 	protected UserPlane getUser() {
