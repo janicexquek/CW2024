@@ -131,7 +131,7 @@ public class WinOverlay extends StackPane {
         // Current Time Label
         currentTimeLabel = new Label("Time: 00:00");
         currentTimeLabel.setTextFill(Color.WHITE);
-        currentTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 24));
+        currentTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 16));
         currentTimeLabel.setWrapText(true);
         currentTimeLabel.setAlignment(Pos.CENTER);
         currentTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
@@ -139,7 +139,7 @@ public class WinOverlay extends StackPane {
         // Fastest Time Label
         fastestTimeLabel = new Label("Fastest Time: 00:00");
         fastestTimeLabel.setTextFill(Color.WHITE);
-        fastestTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 24));
+        fastestTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 16));
         fastestTimeLabel.setWrapText(true);
         fastestTimeLabel.setAlignment(Pos.CENTER);
         fastestTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
