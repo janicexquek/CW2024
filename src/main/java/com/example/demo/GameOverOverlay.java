@@ -31,6 +31,7 @@ public class GameOverOverlay extends StackPane {
     // New Label to display level information
     private Label levelInfoLabel;
     private Label currentTimeLabel;
+    private Label fastestTimeLabel;
 
     public GameOverOverlay(double screenWidth, double screenHeight) {
         // Set the size of the overlay to cover the entire screen
@@ -131,11 +132,18 @@ public class GameOverOverlay extends StackPane {
         // Current Time Label
         currentTimeLabel = new Label("Time: 00:00");
         currentTimeLabel.setTextFill(Color.WHITE);
-        currentTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 24));
+        currentTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 16));
         currentTimeLabel.setWrapText(true);
         currentTimeLabel.setAlignment(Pos.CENTER);
         currentTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
 
+        // Fastest Time Label
+        fastestTimeLabel = new Label("Fastest Time: 00:00");
+        fastestTimeLabel.setTextFill(Color.WHITE);
+        fastestTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 16));
+        fastestTimeLabel.setWrapText(true);
+        fastestTimeLabel.setAlignment(Pos.CENTER);
+        fastestTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
 
         // Create a VBox to hold the message and button
         VBox vbox = new VBox(30); // Spacing between elements
@@ -144,7 +152,7 @@ public class GameOverOverlay extends StackPane {
         vbox.setMaxSize(boxWidth, boxHeight);
         vbox.setMinSize(boxWidth, boxHeight);
 
-        vbox.getChildren().addAll(gameOverMessage, levelInfoLabel, currentTimeLabel); // Add messages to VBox
+        vbox.getChildren().addAll(gameOverMessage, levelInfoLabel, currentTimeLabel,fastestTimeLabel); // Add messages to VBox
 
         // Stack the background and the message box
         StackPane messageBox = new StackPane(background, vbox);
@@ -205,9 +213,10 @@ public class GameOverOverlay extends StackPane {
         }
     }
     // Method to set current time and fastest time
-    public void setTimes(String currentTime) {
+    public void setTimes(String currentTime, String fastestTime) {
         Platform.runLater(() -> {
             currentTimeLabel.setText("Time: " + currentTime);
+            fastestTimeLabel.setText("Fastest Time: " + fastestTime);
         });
     }
     // Factory method to create a custom button with image and assign its action

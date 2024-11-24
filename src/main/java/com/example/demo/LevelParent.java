@@ -469,6 +469,10 @@ public abstract class LevelParent extends Observable {
 		long currentTimeSeconds = elapsedSeconds;
 		String levelName = getLevelName();
 		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
+		// Step 2: Access Preferences to Get Existing Fastest Time
+		FastestTimesManager ftm = FastestTimesManager.getInstance();
+		long existingFastestTime = ftm.getFastestTime(levelName);
+		long fastestTimeSeconds = existingFastestTime;
 
 		// Instead of show WinOverlay
 		if (levelView != null) {
@@ -477,7 +481,8 @@ public abstract class LevelParent extends Observable {
 					() -> backToMainMenu(), // Back to Main Menu callback
 					() -> restartGame(), // Restart callback
 					getLevelDisplayName(),   // Current level display name
-					currentTimeSeconds     // Current Time in seconds
+					currentTimeSeconds,    // Current Time in seconds
+					fastestTimeSeconds
 			);
 		}
 		SettingsManager.getInstance().playDefeatSound(); // Play defeat sound
