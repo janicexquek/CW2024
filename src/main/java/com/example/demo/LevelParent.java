@@ -60,7 +60,6 @@ public abstract class LevelParent extends Observable {
 		this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
-//		this.enemyMaximumYPosition = Y_LOWER_BOUND ;
 		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
 		this.levelName = levelName;
@@ -87,14 +86,7 @@ public abstract class LevelParent extends Observable {
 
 	protected abstract void updateCustomDisplay();
 
-	// Ensure getter methods for Y bounds if needed
-	public double getYUpperBound() {
-		return Y_UPPER_BOUND;
-	}
 
-	public double getYLowerBound() {
-		return Y_LOWER_BOUND;
-	}
 	public String getLevelName() {
 		return levelName;
 	}
@@ -105,9 +97,9 @@ public abstract class LevelParent extends Observable {
 		timerTimeline.setCycleCount(Timeline.INDEFINITE);
 	}
 
-	public long getElapsedSeconds() {
-		return elapsedSeconds;
-	}
+//	public long getElapsedSeconds() {
+//		return elapsedSeconds;
+//	}
 
 	public void startTimer() {
 		if (timerTimeline != null) {
@@ -476,7 +468,6 @@ public abstract class LevelParent extends Observable {
 
 		// Instead of show WinOverlay
 		if (levelView != null) {
-//			String levelName = getLevelDisplayName();
 			levelView.showGameOverOverlay(
 					() -> backToMainMenu(), // Back to Main Menu callback
 					() -> restartGame(), // Restart callback
@@ -504,10 +495,6 @@ public abstract class LevelParent extends Observable {
 		enemyUnits.add(enemy);
 		root.getChildren().add(enemy);
 	}
-
-//	protected double getEnemyMaximumYPosition() {
-//		return enemyMaximumYPosition;
-//	}
 
 	protected double getScreenWidth() {
 		return screenWidth;
