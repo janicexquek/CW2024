@@ -103,7 +103,8 @@ public class ScoreboardPage {
         scoresBox.getChildren().addAll(headers, separator);
 
         // Fetch fastest times from the controller
-        Map<String, Long> fastestTimes = controller.getFastestTimes();
+        FastestTimesManager ftm = FastestTimesManager.getInstance();
+        Map<String, Long> fastestTimes = ftm.getAllFastestTimes();
 
         // Debugging: Print the fastest times to verify
         System.out.println("Fastest Times Retrieved:");
@@ -115,7 +116,7 @@ public class ScoreboardPage {
         for (Map.Entry<String, Long> entry : fastestTimes.entrySet()) {
             HBox row = new HBox();
             row.setSpacing(200);
-            row.setAlignment(Pos.CENTER);
+            row.setAlignment(Pos.TOP_CENTER);
             row.setPadding(new Insets(5, 0, 5, 0));
 
             Label levelName = new Label(entry.getKey());
@@ -132,36 +133,6 @@ public class ScoreboardPage {
             row.getChildren().addAll(levelName, time);
             scoresBox.getChildren().add(row);
         }
-
-        // Optionally, handle levels with no recorded times yet
-        // For example, list all available levels and indicate if no time is recorded
-        /*
-        String[] predefinedLevels = {"LEVEL ONE", "LEVEL TWO", "LEVEL THREE", "LEVEL FOUR"};
-        for (String level : predefinedLevels) {
-            HBox row = new HBox();
-            row.setSpacing(200);
-            row.setAlignment(Pos.CENTER);
-            row.setPadding(new Insets(5, 0, 5, 0));
-
-            Label levelName = new Label(level);
-            levelName.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                    Font.font("Arial", 20)).getName(), 20));
-            levelName.setTextFill(Color.BLACK);
-
-            Label timeLabel;
-            if (fastestTimes.containsKey(level)) {
-                timeLabel = new Label(formatTime(fastestTimes.get(level)));
-            } else {
-                timeLabel = new Label("N/A");
-            }
-            timeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                    Font.font("Arial", 20)).getName(), 20));
-            timeLabel.setTextFill(Color.BLACK);
-
-            row.getChildren().addAll(levelName, timeLabel);
-            scoresBox.getChildren().add(row);
-        }
-        */
 
         VBox mainBox = new VBox(20);
         mainBox.setAlignment(Pos.TOP_CENTER);

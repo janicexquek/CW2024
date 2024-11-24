@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.animation.*;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -152,6 +151,7 @@ public abstract class LevelParent extends Observable {
 	public void stopGame() {
 		if (timeline != null) {
 			timeline.stop();
+			stopTimer();
 		}
 		// Perform additional cleanup if necessary
 		removeAllDestroyedActors(); // Clean up any remaining actors
@@ -173,6 +173,7 @@ public abstract class LevelParent extends Observable {
 	public void pauseGame() {
 		if (timeline != null) {
 			timeline.pause();
+			pauseTimer();
 		}
 		// Pause all active sound effects
 		SettingsManager.getInstance().pauseMusic();
@@ -184,6 +185,7 @@ public abstract class LevelParent extends Observable {
 	public void resumeGame() {
 		if (timeline != null) {
 			timeline.play();
+			resumeTimer();;
 		}
 		SettingsManager.getInstance().resumeMusic();
 		SettingsManager.getInstance().unmuteAllSoundEffects();
@@ -203,8 +205,8 @@ public abstract class LevelParent extends Observable {
 	// New method to start the game after countdown
 	private void startGameAfterCountdown() {
 		// Start the game timeline
-		 startTimer();
 		 startGame(); // Existing game start logic
+		 startTimer();
 	}
 
 	public void startGame() {
@@ -288,12 +290,12 @@ public abstract class LevelParent extends Observable {
 
 		if (!isPaused) {
 			pauseGame();
-			pauseTimer();
+//			pauseTimer();
 			levelView.showPauseOverlay();
 			isPaused = true;
 		} else {
 			resumeGame();
-			resumeTimer();
+//			resumeTimer();
 			levelView.hidePauseOverlay();
 			isPaused = false;
 		}
@@ -409,21 +411,38 @@ public abstract class LevelParent extends Observable {
 		if (gameOver) return;
 		gameOver = true;
 		timeline.stop();
-		timerTimeline.stop();
+		stopTimer();
 		setChanged();
-		notifyObservers("win:" + getLevelName() + ":" + elapsedSeconds);
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
-		// Instead of show WinOverlay
-	if (levelView != null) {
-		levelView.showWinOverlay(
-				() -> backToMainMenu(), // Back to Main Menu callback
-				() -> proceedToNextLevel(), // Next Level callback
-				() -> restartGame(), // Restart callback
-				getLevelDisplayName()   // Current level display name
-		);
-	}
 		SettingsManager.getInstance().playVictorySound(); // Play victory sound
+		// Step 1: Retrieve Current Time
+		long currentTimeSeconds = elapsedSeconds;
+		String levelName = getLevelName();
+		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
+
+		// Step 2: Access Preferences to Get Existing Fastest Time
+		FastestTimesManager ftm = FastestTimesManager.getInstance();
+		long existingFastestTime = ftm.getFastestTime(levelName);
+		long fastestTimeSeconds = existingFastestTime;
+
+		// Step 3: Compare and Update Fastest Time if Current Time is Faster
+		if (currentTimeSeconds < existingFastestTime) {
+			ftm.updateFastestTime(levelName, currentTimeSeconds);
+			fastestTimeSeconds = currentTimeSeconds;
+		}
+		// Instead of show WinOverlay
+		if (levelView != null) {
+			levelView.showWinOverlay(
+					() -> backToMainMenu(), // Back to Main Menu callback
+					() -> proceedToNextLevel(), // Next Level callback
+					() -> restartGame(), // Restart callback
+					getLevelDisplayName(),   // Current level display name
+					 currentTimeSeconds,     // Current Time in seconds
+					 fastestTimeSeconds      // Fastest Time in seconds
+			);
+		}
 	}
+
 	// New method to handle proceeding to the next level
 	private void proceedToNextLevel() {
 		SettingsManager.getInstance().unmuteAllSoundEffects();
@@ -443,9 +462,8 @@ public abstract class LevelParent extends Observable {
 		if (gameOver) return;
 		gameOver = true;
 		timeline.stop();
-		timerTimeline.stop();
+		stopTimer();
 		setChanged();
-		notifyObservers("lose:" + getLevelName() + ":" + elapsedSeconds);
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		// Instead of show WinOverlay
 		if (levelView != null) {

@@ -201,9 +201,14 @@ public class LevelView {
 	}
 
 	// Method to show the WinOverlay with custom buttons
-	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback, Runnable restartCallback, String levelName) {
+	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback, Runnable restartCallback,
+							   String levelName, long currentTimeSeconds, long fastestTimeSeconds) {
 		if (activeOverlay == ActiveOverlay.NONE) {
 			winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback, restartCallback, levelName);
+			// Format times
+			String currentTime = formatTime(currentTimeSeconds);
+			String fastestTime = formatTime(fastestTimeSeconds);
+			winOverlay.setTimes(currentTime, fastestTime);
 			winOverlay.showWInOverlay();
 			activeOverlay = ActiveOverlay.WIN;
 		}
@@ -265,6 +270,12 @@ public class LevelView {
 	}
 	public GameOverOverlay getGameOverOverlay() {
 		return gameOverOverlay;
+	}
+	// Helper method to format time from seconds to MM:SS
+	private String formatTime(long totalSeconds) {
+		long minutes = totalSeconds / 60;
+		long seconds = totalSeconds % 60;
+		return String.format("%02d:%02d", minutes, seconds);
 	}
 
 }

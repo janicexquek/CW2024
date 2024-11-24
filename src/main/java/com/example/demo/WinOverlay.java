@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -29,6 +30,8 @@ public class WinOverlay extends StackPane {
     private boolean buttonsInitialized = false;
     // New Label to display level information
     private Label levelInfoLabel;
+    private Label currentTimeLabel;
+    private Label fastestTimeLabel;
 
     public WinOverlay(double screenWidth, double screenHeight) {
         // Set the size of the overlay to cover the entire screen
@@ -66,7 +69,8 @@ public class WinOverlay extends StackPane {
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf"
+                "/com/example/demo/fonts/Sugar Bomb.ttf",
+                "/com/example/demo/fonts/Pixel Digivolve.otf",
         };
 
         for (String fontPath : fontPaths) {
@@ -124,14 +128,30 @@ public class WinOverlay extends StackPane {
         levelInfoLabel.setAlignment(Pos.CENTER);
         levelInfoLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
 
+        // Current Time Label
+        currentTimeLabel = new Label("Time: 00:00");
+        currentTimeLabel.setTextFill(Color.WHITE);
+        currentTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 24));
+        currentTimeLabel.setWrapText(true);
+        currentTimeLabel.setAlignment(Pos.CENTER);
+        currentTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
+
+        // Fastest Time Label
+        fastestTimeLabel = new Label("Fastest Time: 00:00");
+        fastestTimeLabel.setTextFill(Color.WHITE);
+        fastestTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 24));
+        fastestTimeLabel.setWrapText(true);
+        fastestTimeLabel.setAlignment(Pos.CENTER);
+        fastestTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
+
         // Create a VBox to hold the message
-        VBox vbox = new VBox(50); // Spacing between elements
+        VBox vbox = new VBox(20); // Spacing between elements
         vbox.setAlignment(Pos.CENTER);
         vbox.setPrefSize(boxWidth, boxHeight);
         vbox.setMaxSize(boxWidth, boxHeight);
         vbox.setMinSize(boxWidth, boxHeight);
 
-        vbox.getChildren().addAll(winMessage, levelInfoLabel); // Add messages to VBox
+        vbox.getChildren().addAll(winMessage, levelInfoLabel, currentTimeLabel, fastestTimeLabel); // Add messages to VBox
 
         // Stack the background and the message box
         StackPane messageBox = new StackPane(background, vbox);
@@ -195,7 +215,13 @@ public class WinOverlay extends StackPane {
             levelInfoLabel.setText(levelName + " COMPLETED");
         }
     }
-
+    // Method to set current time and fastest time
+    public void setTimes(String currentTime, String fastestTime) {
+        Platform.runLater(() -> {
+            currentTimeLabel.setText("Time: " + currentTime);
+            fastestTimeLabel.setText("Fastest Time: " + fastestTime);
+        });
+    }
     // Factory method to create a custom button with image and assign its action
     private Button createCustomButton(String buttonText, Runnable action) {
         Button button = new Button();
