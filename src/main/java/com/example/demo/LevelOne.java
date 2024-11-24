@@ -23,6 +23,7 @@ public class LevelOne extends LevelParent {
 //			goToNextLevel(NEXT_LEVEL);
 			winGame(); // Triggers the WinOverlay
 	}
+
 	@Override
 	protected void updateCustomDisplay() {
 		levelView.updateKillCount(getUser().getNumberOfKills(), KILLS_TO_ADVANCE);
