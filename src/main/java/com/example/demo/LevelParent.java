@@ -271,11 +271,11 @@ public abstract class LevelParent extends Observable {
 				if (kc == KeyCode.UP || kc == KeyCode.DOWN) user.stop();
 			}
 		});
-// Check if background is already added
+		// Check if background is already added
 		if (!root.getChildren().contains(background)) {
 			root.getChildren().add(background);
 		}		levelView.bringInfoDisplayToFront();
-//		background.setOpacity(0.5);
+		//		background.setOpacity(0.5);
 	}
 
 	 // Toggles the game's pause state.
@@ -465,13 +465,19 @@ public abstract class LevelParent extends Observable {
 		stopTimer();
 		setChanged();
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
+		// Step 1: Retrieve Current Time
+		long currentTimeSeconds = elapsedSeconds;
+		String levelName = getLevelName();
+		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
+
 		// Instead of show WinOverlay
 		if (levelView != null) {
-			String levelName = getLevelDisplayName();
+//			String levelName = getLevelDisplayName();
 			levelView.showGameOverOverlay(
 					() -> backToMainMenu(), // Back to Main Menu callback
 					() -> restartGame(), // Restart callback
-					getLevelDisplayName()   // Current level display name
+					getLevelDisplayName(),   // Current level display name
+					currentTimeSeconds     // Current Time in seconds
 			);
 		}
 		SettingsManager.getInstance().playDefeatSound(); // Play defeat sound

@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -29,6 +30,7 @@ public class GameOverOverlay extends StackPane {
     private boolean buttonsInitialized = false;
     // New Label to display level information
     private Label levelInfoLabel;
+    private Label currentTimeLabel;
 
     public GameOverOverlay(double screenWidth, double screenHeight) {
         // Set the size of the overlay to cover the entire screen
@@ -67,7 +69,8 @@ public class GameOverOverlay extends StackPane {
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf"
+                "/com/example/demo/fonts/Sugar Bomb.ttf",
+                "/com/example/demo/fonts/Pixel Digivolve.otf",
         };
 
         for (String fontPath : fontPaths) {
@@ -125,6 +128,14 @@ public class GameOverOverlay extends StackPane {
         levelInfoLabel.setAlignment(Pos.CENTER);
         levelInfoLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
 
+        // Current Time Label
+        currentTimeLabel = new Label("Time: 00:00");
+        currentTimeLabel.setTextFill(Color.WHITE);
+        currentTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 24));
+        currentTimeLabel.setWrapText(true);
+        currentTimeLabel.setAlignment(Pos.CENTER);
+        currentTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
+
 
         // Create a VBox to hold the message and button
         VBox vbox = new VBox(30); // Spacing between elements
@@ -133,7 +144,7 @@ public class GameOverOverlay extends StackPane {
         vbox.setMaxSize(boxWidth, boxHeight);
         vbox.setMinSize(boxWidth, boxHeight);
 
-        vbox.getChildren().addAll(gameOverMessage, levelInfoLabel); // Add messages to VBox
+        vbox.getChildren().addAll(gameOverMessage, levelInfoLabel, currentTimeLabel); // Add messages to VBox
 
         // Stack the background and the message box
         StackPane messageBox = new StackPane(background, vbox);
@@ -192,6 +203,12 @@ public class GameOverOverlay extends StackPane {
         if (levelInfoLabel != null) {
             levelInfoLabel.setText("TRY AGAIN " + levelName);
         }
+    }
+    // Method to set current time and fastest time
+    public void setTimes(String currentTime) {
+        Platform.runLater(() -> {
+            currentTimeLabel.setText("Time: " + currentTime);
+        });
     }
     // Factory method to create a custom button with image and assign its action
     private Button createCustomButton(String buttonText, Runnable action) {

@@ -224,9 +224,13 @@ public class LevelView {
 	}
 
 	// Method to show the GameOverOverlay with custom buttons
-	public void showGameOverOverlay(Runnable backToMainMenuCallback, Runnable restartCallback, String levelName) {
+	public void showGameOverOverlay(Runnable backToMainMenuCallback, Runnable restartCallback,
+									String levelName, long currentTimeSeconds) {
 		if (activeOverlay == ActiveOverlay.NONE) {
 			gameOverOverlay.initializeButtons(backToMainMenuCallback, restartCallback, levelName);
+			// Format times
+			String currentTime = formatTime(currentTimeSeconds);
+			gameOverOverlay.setTimes(currentTime);
 			gameOverOverlay.showOverlay();
 			activeOverlay = ActiveOverlay.GAME_OVER;
 		}
