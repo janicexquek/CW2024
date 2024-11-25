@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.example.demo.mainmenu;
 
+import com.example.demo.FastestTimesManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -19,9 +20,18 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
-public class InstructionsPage {
-    private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background5.jpg";
+public class ScoreboardPage {
+    private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background6.jpeg";
+
+    private static final List<String> ORDERED_LEVELS = Arrays.asList(
+            "LEVEL ONE",
+            "LEVEL TWO",
+            "LEVEL THREE"
+            // Add more levels here in the desired order
+    );
 
     private final Stage stage;
     private final Controller controller;
@@ -29,7 +39,7 @@ public class InstructionsPage {
     // Map to store loaded fonts for easy access
     private Map<String, Font> customFonts = new HashMap<>();
 
-    public InstructionsPage(Stage stage, Controller controller) {
+    public ScoreboardPage(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
         // Load custom fonts
@@ -44,9 +54,6 @@ public class InstructionsPage {
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
 
-        // Initialize MusicManager instance
-        SettingsManager settingsManager = SettingsManager.getInstance();
-
         // --- Back Button ---
         StackPane backButton = createCustomButton("Back",
                 "/com/example/demo/images/ButtonText_Small_Round.png", 80, 30);
@@ -58,52 +65,89 @@ public class InstructionsPage {
 
         // Position the back button at top-left
         StackPane.setAlignment(backButton, Pos.TOP_LEFT);
-        StackPane.setMargin(backButton, new Insets(30, 0, 0, 30)); // 10px from top and left
+        StackPane.setMargin(backButton, new Insets(30, 0, 0, 30)); // 30px from top and left
 
-        // Instructions Title
+        // Scoreboard Title
         VBox titleVBox = new VBox();
         titleVBox.setAlignment(Pos.TOP_CENTER);
-        titleVBox.setPadding(new Insets(30,0,0,0));
+        titleVBox.setPadding(new Insets(30, 0, 0, 0));
 
-        Label instructionsTitle = new Label("Instructions");
-        instructionsTitle.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
+        Label scoreboardTitle = new Label("Scoreboard");
+        scoreboardTitle.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
                 Font.font("Arial", 100)).getName(), 100));
 
-        instructionsTitle.getStyleClass().add("title-text");
-        titleVBox.getChildren().add(instructionsTitle);
+        scoreboardTitle.getStyleClass().add("title-text");
+        titleVBox.getChildren().add(scoreboardTitle);
 
-        // --- Instructions Box with Blur Effect ---
-        VBox instructionsBox = new VBox(20);
-        instructionsBox.setAlignment(Pos.CENTER);
-        instructionsBox.setPadding(new Insets(20));
-        instructionsBox.setMaxWidth(650);
-        instructionsBox.setPrefHeight(400);
-        instructionsBox.setStyle("-fx-background-color: rgba(255, 255, 255, 0.8); -fx-background-radius: 10;");
+        // --- Headers for the Table ---
+        HBox headers = new HBox();
+        headers.setSpacing(200);
+        headers.setAlignment(Pos.CENTER);
+        headers.setPadding(new Insets(10, 0, 10, 0));
 
-        // Instructions Text
-        VBox textVBox = new VBox();
-        textVBox.setAlignment(Pos.TOP_CENTER);
-        textVBox.setPadding(new Insets(20,0,40,0));
-        Label instructionsText = new Label(
-                "Welcome to SKY BATTLE!\n\n" +
-                        "Use the arrow keys to navigate your spaceship.\n" +
-                        "Press SPACE to shoot enemies.\n" +
-                        "Press ESC to pause your game.\n\n" +
-                        "Avoid incoming fire and destroy all enemies to win.\n\n" +
-                        "Good luck and have fun!"
-        );
-        instructionsText.setTextFill(Color.BLACK);
-        instructionsText.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                Font.font("Arial", 20)).getName(), 20));
-        instructionsText.setWrapText(true);
-        textVBox.getChildren().add(instructionsText);
+        Label levelHeader = new Label("Level");
+        levelHeader.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+                Font.font("Arial", 24)).getName(), 24));
+        levelHeader.setTextFill(Color.BLACK);
 
-        // Add title and text to the box
-        instructionsBox.getChildren().add(textVBox);
+        Label timeHeader = new Label("Fastest Time (s)");
+        timeHeader.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+                Font.font("Arial", 24)).getName(), 24));
+        timeHeader.setTextFill(Color.BLACK);
+
+        headers.getChildren().addAll(levelHeader, timeHeader);
+
+        // --- Separator ---
+        Label separator = new Label("--------------------------------------------------");
+        separator.setTextFill(Color.BLACK);
+
+        // --- Scores Box with Styling ---
+        VBox scoresBox = new VBox(10);
+        scoresBox.setAlignment(Pos.CENTER);
+        scoresBox.setPadding(new Insets(20));
+        scoresBox.setMaxWidth(650);
+        scoresBox.setPrefHeight(400);
+        scoresBox.setStyle("-fx-background-color: rgba(255, 255, 255, 0.8); -fx-background-radius: 10;");
+
+        // Add headers and separator
+        scoresBox.getChildren().addAll(headers, separator);
+
+        // Fetch fastest times from the controller
+        FastestTimesManager ftm = FastestTimesManager.getInstance();
+        Map<String, Long> fastestTimes = ftm.getAllFastestTimes();
+
+        // Debugging: Print the fastest times to verify
+        System.out.println("Fastest Times Retrieved:");
+        for (Map.Entry<String, Long> entry : fastestTimes.entrySet()) {
+            System.out.println("Level: " + entry.getKey() + ", Time: " + entry.getValue() + " seconds");
+        }
+
+        // Dynamically create rows for each level in the predefined order
+        for (String levelName : ORDERED_LEVELS) {
+            HBox row = new HBox();
+            row.setSpacing(200);
+            row.setAlignment(Pos.TOP_CENTER);
+            row.setPadding(new Insets(5, 0, 5, 0));
+
+            Label levelLabel = new Label(levelName);
+            levelLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+                    Font.font("Arial", 20)).getName(), 20));
+            levelLabel.setTextFill(Color.BLACK);
+
+            long timeValue = fastestTimes.getOrDefault(levelName, Long.MAX_VALUE);
+            String timeStr = timeValue < Long.MAX_VALUE ? formatTime(timeValue) : "N/A";
+            Label timeLabel = new Label(timeStr);
+            timeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+                    Font.font("Arial", 20)).getName(), 20));
+            timeLabel.setTextFill(Color.BLACK);
+
+            row.getChildren().addAll(levelLabel, timeLabel);
+            scoresBox.getChildren().add(row);
+        }
 
         VBox mainBox = new VBox(20);
         mainBox.setAlignment(Pos.TOP_CENTER);
-        mainBox.getChildren().addAll(titleVBox, instructionsBox);
+        mainBox.getChildren().addAll(titleVBox, scoresBox);
 
         // --- Main Layout ---
         BorderPane mainLayout = new BorderPane();
@@ -128,8 +172,13 @@ public class InstructionsPage {
         stage.show();
     }
 
-    private StackPane createCustomButton(String text, String imagePath, double width, double height) {
+    private String formatTime(long totalSeconds) {
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
 
+    private StackPane createCustomButton(String text, String imagePath, double width, double height) {
         // Load the button background image
         ImageView buttonImageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
         buttonImageView.setFitWidth(width);
@@ -182,12 +231,11 @@ public class InstructionsPage {
         return stackPane;
     }
 
-
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
                 "/com/example/demo/fonts/Pixel Digivolve.otf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf" // Add the new font path here
+                "/com/example/demo/fonts/Sugar Bomb.ttf" // Ensure this font is available
         };
 
         for (String fontPath : fontPaths) {
@@ -208,6 +256,4 @@ public class InstructionsPage {
             }
         }
     }
-
-
 }

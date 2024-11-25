@@ -1,5 +1,10 @@
 package com.example.demo;
 
+import com.example.demo.mainmenu.SettingsManager;
+import com.example.demo.overlay.CountdownOverlay;
+import com.example.demo.overlay.GameOverOverlay;
+import com.example.demo.overlay.PauseOverlay;
+import com.example.demo.overlay.WinOverlay;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;

@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.mainmenu;
 
 import com.example.demo.controller.Controller;
 import javafx.animation.ScaleTransition;

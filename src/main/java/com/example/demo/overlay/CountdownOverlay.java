@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.example.demo.overlay;
 
+import com.example.demo.mainmenu.SettingsManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Pos;

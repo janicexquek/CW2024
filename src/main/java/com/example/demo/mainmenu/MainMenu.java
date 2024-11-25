@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.mainmenu;
 
 import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;

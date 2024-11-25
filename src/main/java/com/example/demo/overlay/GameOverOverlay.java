@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.overlay;
 
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;

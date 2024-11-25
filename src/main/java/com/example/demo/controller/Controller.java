@@ -2,14 +2,12 @@ package com.example.demo.controller;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.prefs.Preferences;
 
 import com.example.demo.LevelParent;
 
-import com.example.demo.MainMenu;
+import com.example.demo.mainmenu.MainMenu;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
