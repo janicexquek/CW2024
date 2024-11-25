@@ -422,6 +422,15 @@ public abstract class LevelParent extends Observable {
 			ftm.updateFastestTime(levelName, currentTimeSeconds);
 			fastestTimeSeconds = currentTimeSeconds;
 		}
+		// Step 4: Determine the Achievement Message
+		String achievementMessage;
+		if (currentTimeSeconds < existingFastestTime) {
+			achievementMessage = "You beat the fastest time!";
+		} else if (currentTimeSeconds == existingFastestTime) {
+			achievementMessage = "Almost beat the fastest time!";
+		} else {
+			achievementMessage = "You completed the level!";
+		}
 		// Instead of show WinOverlay
 		if (levelView != null) {
 			levelView.showWinOverlay(
@@ -430,7 +439,8 @@ public abstract class LevelParent extends Observable {
 					() -> restartGame(), // Restart callback
 					getLevelDisplayName(),   // Current level display name
 					 currentTimeSeconds,     // Current Time in seconds
-					 fastestTimeSeconds      // Fastest Time in seconds
+					 fastestTimeSeconds,      // Fastest Time in seconds
+					achievementMessage         // Achievement message
 			);
 		}
 	}

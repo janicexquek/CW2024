@@ -30,6 +30,7 @@ public class WinOverlay extends StackPane {
     private boolean buttonsInitialized = false;
     // New Label to display level information
     private Label levelInfoLabel;
+    private Label achievementLabel;
     private Label currentTimeLabel;
     private Label fastestTimeLabel;
 
@@ -128,6 +129,14 @@ public class WinOverlay extends StackPane {
         levelInfoLabel.setAlignment(Pos.CENTER);
         levelInfoLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
 
+        // Create the achievement message label
+        achievementLabel = new Label("Achievement Message Here"); // Placeholder text
+        achievementLabel.setTextFill(Color.YELLOW); // Highlighted color
+        achievementLabel.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20));
+        achievementLabel.setWrapText(true);
+        achievementLabel.setAlignment(Pos.CENTER);
+        achievementLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
+
         // Current Time Label
         currentTimeLabel = new Label("Time: 00:00");
         currentTimeLabel.setTextFill(Color.WHITE);
@@ -151,7 +160,7 @@ public class WinOverlay extends StackPane {
         vbox.setMaxSize(boxWidth, boxHeight);
         vbox.setMinSize(boxWidth, boxHeight);
 
-        vbox.getChildren().addAll(winMessage, levelInfoLabel, currentTimeLabel, fastestTimeLabel); // Add messages to VBox
+        vbox.getChildren().addAll(winMessage, levelInfoLabel, achievementLabel, currentTimeLabel, fastestTimeLabel);
 
         // Stack the background and the message box
         StackPane messageBox = new StackPane(background, vbox);
@@ -215,6 +224,13 @@ public class WinOverlay extends StackPane {
             levelInfoLabel.setText(levelName + " COMPLETED");
         }
     }
+    // Method to set the achievement message
+    public void setAchievementMessage(String message) {
+        Platform.runLater(() -> {
+            achievementLabel.setText(message);
+        });
+    }
+
     // Method to set current time and fastest time
     public void setTimes(String currentTime, String fastestTime) {
         Platform.runLater(() -> {

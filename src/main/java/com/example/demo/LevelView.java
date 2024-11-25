@@ -202,13 +202,14 @@ public class LevelView {
 
 	// Method to show the WinOverlay with custom buttons
 	public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback, Runnable restartCallback,
-							   String levelName, long currentTimeSeconds, long fastestTimeSeconds) {
+							   String levelName, long currentTimeSeconds, long fastestTimeSeconds, String achievementMessage) {
 		if (activeOverlay == ActiveOverlay.NONE) {
 			winOverlay.initializeButtons(backToMainMenuCallback, nextLevelCallback, restartCallback, levelName);
 			// Format times
 			String currentTime = formatTime(currentTimeSeconds);
 			String fastestTime = formatTime(fastestTimeSeconds);
 			winOverlay.setTimes(currentTime, fastestTime);
+			winOverlay.setAchievementMessage(achievementMessage); // Set the achievement message
 			winOverlay.showWInOverlay();
 			activeOverlay = ActiveOverlay.WIN;
 		}
