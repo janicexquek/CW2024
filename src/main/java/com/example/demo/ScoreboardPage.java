@@ -19,9 +19,18 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 public class ScoreboardPage {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background6.jpeg";
+
+    private static final List<String> ORDERED_LEVELS = Arrays.asList(
+            "LEVEL ONE",
+            "LEVEL TWO",
+            "LEVEL THREE"
+            // Add more levels here in the desired order
+    );
 
     private final Stage stage;
     private final Controller controller;
@@ -112,25 +121,26 @@ public class ScoreboardPage {
             System.out.println("Level: " + entry.getKey() + ", Time: " + entry.getValue() + " seconds");
         }
 
-        // Dynamically create rows for each level
-        for (Map.Entry<String, Long> entry : fastestTimes.entrySet()) {
+        // Dynamically create rows for each level in the predefined order
+        for (String levelName : ORDERED_LEVELS) {
             HBox row = new HBox();
             row.setSpacing(200);
             row.setAlignment(Pos.TOP_CENTER);
             row.setPadding(new Insets(5, 0, 5, 0));
 
-            Label levelName = new Label(entry.getKey());
-            levelName.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+            Label levelLabel = new Label(levelName);
+            levelLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
                     Font.font("Arial", 20)).getName(), 20));
-            levelName.setTextFill(Color.BLACK);
+            levelLabel.setTextFill(Color.BLACK);
 
-            String timeStr = entry.getValue() > 0 ? formatTime(entry.getValue()) : "N/A";
-            Label time = new Label(timeStr);
-            time.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+            long timeValue = fastestTimes.getOrDefault(levelName, Long.MAX_VALUE);
+            String timeStr = timeValue < Long.MAX_VALUE ? formatTime(timeValue) : "N/A";
+            Label timeLabel = new Label(timeStr);
+            timeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
                     Font.font("Arial", 20)).getName(), 20));
-            time.setTextFill(Color.BLACK);
+            timeLabel.setTextFill(Color.BLACK);
 
-            row.getChildren().addAll(levelName, time);
+            row.getChildren().addAll(levelLabel, timeLabel);
             scoresBox.getChildren().add(row);
         }
 
