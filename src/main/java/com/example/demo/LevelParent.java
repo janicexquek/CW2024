@@ -221,7 +221,7 @@ public abstract class LevelParent extends Observable {
 
 	private void updateScene() {
 		if (gameOver) return;
-		updateKillCount();
+//		updateKillCount();
 		checkIfGameOver();
 		spawnEnemyUnits();
 		updateActors();
@@ -354,7 +354,22 @@ public abstract class LevelParent extends Observable {
 	}
 	// Handle collisions between user projectiles and enemies
 	private void handleUserProjectileCollisions() {
-		handleCollisions(userProjectiles, enemyUnits);
+		Iterator<ActiveActorDestructible> projectileIterator = userProjectiles.iterator();
+		while (projectileIterator.hasNext()) {
+			ActiveActorDestructible projectile = projectileIterator.next();
+			Iterator<ActiveActorDestructible> enemyIterator = enemyUnits.iterator();
+			while (enemyIterator.hasNext()) {
+				ActiveActorDestructible enemy = enemyIterator.next();
+				if (projectile.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
+					enemy.takeDamage();
+					projectile.takeDamage();
+					if (enemy.isDestroyed()) {
+						user.incrementKillCount(); // Increment kill count here
+					}
+					break; // Move to the next projectile after collision
+				}
+			}
+		}
 	}
 	// Handle collisions between enemy projectiles and the user
 	private void handleEnemyProjectileCollisions() {
@@ -389,11 +404,11 @@ public abstract class LevelParent extends Observable {
 		updateCustomDisplay(); // Call the abstract method
 	}
 
-	private void updateKillCount() {
-		for (int i = 0; i < currentNumberOfEnemies - enemyUnits.size(); i++) {
-			user.incrementKillCount();
-		}
-	}
+//	private void updateKillCount() {
+//		for (int i = 0; i < currentNumberOfEnemies - enemyUnits.size(); i++) {
+//			user.incrementKillCount();
+//		}
+//	}
 
 	private boolean enemyHasPenetratedDefenses(ActiveActorDestructible enemy) {
 		return Math.abs(enemy.getTranslateX()) > screenWidth;
