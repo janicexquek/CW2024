@@ -12,4 +12,5 @@ module com.example.demo {
     opens com.example.demo.mainmenu to javafx.fxml;
     opens com.example.demo.display to javafx.fxml;
     opens com.example.demo.plane to javafx.fxml;
+    opens com.example.demo.projectile to javafx.fxml;
 }

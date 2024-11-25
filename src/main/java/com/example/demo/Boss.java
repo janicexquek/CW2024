@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.plane.FighterPlane;
+import com.example.demo.projectile.BossProjectile;
 
 import java.util.*;
 
