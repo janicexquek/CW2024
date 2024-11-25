@@ -335,7 +335,7 @@ public abstract class LevelParent extends Observable {
 		enemyProjectiles.forEach(projectile -> projectile.updateActor());
 	}
 	// Remove all destroyed actors from the scene and tracking lists
-	private void removeAllDestroyedActors() {
+	protected void removeAllDestroyedActors() {
 		removeDestroyedActors(friendlyUnits);
 		removeDestroyedActors(enemyUnits);
 		removeDestroyedActors(userProjectiles);
@@ -508,4 +508,8 @@ public abstract class LevelParent extends Observable {
 		currentNumberOfEnemies = enemyUnits.size();
 	}
 
+	// Add this protected getter method
+	protected List<ActiveActorDestructible> getEnemyUnits() {
+		return enemyUnits;
+	}
 }
