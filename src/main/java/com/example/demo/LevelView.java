@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import com.example.demo.display.ExitDisplay;
+import com.example.demo.display.ExitOverlay;
+import com.example.demo.display.HeartDisplay;
 import com.example.demo.mainmenu.SettingsManager;
 import com.example.demo.overlay.CountdownOverlay;
 import com.example.demo.overlay.GameOverOverlay;

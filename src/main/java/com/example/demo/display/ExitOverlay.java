@@ -1,5 +1,5 @@
 // ExitOverlay.java
-package com.example.demo;
+package com.example.demo.display;
 
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Pos;

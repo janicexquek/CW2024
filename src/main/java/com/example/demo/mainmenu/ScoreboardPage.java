@@ -1,6 +1,5 @@
 package com.example.demo.mainmenu;
 
-import com.example.demo.FastestTimesManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;

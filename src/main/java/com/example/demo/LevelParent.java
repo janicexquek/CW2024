@@ -3,6 +3,7 @@ package com.example.demo;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

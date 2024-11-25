@@ -10,4 +10,5 @@ module com.example.demo {
     exports com.example.demo.controller;
     opens com.example.demo.overlay to javafx.fxml;
     opens com.example.demo.mainmenu to javafx.fxml;
+    opens com.example.demo.display to javafx.fxml;
 }
