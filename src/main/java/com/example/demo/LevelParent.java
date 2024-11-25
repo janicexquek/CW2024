@@ -91,15 +91,10 @@ public abstract class LevelParent extends Observable {
 		return levelName;
 	}
 
-
 	private void initializeTimer() {
 		timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> elapsedSeconds++));
 		timerTimeline.setCycleCount(Timeline.INDEFINITE);
 	}
-
-//	public long getElapsedSeconds() {
-//		return elapsedSeconds;
-//	}
 
 	public void startTimer() {
 		if (timerTimeline != null) {
@@ -429,7 +424,7 @@ public abstract class LevelParent extends Observable {
 		} else if (currentTimeSeconds == existingFastestTime) {
 			achievementMessage = "Almost beat the fastest time!";
 		} else {
-			achievementMessage = "You completed the level!";
+			achievementMessage = "Try Again to beat the fastest time";
 		}
 		// Instead of show WinOverlay
 		if (levelView != null) {
@@ -440,7 +435,7 @@ public abstract class LevelParent extends Observable {
 					getLevelDisplayName(),   // Current level display name
 					 currentTimeSeconds,     // Current Time in seconds
 					 fastestTimeSeconds,      // Fastest Time in seconds
-					achievementMessage         // Achievement message
+					 achievementMessage       // Achievement message
 			);
 		}
 	}
