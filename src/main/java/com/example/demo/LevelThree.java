@@ -164,15 +164,15 @@ public class LevelThree extends LevelParent {
                 .collect(Collectors.toList());
 
         for (ActiveActorDestructible enemy : destroyedEnemies) {
-            if (enemy instanceof MasterPlane) {
-                masterPlanesDestroyed++;
-//                System.out.println("MasterPlane destroyed. Total destroyed: " + masterPlanesDestroyed);
-            } else if (enemy instanceof IntermediatePlane) {
-                intermediatePlanesDestroyed++;
-//                System.out.println("IntermediatePlane destroyed. Total destroyed: " + intermediatePlanesDestroyed);
-            } else if (enemy instanceof EnemyPlane) {
-                normalPlanesDestroyed++;
-//                System.out.println("EnemyPlane destroyed. Total destroyed: " + normalPlanesDestroyed);
+            // Only increment counts if destroyed by user projectile
+            if (enemy.getDestroyedBy() == ActiveActorDestructible.DestroyedBy.USER_PROJECTILE) {
+                if (enemy instanceof MasterPlane) {
+                    masterPlanesDestroyed++;
+                } else if (enemy instanceof IntermediatePlane) {
+                    intermediatePlanesDestroyed++;
+                } else if (enemy instanceof EnemyPlane) {
+                    normalPlanesDestroyed++;
+                }
             }
         }
 

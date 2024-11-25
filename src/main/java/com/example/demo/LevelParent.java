@@ -348,11 +348,25 @@ public abstract class LevelParent extends Observable {
 		root.getChildren().removeAll(destroyedActors);
 		actors.removeAll(destroyedActors);
 	}
-	// Handle collisions between planes (user and enemies)
+	// Modify handlePlaneCollisions()
 	private void handlePlaneCollisions() {
-		handleCollisions(friendlyUnits, enemyUnits);
+		if (gameOver) return;
+		for (ActiveActorDestructible friendly : friendlyUnits) {
+			for (ActiveActorDestructible enemy : enemyUnits) {
+				if (friendly.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
+					friendly.takeDamage();
+					enemy.takeDamage();
+					if (friendly.isDestroyed()) {
+						friendly.setDestroyedBy(ActiveActorDestructible.DestroyedBy.COLLISION_WITH_USER);
+					}
+					if (enemy.isDestroyed()) {
+						enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.COLLISION_WITH_USER);
+					}
+				}
+			}
+		}
 	}
-	// Handle collisions between user projectiles and enemies
+	// Modify handleUserProjectileCollisions()
 	private void handleUserProjectileCollisions() {
 		Iterator<ActiveActorDestructible> projectileIterator = userProjectiles.iterator();
 		while (projectileIterator.hasNext()) {
@@ -364,6 +378,7 @@ public abstract class LevelParent extends Observable {
 					enemy.takeDamage();
 					projectile.takeDamage();
 					if (enemy.isDestroyed()) {
+						enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.USER_PROJECTILE);
 						user.incrementKillCount(); // Increment kill count here
 					}
 					break; // Move to the next projectile after collision
@@ -371,6 +386,7 @@ public abstract class LevelParent extends Observable {
 			}
 		}
 	}
+
 	// Handle collisions between enemy projectiles and the user
 	private void handleEnemyProjectileCollisions() {
 		handleCollisions(enemyProjectiles, friendlyUnits);
@@ -388,12 +404,13 @@ public abstract class LevelParent extends Observable {
 			}
 		}
 	}
-	// Handle scenarios where enemies penetrate defenses (reach the user)
+	// Modify handleEnemyPenetration()
 	private void handleEnemyPenetration() {
 		if (gameOver) return;
 		for (ActiveActorDestructible enemy : enemyUnits) {
 			if (enemyHasPenetratedDefenses(enemy)) {
 				user.takeDamage();
+				enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.PENETRATION);
 				enemy.destroy();
 			}
 		}
