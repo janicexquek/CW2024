@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
+import com.example.demo.plane.FighterPlane;
+import com.example.demo.plane.UserPlane;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;

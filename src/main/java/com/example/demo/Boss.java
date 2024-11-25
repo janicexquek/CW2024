@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import com.example.demo.plane.FighterPlane;
+
 import java.util.*;
 
 public class Boss extends FighterPlane {

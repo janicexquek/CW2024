@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import com.example.demo.plane.EnemyPlane;
+import com.example.demo.plane.IntermediatePlane;
+import com.example.demo.plane.MasterPlane;
 import javafx.animation.Timeline;
 
 import java.util.List;

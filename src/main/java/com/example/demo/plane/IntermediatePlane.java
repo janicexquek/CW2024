@@ -1,17 +1,20 @@
-package com.example.demo;
+package com.example.demo.plane;
 
-public class MasterPlane extends FighterPlane {
+import com.example.demo.ActiveActorDestructible;
+import com.example.demo.EnemyProjectile;
 
-    private static final String IMAGE_NAME = "masterplane.png";
-    private static final int IMAGE_HEIGHT = 80;
-    private static final int HORIZONTAL_VELOCITY = -6;
+public class IntermediatePlane extends FighterPlane {
+
+    private static final String IMAGE_NAME = "intermediateplane.png";
+    private static final int IMAGE_HEIGHT = 150;
+    private static final int HORIZONTAL_VELOCITY = -4;
     private static final double PROJECTILE_X_POSITION_OFFSET = -100.0;
     private static final double PROJECTILE_Y_POSITION_OFFSET = 50.0;
-    private static final int INITIAL_HEALTH = 5;
+    private static final int INITIAL_HEALTH = 2;
     private static final double FIRE_RATE = 0.01;
     private int health = INITIAL_HEALTH;
 
-    public MasterPlane(double initialXPos, double initialYPos) {
+    public IntermediatePlane(double initialXPos, double initialYPos) {
         super(IMAGE_NAME, IMAGE_HEIGHT, initialXPos, initialYPos, INITIAL_HEALTH);
     }
 
@@ -34,7 +37,6 @@ public class MasterPlane extends FighterPlane {
     public void updateActor() {
         updatePosition();
     }
-
     @Override
     public void takeDamage() {
         // Implement damage logic
