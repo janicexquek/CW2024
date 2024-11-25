@@ -81,7 +81,7 @@ public class LevelThree extends LevelParent {
 
     @Override
     protected LevelView instantiateLevelView(double screenWidth, double screenHeight, Timeline timeline) {
-        return new LevelViewLevelThree(
+        return new LevelView(
                 getRoot(),
                 PLAYER_INITIAL_HEALTH,
                 getBackToMainMenuCallback(),
