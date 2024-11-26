@@ -52,12 +52,23 @@ public class MainMenu {
         titleLabel.getStyleClass().add("title-text");
 
         // Create custom buttons
-        StackPane statButton = createStickerButton();
+        StackPane statButton = createStickerButton("/com/example/demo/images/statistic.png");
         statButton.setOnMouseClicked(e -> {
             System.out.println("Sticker Button Clicked! Navigating to Scoreboard.");
             ScoreboardPage scoreboardPage = new ScoreboardPage(stage, controller);
             scoreboardPage.show();
         });
+
+        // --- Create Store Button ---
+        StackPane storeButton = createStickerButton("/com/example/demo/images/aircraft.png");
+        storeButton.setOnMouseClicked(e -> {
+            System.out.println("Store Button Clicked! Navigating to Store.");
+            StorePage storePage = new StorePage(stage, controller);
+            storePage.show();
+        });
+
+        HBox stickerButtonLayout = new HBox (20,statButton, storeButton);
+        stickerButtonLayout.setAlignment(Pos.CENTER);
 
         StackPane playButton = createCustomButton("Play");
         playButton.setOnMouseClicked(e -> controller.startGame());
@@ -76,7 +87,7 @@ public class MainMenu {
         });
 
         // Arrange buttons in VBox
-        VBox buttonLayout = new VBox(20, statButton,playButton, settingsButton, instructionsButton);
+        VBox buttonLayout = new VBox(20, stickerButtonLayout,playButton, settingsButton, instructionsButton);
         buttonLayout.setAlignment(Pos.CENTER);
 
         // Create a BorderPane for main layout
@@ -106,7 +117,7 @@ public class MainMenu {
 
         // Set alignment to top-left and add margin
         StackPane.setAlignment(closeImageView, Pos.TOP_LEFT);
-        StackPane.setMargin(closeImageView, new Insets(40, 0, 160, 40)); // 10px from top and left
+        StackPane.setMargin(closeImageView, new Insets(40, 0, 160, 40)); // 40px from top and left
 
         // Add click handler to close the stage
         closeImageView.setOnMouseClicked(e -> stage.close());
@@ -128,13 +139,13 @@ public class MainMenu {
         stage.show();
     }
 
-    private StackPane createStickerButton(){
+    private StackPane createStickerButton(String imagePath){
         // Load the button background image
         Image buttonImage;
         try {
-            URL imageUrl = getClass().getResource("/com/example/demo/images/statistic.png");
+            URL imageUrl = getClass().getResource(imagePath);
             if (imageUrl == null) {
-                throw new IllegalArgumentException("Image not found: /com/example/demo/images/statistic.png");
+                throw new IllegalArgumentException("Image not found: " + imagePath);
             }
             buttonImage = new Image(imageUrl.toExternalForm());
         } catch (Exception e) {
@@ -146,15 +157,15 @@ public class MainMenu {
 
         ImageView buttonImageView = new ImageView(buttonImage);
         if (buttonImage != null) {
-            buttonImageView.setFitWidth(50); // Set desired width
-            buttonImageView.setFitHeight(50); // Set desired height
+            buttonImageView.setFitWidth(40); // Set desired width
+            buttonImageView.setFitHeight(40); // Set desired height
             buttonImageView.setPreserveRatio(false);
         }
 
         // Create a Circle around the ImageView
         Circle hoverCircle = new Circle();
         hoverCircle.setStroke(Color.web ("#5b6980")); // Set desired circle color
-        hoverCircle.setStrokeWidth(3);       // Set desired stroke width
+        hoverCircle.setStrokeWidth(3.5);       // Set desired stroke width
         hoverCircle.setFill(Color.web("#5b6980")); // Set fill to specific color
         hoverCircle.setOpacity(0);           // Initially invisible
 

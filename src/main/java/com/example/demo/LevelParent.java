@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
+import com.example.demo.mainmenu.StoreManager;
 import com.example.demo.plane.FighterPlane;
 import com.example.demo.plane.UserPlane;
 import javafx.animation.KeyFrame;
@@ -54,7 +55,10 @@ public abstract class LevelParent extends Observable {
 		this.root = new Group();
 		this.scene = new Scene(root, screenWidth, screenHeight);
 		this.timeline = new Timeline();
-		this.user = new UserPlane(playerInitialHealth);
+		// Retrieve the selected plane from StoreManager
+		String selectedPlane = StoreManager.getInstance().getSelectedPlane();
+		this.user = new UserPlane(selectedPlane, playerInitialHealth);
+
 		this.friendlyUnits = new ArrayList<>();
 		this.enemyUnits = new ArrayList<>();
 		this.userProjectiles = new ArrayList<>();
