@@ -5,7 +5,8 @@ public class StoreManager {
     private static StoreManager instance = null;
 
     // Default plane
-    private String selectedPlane = "userplane.png";
+//    private String selectedPlane = "userplane.png";
+    private int selectedPlaneNumber = 1;
 
     // Private constructor to enforce singleton pattern
     private StoreManager() {
@@ -21,13 +22,13 @@ public class StoreManager {
     }
 
     // Getter for selectedPlane
-    public String getSelectedPlane() {
-        return selectedPlane;
+    public int getSelectedPlaneNumber() {
+        return selectedPlaneNumber;
     }
 
     // Setter for selectedPlane
-    public void setSelectedPlane(String selectedPlane) {
-        this.selectedPlane = selectedPlane;
+    public void setSelectedPlaneNumber(int selectedPlaneNumber) {
+        this.selectedPlaneNumber = selectedPlaneNumber;
         // Optionally, save the selection to persistent storage
     }
 }

@@ -56,8 +56,12 @@ public abstract class LevelParent extends Observable {
 		this.scene = new Scene(root, screenWidth, screenHeight);
 		this.timeline = new Timeline();
 		// Retrieve the selected plane from StoreManager
-		String selectedPlane = StoreManager.getInstance().getSelectedPlane();
-		this.user = new UserPlane(selectedPlane, playerInitialHealth);
+		// Retrieve the selected plane number from StoreManager
+		int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
+		// Map plane number to filename
+		String selectedPlaneFilename = mapPlaneNumberToFilename(selectedPlaneNumber);
+
+		this.user = new UserPlane(selectedPlaneFilename, playerInitialHealth);
 
 		this.friendlyUnits = new ArrayList<>();
 		this.enemyUnits = new ArrayList<>();
@@ -128,7 +132,27 @@ public abstract class LevelParent extends Observable {
 			timerTimeline.stop();
 		}
 	}
-
+	//  * Maps the plane number to its corresponding filename.
+	private String mapPlaneNumberToFilename(int planeNumber) {
+		switch (planeNumber) {
+			case 1:
+				return "userplane.png";
+			case 2:
+				return "userplane1.png";
+			case 3:
+				return "userplane2.png";
+			case 4:
+				return "userplane3.png";
+			case 5:
+				return "userplane4.png";
+			case 6:
+				return "userplane5.png";
+			case 7:
+				return "userplane6.png";
+			default:
+				return "userplane.png"; // Default plane
+		}
+	}
 
 	public void backToMainMenu() {
 		setChanged();

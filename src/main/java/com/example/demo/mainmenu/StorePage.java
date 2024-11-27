@@ -29,6 +29,7 @@ public class StorePage {
 
     // Map to store loaded fonts for easy access
     private Map<String, Font> customFonts = new HashMap<>();
+    private Label selectionMessageLabel;
 
     public StorePage(Stage stage, Controller controller) {
         this.stage = stage;
@@ -65,21 +66,31 @@ public class StorePage {
 
         Label storeTitle = new Label("Welcome to the Plane Store");
         storeTitle.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
-                Font.font("Arial", 100)).getName(), 60));
+                Font.font("Arial", 60)).getName(), 60));
         storeTitle.getStyleClass().add("title-text");
 
         Label storeText = new Label("Please choose your own plane");
         storeText.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
-                Font.font("Arial", 100)).getName(), 40));
+                Font.font("Arial", 40)).getName(), 40));
         storeText.getStyleClass().add("title-text");
 
-        titleVBox.getChildren().addAll(storeTitle, storeText);
+        // --- Selection Message Label ---
+        selectionMessageLabel = new Label();
+        selectionMessageLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+                Font.font("Arial", 25)).getName(), 25));
+        selectionMessageLabel.getStyleClass().add("title-text");
+
+        titleVBox.getChildren().addAll(storeTitle, storeText, selectionMessageLabel);
+
+        // Initialize the selection message based on current selection
+        int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
+        updateSelectionMessage(selectedPlaneNumber);
 
         // --- Planes Display Area ---
         TilePane planesBox = new TilePane();
         planesBox.setAlignment(Pos.CENTER);
         planesBox.setPadding(new Insets(20));
-        planesBox.setHgap(20); // Horizontal gap between tiles
+        planesBox.setHgap(120); // Horizontal gap between tiles
         planesBox.setVgap(20); // Vertical gap between tiles
         planesBox.setPrefColumns(2); // Fixed number of columns to 2
         planesBox.setMaxWidth(600); // Adjust as needed
@@ -101,7 +112,7 @@ public class StorePage {
         scrollPane.setFitToHeight(true);
         scrollPane.setPannable(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         // Set preferred size
         scrollPane.setPrefWidth(600); // Adjust as needed
@@ -141,7 +152,30 @@ public class StorePage {
         stage.show();
     }
 
-     // Creates a plane option with hover and click effects.
+    // Updates the selection message label based on the selected plane number.
+    private void updateSelectionMessage(int planeNumber) {
+        selectionMessageLabel.setText("You have selected plane " + planeNumber);
+    }
+
+     // Extracts the plane number from the plane image filename.
+    private int getPlaneNumber(String planeImageName) {
+        if (planeImageName.equalsIgnoreCase("userplane.png")) {
+            return 1;
+        }
+        // Extract number from filename, e.g., "userplane3.png" -> 4
+        String numberPart = planeImageName.replaceAll("[^0-9]", "");
+        if (!numberPart.isEmpty()) {
+            try {
+                return Integer.parseInt(numberPart) + 1;
+            } catch (NumberFormatException e) {
+                // If parsing fails, default to 1
+                return 1;
+            }
+        }
+        return 1; // Default plane number
+    }
+
+     // Creates a plane option with hover and click effects, including a plane number overlay.
     private StackPane createPlaneOption(String planeImageName) {
         // Load the plane image
         ImageView planeImageView = new ImageView(new Image(getClass().getResource("/com/example/demo/images/" + planeImageName).toExternalForm()));
@@ -163,10 +197,21 @@ public class StorePage {
         selectionBorder.setStrokeWidth(3);
         selectionBorder.setVisible(false); // Initially not selected
 
-        // Create a StackPane to layer the plane image, hover overlay, and selection border
-        StackPane stackPane = new StackPane(planeImageView, hoverOverlay, selectionBorder);
+        // Create a Label for the plane number
+        int planeNumber = getPlaneNumber(planeImageName);
+        Label planeNumberLabel = new Label(String.valueOf(planeNumber));
+        planeNumberLabel.setTextFill(Color.WHITE); // Gold color for visibility
+        planeNumberLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
+                Font.font("Arial", 20)).getName(), 20)); // Use Pixel Digivolve font
+
+        // Create a StackPane to layer the plane image, hover overlay, selection border, and plane number
+        StackPane stackPane = new StackPane(planeImageView, hoverOverlay, selectionBorder, planeNumberLabel);
         stackPane.setAlignment(Pos.CENTER);
         stackPane.setCursor(Cursor.HAND);
+
+        // Position the plane number label at the top-left corner
+        StackPane.setAlignment(planeNumberLabel, Pos.TOP_LEFT);
+        StackPane.setMargin(planeNumberLabel, new Insets(5, 0, 0, 10)); // Adjust margins as needed
 
         // Bind plane image size to window size for responsiveness
         planeImageView.fitWidthProperty().bind(stage.widthProperty().multiply(0.15)); // 15% of window width
@@ -219,9 +264,11 @@ public class StorePage {
             // Select this plane by showing its selection border
             selectionBorder.setVisible(true);
 
-            // Save the selected plane in StoreManager
-            StoreManager.getInstance().setSelectedPlane(planeImageName);
-            System.out.println("Selected Plane: " + planeImageName);
+            // Update the selection message
+            updateSelectionMessage(planeNumber);
+
+            // Save the selected plane number in StoreManager
+            StoreManager.getInstance().setSelectedPlaneNumber(planeNumber);
 
             // Optionally, add a scale transition for visual feedback
             ScaleTransition selectScale = new ScaleTransition(Duration.millis(200), stackPane);
@@ -297,7 +344,9 @@ public class StorePage {
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf" // Add the new font path here
+                "/com/example/demo/fonts/Sugar Bomb.ttf",
+                "/com/example/demo/fonts/Pixel Digivolve.otf"
+
         };
 
         for (String fontPath : fontPaths) {
