@@ -268,7 +268,7 @@ public class LevelView {
 			this.infoDisplay.setText("Boss Health: " + currentHealth);
 		});
 	}
-	// Method to update wave for Level Three
+	// Method to update wave for Level Three & Level Four
 	public void updateCustomInfo(String info) {
 		Platform.runLater(() -> {
 			this.infoDisplay.setText(info);

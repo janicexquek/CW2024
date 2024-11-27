@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class LevelThree extends LevelParent {
 
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg"; // Updated to LevelThree background
-    private static final String NEXT_LEVEL = ""; // No next level or set to main menu
+    private static final String NEXT_LEVEL = "com.example.demo.LevelFour"; // No next level or set to main menu
     private static final int PLAYER_INITIAL_HEALTH = 5;
     private int masterPlanesDestroyed = 0;
     private static final int MASTER_TO_WIN_DESTROYED = 2; // Destroy 5 intermediate planes to spawn masters
