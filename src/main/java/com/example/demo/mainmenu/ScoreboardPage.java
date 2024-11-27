@@ -28,7 +28,8 @@ public class ScoreboardPage {
     private static final List<String> ORDERED_LEVELS = Arrays.asList(
             "LEVEL ONE",
             "LEVEL TWO",
-            "LEVEL THREE"
+            "LEVEL THREE",
+            "LEVEL FOUR"
             // Add more levels here in the desired order
     );
 
