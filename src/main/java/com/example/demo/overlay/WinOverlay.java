@@ -114,7 +114,7 @@ public class WinOverlay extends StackPane {
 
         // Create the win message label
         Label winMessage = new Label("VICTORY!");
-        winMessage.setTextFill(Color.WHITE);
+        winMessage.setTextFill(Color.web("#f5f551"));
         // Set font or fallback
         winMessage.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies", Font.font("Arial")).getName(), 50));
         winMessage.setWrapText(true);
@@ -132,7 +132,7 @@ public class WinOverlay extends StackPane {
 
         // Create the achievement message label
         achievementLabel = new Label("Achievement Message Here"); // Placeholder text
-        achievementLabel.setTextFill(Color.YELLOW); // Highlighted color
+        achievementLabel.setTextFill(Color.web("#f5f551")); // Highlighted color
         achievementLabel.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20));
         achievementLabel.setWrapText(true);
         achievementLabel.setAlignment(Pos.CENTER);

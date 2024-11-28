@@ -113,7 +113,7 @@ public class GameOverOverlay extends StackPane {
 
         // Create the game over message label
         Label gameOverMessage = new Label("DEFEAT");
-        gameOverMessage.setTextFill(Color.WHITE);
+        gameOverMessage.setTextFill(Color.web("#f5f551"));
         // Use 'Cartoon cookies' or fallback
         gameOverMessage.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies", Font.font("Arial")).getName(), 50));
         gameOverMessage.setWrapText(true);
