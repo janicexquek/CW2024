@@ -58,7 +58,7 @@ public class SettingsManager {
         }
         return instance;
     }
-
+    // --------------------- BACKGROUND MUSIC -----------------------
     private void initializeBackgroundMusic() {
         // Search the audio file
         URL resource = getClass().getResource("/com/example/demo/audios/backgroundmusic1.mp3");
@@ -74,7 +74,7 @@ public class SettingsManager {
             System.err.println("Background music file not found.");
         }
     }
-
+    // ------------------- BACKGROUND MUSIC ADJUSTMENT ---------------------------
     // Starts or resumes the background music playback.
     public void playMusic() {
         if (mediaPlayer != null) {
@@ -114,26 +114,7 @@ public class SettingsManager {
         return musicVolume;
     }
 
-    // Set sound effect volume and save to preferences
-    public void setSoundEffectVolume(double volume) {
-        this.soundEffectVolume = volume;
-        prefs.putDouble("soundEffectVolume", volume);
-    }
-
-    public double getSoundEffectVolume() {
-        return soundEffectVolume;
-    }
-
-    // Set countdown sound effect volume and save to preferences
-    public void setCountdownSoundVolume(double volume) {
-        this.countdownSoundVolume = volume;
-        prefs.putDouble("countdownSoundVolume", volume);
-    }
-
-    public double getCountdownSoundVolume() {
-        return countdownSoundVolume;
-    }
-
+    // --------------------- SOUND EFFECT -----------------------
     // Play general sound effects
     public void playSoundEffect(String fileName) {
         if (allMuted || soundEffectsMuted) return; // Do not play if muted
@@ -153,6 +134,35 @@ public class SettingsManager {
         }
     }
 
+    // Set sound effect volume and save to preferences
+    public void setSoundEffectVolume(double volume) {
+        this.soundEffectVolume = volume;
+        prefs.putDouble("soundEffectVolume", volume);
+    }
+
+    public double getSoundEffectVolume() {
+        return soundEffectVolume;
+    }
+
+    // Play victory sound effect
+    public void playVictorySound() {
+        playSoundEffect("victory.mp3");
+    }
+    // Play defeat sound effect
+    public void playDefeatSound() {
+        playSoundEffect("defeat.mp3");
+    }
+
+    // Stop and clear all active sound effects
+    public void stopAllSoundEffects() {
+        for (MediaPlayer soundPlayer : activeSoundEffects) {
+            soundPlayer.stop();
+            soundPlayer.dispose();
+        }
+        activeSoundEffects.clear();
+    }
+
+    // --------------------- COUNTDOWN SOUND -----------------------
     // Play countdown sound effect
     public void playCountdownSound() {
         URL soundUrl = getClass().getResource("/com/example/demo/audios/countdown.mp3");
@@ -171,6 +181,18 @@ public class SettingsManager {
             System.err.println("Countdown sound file not found: /com/example/demo/audios/countdown.mp3");
         }
     }
+
+    // Set countdown sound effect volume and save to preferences
+    public void setCountdownSoundVolume(double volume) {
+        this.countdownSoundVolume = volume;
+        prefs.putDouble("countdownSoundVolume", volume);
+    }
+
+    public double getCountdownSoundVolume() {
+        return countdownSoundVolume;
+    }
+
+    // --------------------- MUTE / UNMUTE SOUND -----------------------
     // Mute all sounds
     public void muteAllSounds() {
         if (!allMuted) {
@@ -210,23 +232,6 @@ public class SettingsManager {
             }
         }
     }
-    // Play victory sound effect
-    public void playVictorySound() {
-        playSoundEffect("victory.mp3");
-    }
-    // Play defeat sound effect
-    public void playDefeatSound() {
-        playSoundEffect("defeat.mp3");
-    }
-    // Stop and clear all active sound effects
-    public void stopAllSoundEffects() {
-        for (MediaPlayer soundPlayer : activeSoundEffects) {
-            soundPlayer.stop();
-            soundPlayer.dispose();
-        }
-        activeSoundEffects.clear();
-    }
-
 
     // Toggle mute all sounds
     public void toggleMuteAll() {
@@ -246,11 +251,7 @@ public class SettingsManager {
     public void muteAllSoundEffects() {
         soundEffectsMuted = true;
         for (MediaPlayer soundPlayer : activeSoundEffects) {
-            // Check if the soundPlayer is playing victory.mp3
-            String source = soundPlayer.getMedia().getSource();
-            if (!source.contains("victory.mp3")) {
                 soundPlayer.setVolume(0);
-            }
         }
     }
 
@@ -262,19 +263,4 @@ public class SettingsManager {
         }
     }
 
-    // Optional: Mute countdown sound effects separately if needed
-//    public void muteCountdownSoundEffects() {
-//        countdownSoundMuted = true;
-//        for (MediaPlayer countdownPlayer : activeCountdownPlayers) {
-//            countdownPlayer.setVolume(0);
-//        }
-//    }
-//
-//    public void unmuteCountdownSoundEffects() {
-//        countdownSoundMuted = false;
-//        for (MediaPlayer countdownPlayer : activeCountdownPlayers) {
-//            countdownPlayer.setVolume(countdownSoundVolume);
-//        }
-//        System.out.println("Countdown sound effects unmuted.");
-//    }
 }
