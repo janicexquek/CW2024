@@ -427,27 +427,25 @@ public abstract class LevelParent extends Observable {
 
 	// Handle collisions between enemy projectiles and the user
 	private void handleEnemyProjectileCollisions() {
-		handleCollisions(enemyProjectiles, friendlyUnits);
-	}
-
-	private void handleCollisions(List<ActiveActorDestructible> actors1,
-			List<ActiveActorDestructible> actors2) {
-		if (gameOver) return;
-		for (ActiveActorDestructible actor : actors2) {
-			for (ActiveActorDestructible otherActor : actors1) {
-				if (actor.getBoundsInParent().intersects(otherActor.getBoundsInParent())) {
-					actor.takeDamage();
-					otherActor.takeDamage();
-				}
+//		handleCollisions(enemyProjectiles, friendlyUnits);
+		Iterator<ActiveActorDestructible> projectileIterator = enemyProjectiles.iterator();
+		while (projectileIterator.hasNext()) {
+			ActiveActorDestructible projectile = projectileIterator.next();
+			if (projectile.getBoundsInParent().intersects(getUser().getBoundsInParent())) {
+				((UserPlane)getUser()).takeDamageFromProjectile(); // Shield absorbs damage
+				projectile.takeDamage();
+				projectileIterator.remove();
+				root.getChildren().remove(projectile);
 			}
 		}
 	}
+
 	// Modify handleEnemyPenetration()
 	private void handleEnemyPenetration() {
 		if (gameOver) return;
 		for (ActiveActorDestructible enemy : enemyUnits) {
 			if (enemyHasPenetratedDefenses(enemy)) {
-				user.takeDamage();
+				((UserPlane)user).takeDamageFromPenetration(); // Directly damage the player
 				enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.PENETRATION);
 				enemy.destroy();
 			}

@@ -55,17 +55,23 @@ public class UserPlane extends FighterPlane {
 		updateShieldPosition();
 	}
 
-	@Override
-	public void takeDamage() {
+	public void takeDamageFromProjectile() {
 		if (isShielded) {
 			shieldDamageCounter++;
 			if (shieldDamageCounter >= MAX_SHIELD_DAMAGE) {
 				deactivateShield();
 			}
-		} else {
+		}
+		// If shield is not active, you might want to decrease health directly
+		else {
 			super.takeDamage();
 			health--;
 		}
+	}
+
+	public void takeDamageFromPenetration() {
+		super.takeDamage();
+		health--;
 	}
 
 	public UserShieldImage getShieldImage() {
