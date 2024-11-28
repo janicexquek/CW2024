@@ -229,12 +229,6 @@ public class MainMenu {
             fadeOut.playFromStart();
         });
 
-        // Optional: Add a click event handler to test the button
-//        stackPane.setOnMouseClicked(e -> {
-//            System.out.println("Sticker Button Clicked!");
-//            // Future: Navigate to the desired page
-//        });
-
         return stackPane;
     }
 

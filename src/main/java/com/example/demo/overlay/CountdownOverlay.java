@@ -94,8 +94,6 @@ public class CountdownOverlay extends StackPane {
                     Duration.seconds(i),
                     event -> {
                         countdownLabel.setText(messages[index]);
-//                        MusicManager.getInstance().playCountdownSound();
-//                        System.out.println("Countdown message: " + messages[index]);
                     }
             );
             timeline.getKeyFrames().add(keyFrame);

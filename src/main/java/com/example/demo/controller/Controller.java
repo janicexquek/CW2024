@@ -52,8 +52,6 @@ public class Controller implements Observer {
 		myLevel.addObserver(this);
 		Scene scene = myLevel.initializeScene();
 		stage.setScene(scene);
-//		myLevel.startGame();
-		// Update the current level reference
 		currentLevel = myLevel;
 
 	}

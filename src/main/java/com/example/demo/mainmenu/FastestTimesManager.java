@@ -26,7 +26,7 @@ public class FastestTimesManager {
         return instance;
     }
 
-    // Load fastest times from Preferences into the map
+    // Load the fastest times from Preferences into the map
     private void loadFastestTimes() {
         String storedTimes = prefs.get(PREF_FASTEST_TIMES, "");
         if (!storedTimes.isEmpty()) {

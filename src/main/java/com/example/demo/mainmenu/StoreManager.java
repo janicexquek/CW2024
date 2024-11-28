@@ -5,7 +5,6 @@ public class StoreManager {
     private static StoreManager instance = null;
 
     // Default plane
-//    private String selectedPlane = "userplane.png";
     private int selectedPlaneNumber = 1;
 
     // Private constructor to enforce singleton pattern
