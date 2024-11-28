@@ -190,17 +190,23 @@ public class WinOverlay extends StackPane {
 
         // Create the buttons with image backgrounds and assign actions
         Button backButton = createCustomButton("Main Menu", backCallback);
-        Button nextButton = createCustomButton("Next Level", nextCallback);
         Button restartButton = createCustomButton("Restart", restartCallback);
+        Button nextButton = null;
+        if (nextCallback != null) {
+            nextButton = createCustomButton("Next Level", nextCallback);
+        }
 
         // Create an HBox to hold the buttons horizontally
         HBox buttonBox = new HBox(20); // 20px spacing between buttons
         buttonBox.setAlignment(Pos.BOTTOM_CENTER);
-        buttonBox.getChildren().addAll(backButton, nextButton);
+        buttonBox.getChildren().addAll(backButton, restartButton);
         // Create an VBox to hold the buttons vertically
         VBox allButtonBox = new VBox(10);
         allButtonBox.setAlignment(Pos.BOTTOM_CENTER);
-        allButtonBox.getChildren().addAll(buttonBox,restartButton);
+        if (nextButton != null) {
+            allButtonBox.getChildren().add(nextButton); // Conditionally add Next Level button
+        }
+        allButtonBox.getChildren().addAll(buttonBox);
 
         // Add the buttonBox to the overlay's VBox
         // Assuming the messageBox's VBox is the second child (index 1)

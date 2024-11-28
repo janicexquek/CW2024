@@ -471,10 +471,10 @@ public abstract class LevelParent extends Observable {
 		setChanged();
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		SettingsManager.getInstance().playVictorySound(); // Play victory sound
+
 		// Step 1: Retrieve Current Time
 		long currentTimeSeconds = elapsedSeconds;
 		String levelName = getLevelName();
-//		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
 
 		// Step 2: Access Preferences to Get Existing Fastest Time
 		FastestTimesManager ftm = FastestTimesManager.getInstance();
@@ -495,16 +495,23 @@ public abstract class LevelParent extends Observable {
 		} else {
 			achievementMessage = "Try Again to beat the fastest time";
 		}
-		// Instead of show WinOverlay
+
+		// Step 5: Determine if there is a next level
+		String nextLevel = getNextLevelClassName();
+		Runnable nextLevelCallback = null;
+		if (nextLevel != null && !nextLevel.isEmpty()) {
+			nextLevelCallback = this::proceedToNextLevel;
+		}
+		// Step 6: Show WinOverlay with conditional Next Level callback
 		if (levelView != null) {
 			levelView.showWinOverlay(
-					() -> backToMainMenu(), // Back to Main Menu callback
-					() -> proceedToNextLevel(), // Next Level callback
-					() -> restartGame(), // Restart callback
-					getLevelDisplayName(),   // Current level display name
-					 currentTimeSeconds,     // Current Time in seconds
-					 fastestTimeSeconds,      // Fastest Time in seconds
-					 achievementMessage       // Achievement message
+					this::backToMainMenu,      // Back to Main Menu callback
+					nextLevelCallback,         // Next Level callback (null if no next level)
+					this::restartGame,         // Restart callback
+					getLevelDisplayName(),     // Current level display name
+					currentTimeSeconds,        // Current Time in seconds
+					fastestTimeSeconds,        // Fastest Time in seconds
+					achievementMessage         // Achievement message
 			);
 		}
 	}
@@ -540,7 +547,7 @@ public abstract class LevelParent extends Observable {
 		long existingFastestTime = ftm.getFastestTime(levelName);
 		long fastestTimeSeconds = existingFastestTime;
 
-		// Instead of show WinOverlay
+		// Instead of show GameOverlay
 		if (levelView != null) {
 			levelView.showGameOverOverlay(
 					() -> backToMainMenu(), // Back to Main Menu callback
