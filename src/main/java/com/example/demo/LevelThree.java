@@ -11,21 +11,22 @@ import java.util.stream.Collectors;
 public class LevelThree extends LevelParent {
 
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg"; // Updated to LevelThree background
-    private static final String NEXT_LEVEL = "com.example.demo.LevelFour"; // No next level or set to main menu
+    private static final String NEXT_LEVEL = "com.example.demo.LevelFour";
     private static final int PLAYER_INITIAL_HEALTH = 5;
     private static final double Y_UPPER_BOUND = 80;
     private static final double Y_LOWER_BOUND = 600.0;
-    private int masterPlanesDestroyed = 0;
-    private static final int MASTER_TO_WIN_DESTROYED = 2; // Destroy 5 intermediate planes to spawn masters
 
     // Wave Management
     private int normalPlanesDestroyed = 0;
     private static final int NORMAL_TO_INTERMEDIATE_DESTROYED = 10; // Destroy 10 normal planes to spawn intermediates
-    private boolean intermediateWaveActive = false;
 
+    private boolean intermediateWaveActive = false;
     private int intermediatePlanesDestroyed = 0;
     private static final int INTERMEDIATE_TO_MASTER_DESTROYED = 5; // Destroy 5 intermediate planes to spawn masters
+
     private boolean masterWaveActive = false;
+    private int masterPlanesDestroyed = 0;
+    private static final int MASTER_TO_WIN_DESTROYED = 2; // Destroy 5 intermediate planes to spawn masters
 
     public LevelThree(double screenHeight, double screenWidth) {
         super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH, "LEVEL THREE");
@@ -108,10 +109,6 @@ public class LevelThree extends LevelParent {
         return "LEVEL THREE";
     }
 
-    private boolean userHasDestroyedAllMasters() {
-        // Check if there are no MasterPlanes left
-        return getEnemyUnits().stream().noneMatch(enemy -> enemy instanceof MasterPlane);
-    }
 
     // Spawn methods for different waves
     private void spawnNormalPlanes() {
