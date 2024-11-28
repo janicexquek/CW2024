@@ -19,12 +19,10 @@ import javafx.util.Duration;
 
 public abstract class LevelParent extends Observable {
 
-	private static final double SCREEN_HEIGHT_ADJUSTMENT = 400;
 	private static final int MILLISECOND_DELAY = 50;
 	private final double screenHeight;
 	private final double screenWidth;
 	private boolean Updated = false;
-	private boolean ChangedState = false ;
 	private boolean isPaused = false;
 	private boolean gameOver = false;
 	private int currentNumberOfEnemies;
@@ -49,9 +47,7 @@ public abstract class LevelParent extends Observable {
 		this.root = new Group();
 		this.scene = new Scene(root, screenWidth, screenHeight);
 		this.timeline = new Timeline();
-		// Retrieve the selected plane number from StoreManager
 		int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
-		// Map plane number to filename
 		String selectedPlaneFilename = mapPlaneNumberToFilename(selectedPlaneNumber);
 
 		this.user = new UserPlane(selectedPlaneFilename, playerInitialHealth);
@@ -61,7 +57,6 @@ public abstract class LevelParent extends Observable {
 		this.userProjectiles = new ArrayList<>();
 		this.enemyProjectiles = new ArrayList<>();
 		this.Updated = false;
-		this.ChangedState = false ;
 
 		this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
 		this.screenHeight = screenHeight;
@@ -93,14 +88,61 @@ public abstract class LevelParent extends Observable {
 	protected abstract void updateCustomDisplay();
 
 
-	public String getLevelName() {
-		return levelName;
+	// --------- INITIALIZE SCENE, TIMER, TIMELINE & BACKGROUND --------------
+	public Scene initializeScene() {
+		initializeBackground();
+		initializeFriendlyUnits();
+		levelView.showHeartDisplay();
+		levelView.showExitDisplay();
+		// Start the countdown before starting the game
+		levelView.startCountdown(this::startGameAfterCountdown);
+		return scene;
 	}
 
 	private void initializeTimer() {
 		timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> elapsedSeconds++));
 		timerTimeline.setCycleCount(Timeline.INDEFINITE);
 	}
+
+	// Initialize the game timeline (game loop)
+	private void initializeTimeline() {
+		timeline.setCycleCount(Timeline.INDEFINITE);
+		KeyFrame gameLoop = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> updateScene());
+		timeline.getKeyFrames().add(gameLoop);
+	}
+
+	// Initialize background and set up key event handlers
+	private void initializeBackground() {
+		background.setFocusTraversable(true);
+		background.setFitHeight(screenHeight);
+		background.setFitWidth(screenWidth);
+		background.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			// Handle key presses for user movement and firing
+			public void handle(KeyEvent e) {
+				KeyCode kc = e.getCode();
+				if (kc == KeyCode.UP) user.moveUp();
+				if (kc == KeyCode.DOWN) user.moveDown();
+				if (kc == KeyCode.SPACE) fireProjectile();
+				if (kc == KeyCode.ESCAPE) {
+					togglePause();
+				}
+			}
+		});
+		background.setOnKeyReleased(new EventHandler<KeyEvent>() {
+			public void handle(KeyEvent e) {
+				KeyCode kc = e.getCode();
+				if (kc == KeyCode.UP || kc == KeyCode.DOWN) user.stop();
+			}
+		});
+		// Check if background is already added
+		if (!root.getChildren().contains(background)) {
+			root.getChildren().add(background);
+		}		levelView.bringInfoDisplayToFront();
+		//		background.setOpacity(0.5);
+	}
+
+
+	// ----------------	TIMER --------------------
 
 	public void startTimer() {
 		if (timerTimeline != null) {
@@ -125,7 +167,8 @@ public abstract class LevelParent extends Observable {
 			timerTimeline.stop();
 		}
 	}
-	//  * Maps the plane number to its corresponding filename.
+
+	//  --------- Maps the plane number to its corresponding filename. -----------
 	private String mapPlaneNumberToFilename(int planeNumber) {
 		switch (planeNumber) {
 			case 1:
@@ -147,6 +190,7 @@ public abstract class LevelParent extends Observable {
 		}
 	}
 
+	// ----------------- ALL BUTTON FUNCTION -------------------
 	public void backToMainMenu() {
 		setChanged();
 		notifyObservers("mainMenu");
@@ -154,7 +198,19 @@ public abstract class LevelParent extends Observable {
 		SettingsManager.getInstance().unmuteAllSoundEffects();
 	}
 
-	  // Method to restart the current level.
+	// New method to start the game after countdown
+	private void startGameAfterCountdown() {
+		// Start the game timeline
+		startGame(); // Existing game start logic
+		startTimer();
+	}
+
+	public void startGame() {
+		background.requestFocus();
+		timeline.play();
+	}
+
+	// Method to restart the current level.
 	public void restartGame() {
 		setChanged();
 		notifyObservers(getClassName());
@@ -198,100 +254,13 @@ public abstract class LevelParent extends Observable {
 	public void resumeGame() {
 		if (timeline != null) {
 			timeline.play();
-			resumeTimer();;
+			resumeTimer();
 		}
 		SettingsManager.getInstance().resumeMusic();
 		SettingsManager.getInstance().unmuteAllSoundEffects();
 	}
 
-
-	public Scene initializeScene() {
-		initializeBackground();
-		initializeFriendlyUnits();
-		levelView.showHeartDisplay();
-		levelView.showExitDisplay();
-		// Start the countdown before starting the game
-		levelView.startCountdown(this::startGameAfterCountdown);
-		return scene;
-	}
-
-	// New method to start the game after countdown
-	private void startGameAfterCountdown() {
-		// Start the game timeline
-		 startGame(); // Existing game start logic
-		 startTimer();
-	}
-
-	public void startGame() {
-		background.requestFocus();
-		timeline.play();
-	}
-
-	public void goToNextLevel(String levelName) {
-		if (!Updated){
-			setChanged();
-			notifyObservers(levelName);
-			Updated = true;
-			ChangedState = true;
-		}
-	}
-
-	public boolean ChangedState(){
-		return ChangedState;
-	}
-
-	private void updateScene() {
-		if (gameOver) return;
-		checkIfGameOver();
-		spawnEnemyUnits();
-		updateActors();
-		generateEnemyFire();
-		updateNumberOfEnemies();
-		handleEnemyPenetration();
-		handleUserProjectileCollisions();
-		handleEnemyProjectileCollisions();
-		handleProjectileCollisions();
-		handlePlaneCollisions();
-		removeAllDestroyedActors();
-		updateLevelView();
-	}
-	// Initialize the game timeline (game loop)
-	private void initializeTimeline() {
-		timeline.setCycleCount(Timeline.INDEFINITE);
-		KeyFrame gameLoop = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> updateScene());
-		timeline.getKeyFrames().add(gameLoop);
-	}
-	// Initialize background and set up key event handlers
-	private void initializeBackground() {
-		background.setFocusTraversable(true);
-		background.setFitHeight(screenHeight);
-		background.setFitWidth(screenWidth);
-		background.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			// Handle key presses for user movement and firing
-			public void handle(KeyEvent e) {
-				KeyCode kc = e.getCode();
-				if (kc == KeyCode.UP) user.moveUp();
-				if (kc == KeyCode.DOWN) user.moveDown();
-				if (kc == KeyCode.SPACE) fireProjectile();
-				if (kc == KeyCode.ESCAPE) {
-					togglePause();
-				}
-			}
-		});
-		background.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			public void handle(KeyEvent e) {
-				KeyCode kc = e.getCode();
-				if (kc == KeyCode.UP || kc == KeyCode.DOWN) user.stop();
-			}
-		});
-		// Check if background is already added
-		if (!root.getChildren().contains(background)) {
-			root.getChildren().add(background);
-		}		levelView.bringInfoDisplayToFront();
-		//		background.setOpacity(0.5);
-	}
-
-	 // Toggles the game's pause state.
+	// Toggles the game's pause state.
 	private void togglePause() {
 		// Check if any overlay is active
 		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN ||
@@ -312,6 +281,59 @@ public abstract class LevelParent extends Observable {
 		}
 	}
 
+	public void goToNextLevel(String levelName) {
+		if (!Updated){
+			setChanged();
+			notifyObservers(levelName);
+			Updated = true;
+		}
+	}
+
+	// handle proceeding to the next level IN OVERLAY
+	private void proceedToNextLevel() {
+		SettingsManager.getInstance().unmuteAllSoundEffects();
+		String nextLevel = getNextLevelClassName();
+		if (nextLevel != null && !nextLevel.isEmpty()) {
+			goToNextLevel(nextLevel);
+		} else {
+			// Handle scenario when there's no next level
+			backToMainMenu();
+		}
+	}
+
+	// Abstract method to get next level class name
+	protected abstract String getNextLevelClassName();
+
+	public String getLevelName() {
+		return levelName;
+	}
+
+//	public boolean ChangedState(){
+//		return ChangedState;
+//	}
+
+	// ------------ UPDATE SCENE ---------------
+	private void updateScene() {
+		if (gameOver) return;
+		checkIfGameOver();
+		spawnEnemyUnits();
+		updateActors();
+		generateEnemyFire();
+		updateNumberOfEnemies();
+		handleEnemyPenetration();
+		handleUserProjectileCollisions();
+		handleEnemyProjectileCollisions();
+		handleProjectileCollisions();
+		handlePlaneCollisions();
+		removeAllDestroyedActors();
+		updateLevelView();
+	}
+	private void updateLevelView() {
+		levelView.removeHearts(user.getHealth());
+		updateCustomDisplay(); // Call the abstract method
+	}
+
+	// --------------------- GAME CONCEPT ----------------------------
 	private boolean canFireProjectiles() {
 		return !gameOver && !isPaused && levelView.getActiveOverlay() == LevelView.ActiveOverlay.NONE;
 	}
@@ -329,7 +351,6 @@ public abstract class LevelParent extends Observable {
 	}
 
 	private void generateEnemyFire() {
-	//	enemyUnits.forEach(enemy -> spawnEnemyProjectile(((FighterPlane) enemy).fireProjectile()));
 		// Iterate over each enemy in the enemyUnits list
 		enemyUnits.forEach(enemy -> {
 			ActiveActorDestructible projectile = ((FighterPlane) enemy).fireProjectile();
@@ -353,6 +374,7 @@ public abstract class LevelParent extends Observable {
 		userProjectiles.forEach(projectile -> projectile.updateActor());
 		enemyProjectiles.forEach(projectile -> projectile.updateActor());
 	}
+
 	// Remove all destroyed actors from the scene and tracking lists
 	protected void removeAllDestroyedActors() {
 		removeDestroyedActors(friendlyUnits);
@@ -360,6 +382,7 @@ public abstract class LevelParent extends Observable {
 		removeDestroyedActors(userProjectiles);
 		removeDestroyedActors(enemyProjectiles);
 	}
+
 	// Helper method to remove destroyed actors from a given list
 	private void removeDestroyedActors(List<ActiveActorDestructible> actors) {
 		List<ActiveActorDestructible> destroyedActors = actors.stream().filter(actor -> actor.isDestroyed())
@@ -367,6 +390,7 @@ public abstract class LevelParent extends Observable {
 		root.getChildren().removeAll(destroyedActors);
 		actors.removeAll(destroyedActors);
 	}
+
 	// Modify handlePlaneCollisions()
 	private void handlePlaneCollisions() {
 		if (gameOver) return;
@@ -385,6 +409,7 @@ public abstract class LevelParent extends Observable {
 			}
 		}
 	}
+
 	// Handle projectile collision between user and enemy
 	private void handleProjectileCollisions() {
 		Iterator<ActiveActorDestructible> userProjectileIterator = userProjectiles.iterator();
@@ -404,7 +429,7 @@ public abstract class LevelParent extends Observable {
 		}
 	}
 
-	// Modify handleUserProjectileCollisions()
+	// Handle collisions between user projectiles and the enemy
 	private void handleUserProjectileCollisions() {
 		Iterator<ActiveActorDestructible> projectileIterator = userProjectiles.iterator();
 		while (projectileIterator.hasNext()) {
@@ -452,15 +477,11 @@ public abstract class LevelParent extends Observable {
 		}
 	}
 
-	private void updateLevelView() {
-		levelView.removeHearts(user.getHealth());
-		updateCustomDisplay(); // Call the abstract method
-	}
-
 	private boolean enemyHasPenetratedDefenses(ActiveActorDestructible enemy) {
 		return Math.abs(enemy.getTranslateX()) > screenWidth;
 	}
 
+	// ------------------------ FINISH GAME ----------------------
 	protected void winGame() {
 		if (gameOver) return;
 		gameOver = true;
@@ -514,20 +535,6 @@ public abstract class LevelParent extends Observable {
 		}
 	}
 
-	// New method to handle proceeding to the next level
-	private void proceedToNextLevel() {
-		SettingsManager.getInstance().unmuteAllSoundEffects();
-		String nextLevel = getNextLevelClassName();
-		if (nextLevel != null && !nextLevel.isEmpty()) {
-			goToNextLevel(nextLevel);
-		} else {
-			// Handle scenario when there's no next level
-			backToMainMenu();
-		}
-	}
-
-	// Abstract method to get next level class name
-	protected abstract String getNextLevelClassName();
 
 	protected void loseGame() {
 		if (gameOver) return;
@@ -539,7 +546,6 @@ public abstract class LevelParent extends Observable {
 		// Step 1: Retrieve Current Time
 		long currentTimeSeconds = elapsedSeconds;
 		String levelName = getLevelName();
-//		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
 		// Step 2: Access Preferences to Get Existing Fastest Time
 		FastestTimesManager ftm = FastestTimesManager.getInstance();
 		long existingFastestTime = ftm.getFastestTime(levelName);
