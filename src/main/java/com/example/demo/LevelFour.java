@@ -3,7 +3,9 @@ package com.example.demo;
 
 import com.example.demo.plane.EnemyPlane;
 import com.example.demo.plane.IntermediatePlane;
+import com.example.demo.plane.UserPlane;
 import javafx.animation.Timeline;
+import javafx.scene.Group;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +17,7 @@ public class LevelFour extends LevelParent {
     private static final int PLAYER_INITIAL_HEALTH = 5;
     private static final double Y_UPPER_BOUND = 80;
     private static final double Y_LOWER_BOUND = 580.0;
+    private boolean shieldActivated = false; // Flag to track shield activation
     // Win conditions
     private static final int NORMAL_PLANES_TO_DESTROY = 15;
     private static final int INTERMEDIATE_PLANES_TO_DESTROY = 8;
@@ -37,7 +40,8 @@ public class LevelFour extends LevelParent {
 
     @Override
     protected void initializeFriendlyUnits() {
-        getRoot().getChildren().add(getUser());
+        Group userGroup = new Group(getUser(), getUser().getShieldImage());
+        getRoot().getChildren().add(userGroup);
     }
 
     @Override
@@ -102,6 +106,11 @@ public class LevelFour extends LevelParent {
             if (enemy.getDestroyedBy() == ActiveActorDestructible.DestroyedBy.USER_PROJECTILE) {
                 if (enemy instanceof IntermediatePlane) {
                     intermediatePlanesDestroyed++;
+                    // Activate shield if two intermediate planes destroyed and shield not yet activated
+                    if (intermediatePlanesDestroyed >= 2 && !shieldActivated) {
+                        getUser().activateShield();
+                        shieldActivated = true; // Prevent future activations
+                    }
                 } else if (enemy instanceof EnemyPlane) {
                     normalPlanesDestroyed++;
                 }
@@ -117,6 +126,10 @@ public class LevelFour extends LevelParent {
         String info = String.format("Normal Planes: %d / %d | Intermediate Planes: %d / %d",
                 normalPlanesDestroyed, NORMAL_PLANES_TO_DESTROY,
                 intermediatePlanesDestroyed, INTERMEDIATE_PLANES_TO_DESTROY);
-        levelView.updateCustomInfo(info);
+        UserPlane userPlane = getUser();
+        String shieldInfo = userPlane.isShieldActive() ?
+                " | Shield: " + (UserPlane.MAX_SHIELD_DAMAGE - userPlane.getShieldDamageCounter()) + " hits left"
+                : "";
+        levelView.updateCustomInfo(info + shieldInfo);
     }
 }
