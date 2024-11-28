@@ -11,6 +11,8 @@ public class LevelOne extends LevelParent {
 	private static final int KILLS_TO_ADVANCE = 10; // 10
 	private static final double ENEMY_SPAWN_PROBABILITY = .20;
 	private static final int PLAYER_INITIAL_HEALTH = 5;
+	private static final double Y_UPPER_BOUND = 80;
+	private static final double Y_LOWER_BOUND = 650.0;
 
 	public LevelOne(double screenHeight, double screenWidth) {
 		super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH, "LEVEL ONE");
@@ -41,7 +43,7 @@ public class LevelOne extends LevelParent {
 		int currentNumberOfEnemies = getCurrentNumberOfEnemies();
 		for (int i = 0; i < TOTAL_ENEMIES - currentNumberOfEnemies; i++) {
 			if (Math.random() < ENEMY_SPAWN_PROBABILITY) {
-				double newEnemyInitialYPosition = LevelParent.Y_UPPER_BOUND + Math.random() * (LevelParent.Y_LOWER_BOUND - LevelParent.Y_UPPER_BOUND);
+				double newEnemyInitialYPosition = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
 				ActiveActorDestructible newEnemy = new EnemyPlane(getScreenWidth(), newEnemyInitialYPosition);
 				addEnemyUnit(newEnemy);
 			}

@@ -17,15 +17,12 @@ import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.util.Duration;
 
-//import static sun.management.MonitorInfoCompositeData.getClassName;
-
 public abstract class LevelParent extends Observable {
 
 	private static final double SCREEN_HEIGHT_ADJUSTMENT = 400;
 	private static final int MILLISECOND_DELAY = 50;
 	private final double screenHeight;
 	private final double screenWidth;
-//	private final double enemyMaximumYPosition;
 	private boolean Updated = false;
 	private boolean ChangedState = false ;
 	private boolean isPaused = false;
@@ -34,9 +31,6 @@ public abstract class LevelParent extends Observable {
 	private long elapsedSeconds = 0;
 	private Timeline timerTimeline;
 	private String levelName;
-	// Centralized Y boundaries
-	protected static final double Y_UPPER_BOUND = 80;
-	protected static final double Y_LOWER_BOUND = 675.0;
 
 	private final Group root;
 	private final Timeline timeline;
@@ -55,7 +49,6 @@ public abstract class LevelParent extends Observable {
 		this.root = new Group();
 		this.scene = new Scene(root, screenWidth, screenHeight);
 		this.timeline = new Timeline();
-		// Retrieve the selected plane from StoreManager
 		// Retrieve the selected plane number from StoreManager
 		int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
 		// Map plane number to filename
@@ -249,7 +242,6 @@ public abstract class LevelParent extends Observable {
 
 	private void updateScene() {
 		if (gameOver) return;
-//		updateKillCount();
 		checkIfGameOver();
 		spawnEnemyUnits();
 		updateActors();
@@ -311,12 +303,10 @@ public abstract class LevelParent extends Observable {
 
 		if (!isPaused) {
 			pauseGame();
-//			pauseTimer();
 			levelView.showPauseOverlay();
 			isPaused = true;
 		} else {
 			resumeGame();
-//			resumeTimer();
 			levelView.hidePauseOverlay();
 			isPaused = false;
 		}
@@ -469,12 +459,6 @@ public abstract class LevelParent extends Observable {
 		updateCustomDisplay(); // Call the abstract method
 	}
 
-//	private void updateKillCount() {
-//		for (int i = 0; i < currentNumberOfEnemies - enemyUnits.size(); i++) {
-//			user.incrementKillCount();
-//		}
-//	}
-
 	private boolean enemyHasPenetratedDefenses(ActiveActorDestructible enemy) {
 		return Math.abs(enemy.getTranslateX()) > screenWidth;
 	}
@@ -490,7 +474,7 @@ public abstract class LevelParent extends Observable {
 		// Step 1: Retrieve Current Time
 		long currentTimeSeconds = elapsedSeconds;
 		String levelName = getLevelName();
-		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
+//		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
 
 		// Step 2: Access Preferences to Get Existing Fastest Time
 		FastestTimesManager ftm = FastestTimesManager.getInstance();
@@ -550,7 +534,7 @@ public abstract class LevelParent extends Observable {
 		// Step 1: Retrieve Current Time
 		long currentTimeSeconds = elapsedSeconds;
 		String levelName = getLevelName();
-		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
+//		System.out.println("Current time " + levelName + ": " + currentTimeSeconds + " seconds");
 		// Step 2: Access Preferences to Get Existing Fastest Time
 		FastestTimesManager ftm = FastestTimesManager.getInstance();
 		long existingFastestTime = ftm.getFastestTime(levelName);
