@@ -1,7 +1,7 @@
 package com.example.demo.plane;
 
 import com.example.demo.ActiveActorDestructible;
-import com.example.demo.UserShieldImage;
+import com.example.demo.shield.UserShieldImage;
 import com.example.demo.projectile.UserProjectile;
 import javafx.geometry.Bounds;
 
@@ -54,7 +54,7 @@ public class UserPlane extends FighterPlane {
 		updatePosition();
 		updateShieldPosition();
 	}
-
+	// shield only take damage for plane collisions and projectile
 	public void takeDamageFromProjectile() {
 		if (isShielded) {
 			shieldDamageCounter++;
