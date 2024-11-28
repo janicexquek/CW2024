@@ -19,5 +19,9 @@ public class UserProjectile extends Projectile {
 	public void updateActor() {
 		updatePosition();
 	}
-	
+
+	@Override
+	public void takeDamage() {
+		destroy(); // This will mark the projectile as destroyed
+	}
 }

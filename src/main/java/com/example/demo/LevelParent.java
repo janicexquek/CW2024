@@ -258,6 +258,7 @@ public abstract class LevelParent extends Observable {
 		handleEnemyPenetration();
 		handleUserProjectileCollisions();
 		handleEnemyProjectileCollisions();
+		handleProjectileCollisions();
 		handlePlaneCollisions();
 		removeAllDestroyedActors();
 		updateLevelView();
@@ -394,6 +395,25 @@ public abstract class LevelParent extends Observable {
 			}
 		}
 	}
+	// Handle projectile collision between user and enemy
+	private void handleProjectileCollisions() {
+		Iterator<ActiveActorDestructible> userProjectileIterator = userProjectiles.iterator();
+		while (userProjectileIterator.hasNext()) {
+			ActiveActorDestructible userProjectile = userProjectileIterator.next();
+			Iterator<ActiveActorDestructible> enemyProjectileIterator = enemyProjectiles.iterator();
+			while (enemyProjectileIterator.hasNext()) {
+				ActiveActorDestructible enemyProjectile = enemyProjectileIterator.next();
+				if (userProjectile.getBoundsInParent().intersects(enemyProjectile.getBoundsInParent())) {
+					// Mark both projectiles as destroyed
+					userProjectile.takeDamage();
+					enemyProjectile.takeDamage();
+
+					break;
+				}
+			}
+		}
+	}
+
 	// Modify handleUserProjectileCollisions()
 	private void handleUserProjectileCollisions() {
 		Iterator<ActiveActorDestructible> projectileIterator = userProjectiles.iterator();
