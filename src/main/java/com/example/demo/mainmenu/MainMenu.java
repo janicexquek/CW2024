@@ -54,7 +54,6 @@ public class MainMenu {
         // Create custom buttons
         StackPane statButton = createStickerButton("/com/example/demo/images/statistic.png");
         statButton.setOnMouseClicked(e -> {
-            System.out.println("Sticker Button Clicked! Navigating to Scoreboard.");
             ScoreboardPage scoreboardPage = new ScoreboardPage(stage, controller);
             scoreboardPage.show();
         });
@@ -62,7 +61,6 @@ public class MainMenu {
         // --- Create Store Button ---
         StackPane storeButton = createStickerButton("/com/example/demo/images/aircraft.png");
         storeButton.setOnMouseClicked(e -> {
-            System.out.println("Store Button Clicked! Navigating to Store.");
             StorePage storePage = new StorePage(stage, controller);
             storePage.show();
         });

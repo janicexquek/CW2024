@@ -116,12 +116,6 @@ public class ScoreboardPage {
         FastestTimesManager ftm = FastestTimesManager.getInstance();
         Map<String, Long> fastestTimes = ftm.getAllFastestTimes();
 
-        // Debugging: Print the fastest times to verify
-        System.out.println("Fastest Times Retrieved:");
-        for (Map.Entry<String, Long> entry : fastestTimes.entrySet()) {
-            System.out.println("Level: " + entry.getKey() + ", Time: " + entry.getValue() + " seconds");
-        }
-
         // Dynamically create rows for each level in the predefined order
         for (String levelName : ORDERED_LEVELS) {
             HBox row = new HBox();

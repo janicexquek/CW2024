@@ -67,7 +67,6 @@ public class FastestTimesManager {
         if (!fastestTimes.containsKey(levelName) || newTime < fastestTimes.get(levelName)) {
             fastestTimes.put(levelName, newTime);
             saveFastestTimes();
-            System.out.println("Updated fastest time for " + levelName + ": " + newTime + " seconds");
         }
     }
 
