@@ -9,6 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.Font;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -184,6 +185,7 @@ public class WinOverlay extends StackPane {
 
     // Combined method to create, assign actions, and add buttons to the overlay
     public void initializeButtons(Runnable backCallback, Runnable nextCallback, Runnable restartCallback, String levelName) {
+        double boxWidth = 500;
         if (buttonsInitialized) {
             return;
         }
@@ -192,8 +194,18 @@ public class WinOverlay extends StackPane {
         Button backButton = createCustomButton("Main Menu", backCallback);
         Button restartButton = createCustomButton("Restart", restartCallback);
         Button nextButton = null;
+        Label completedMessage = null; // Declare outside the if block
         if (nextCallback != null) {
             nextButton = createCustomButton("Next Level", nextCallback);
+        }
+        else { // Use else since nextCallback == null
+            completedMessage = new Label("Congratulations !\nYou have completed all levels.");
+            completedMessage.setTextFill(Color.WHITE);
+            completedMessage.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 16));
+            completedMessage.setWrapText(true);
+            completedMessage.setAlignment(Pos.CENTER);
+            completedMessage.setTextAlignment(TextAlignment.CENTER); // Added for text centering
+            completedMessage.setMaxWidth(boxWidth - 40); // boxWidth - 20 padding
         }
 
         // Create an HBox to hold the buttons horizontally
@@ -205,6 +217,9 @@ public class WinOverlay extends StackPane {
         allButtonBox.setAlignment(Pos.BOTTOM_CENTER);
         if (nextButton != null) {
             allButtonBox.getChildren().add(nextButton); // Conditionally add Next Level button
+        }
+        if(nextButton == null && completedMessage != null){
+            allButtonBox.getChildren().add(completedMessage); // Conditionally add completedMessage
         }
         allButtonBox.getChildren().addAll(buttonBox);
 
