@@ -75,7 +75,6 @@ public class LevelView {
 			if (font == null) {
 				System.out.println("Failed to load font from: " + fontPath);
 			} else {
-				System.out.println("Loaded font: " + font.getName());
 				this.infoDisplay.setFont(font);
 			}
 		}
