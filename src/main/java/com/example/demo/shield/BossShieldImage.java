@@ -1,14 +1,14 @@
-package com.example.demo;
+package com.example.demo.shield;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class ShieldImage extends ImageView {
+public class BossShieldImage extends ImageView {
 
 	private static final String IMAGE_NAME = "shield.png";
 	private static final int SHIELD_SIZE = 200;
 
-	public ShieldImage(double xPosition, double yPosition) {
+	public BossShieldImage(double xPosition, double yPosition) {
 		this.setLayoutX(xPosition);
 		this.setLayoutY(yPosition);
 		// this.setImage(new Image(IMAGE_NAME));
