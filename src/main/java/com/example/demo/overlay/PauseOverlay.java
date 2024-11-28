@@ -46,6 +46,18 @@ public class PauseOverlay extends StackPane {
         });
     }
 
+    // Method to load the custom font
+    private Font loadCustomFont(double size) {
+        try {
+            return Font.loadFont(getClass().getResourceAsStream(FONT_PATH), size);
+        } catch (Exception e) {
+            System.err.println("Failed to load custom font for PauseOverlay.");
+            e.printStackTrace();
+            // Fallback to Arial
+            return Font.font("Arial", size);
+        }
+    }
+
     private StackPane createMessageBox(double screenWidth, double screenHeight) {
         // Fixed size for the message box
         double boxWidth = 500;
@@ -89,16 +101,4 @@ public class PauseOverlay extends StackPane {
         return messageBox;
     }
 
-
-    // Method to load the custom font
-    private Font loadCustomFont(double size) {
-        try {
-            return Font.loadFont(getClass().getResourceAsStream(FONT_PATH), size);
-        } catch (Exception e) {
-            System.err.println("Failed to load custom font for PauseOverlay.");
-            e.printStackTrace();
-            // Fallback to Arial
-            return Font.font("Arial", size);
-        }
-    }
 }
