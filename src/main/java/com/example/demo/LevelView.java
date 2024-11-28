@@ -48,7 +48,7 @@ public class LevelView {
 		this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION,
 				pauseGameCallback, resumeGameCallback, backToMainMenuCallback, this::showExitOverlay);
 
-		// Initialize the PauseOverlay with screen dimensions
+		// Initialize the Pause, Win, GameOver Overlay with screen dimensions
 		this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, pauseGameCallback::run);
 		this.winOverlay = new WinOverlay(screenWidth, screenHeight); // Initialize WinOverlay
 		this.gameOverOverlay = new GameOverOverlay(screenWidth, screenHeight); // Initialize WinOverlay
@@ -63,6 +63,7 @@ public class LevelView {
 		infoDisplay.toFront(); // Bring infoDisplay to the front
 		positionInfoDisplay();
 	}
+	// -------------- load font for info display -------------------------
 	private void loadCustomFont() {
 		// Adjusted font loading code to handle spaces in file name
 		String fontPath = "/com/example/demo/fonts/Pixel Digivolve.otf";
@@ -84,7 +85,7 @@ public class LevelView {
 			this.infoDisplay.setFont(Font.font("Verdana", 20));
 		}
 	}
-
+	// -------------- position for info display -------------------------
 	private void positionInfoDisplay() {
 		Platform.runLater(() -> {
 			Bounds heartBounds = heartDisplay.getContainer().getBoundsInParent();
@@ -95,8 +96,15 @@ public class LevelView {
 			infoDisplay.setY(heartY + 40); // Align vertically with the heart display
 		});
 	}
+	// ----------------------- format time --------------------------
+	// Helper method to format time from seconds to MM:SS
+	private String formatTime(long totalSeconds) {
+		long minutes = totalSeconds / 60;
+		long seconds = totalSeconds % 60;
+		return String.format("%02d:%02d", minutes, seconds);
+	}
 
-
+	// ----------------  tracker for active overlay -------------------------
 	// New state variable to track active overlay
 	public static enum ActiveOverlay {
 		NONE,
@@ -106,7 +114,7 @@ public class LevelView {
 		COUNTDOWN,
 		EXIT
 	}
-
+	// ---------------- countdown overlay -------------------------
 	// Method to start the countdown
 	public void startCountdown(Runnable startGameCallback) {
 		if (activeOverlay != ActiveOverlay.NONE) {
@@ -158,8 +166,16 @@ public class LevelView {
 		activeOverlay = ActiveOverlay.NONE;
 	}
 
+	// ---------------- heart and exit display -------------------------
 	public void showHeartDisplay() {
 		root.getChildren().add(heartDisplay.getContainer());
+	}
+
+	public void removeHearts(int heartsRemaining) {
+		int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
+		for (int i = 0; i < currentNumberOfHearts - heartsRemaining; i++) {
+			heartDisplay.removeHeart();
+		}
 	}
 
 	public void showExitOverlay() {
@@ -180,13 +196,7 @@ public class LevelView {
 		root.getChildren().add(exitDisplay.getContainer());
 	}
 
-	public void removeHearts(int heartsRemaining) {
-		int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
-		for (int i = 0; i < currentNumberOfHearts - heartsRemaining; i++) {
-			heartDisplay.removeHeart();
-		}
-	}
-
+	// ---------------- PAUSE, WIN, GAME OVER overlay -------------------------
 	// Shows the pause overlay.
 	public void showPauseOverlay() {
 		if (activeOverlay == ActiveOverlay.NONE) {
@@ -254,6 +264,7 @@ public class LevelView {
 			activeOverlay = ActiveOverlay.NONE;
 	}
 
+	// ---------------- info display -------------------------
 	// Method to update kill count for Level One
 	public void updateKillCount(int currentKills, int killsToAdvance) {
 		Platform.runLater(() -> {
@@ -278,7 +289,6 @@ public class LevelView {
 		infoDisplay.toFront();
 	}
 
-	// Inside LevelView class
 	public ActiveOverlay getActiveOverlay() {
 		return activeOverlay;
 	}
@@ -290,12 +300,6 @@ public class LevelView {
 	}
 	public GameOverOverlay getGameOverOverlay() {
 		return gameOverOverlay;
-	}
-	// Helper method to format time from seconds to MM:SS
-	private String formatTime(long totalSeconds) {
-		long minutes = totalSeconds / 60;
-		long seconds = totalSeconds % 60;
-		return String.format("%02d:%02d", minutes, seconds);
 	}
 
 }
