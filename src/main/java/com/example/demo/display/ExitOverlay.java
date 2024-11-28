@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 import java.io.InputStream;
@@ -124,7 +125,7 @@ public class ExitOverlay extends StackPane {
         titleLabel.setMaxWidth(boxWidth - 40);
 
         // Create the message label
-        Label messageLabel = new Label("Do you want to CONTINUE your game or \nBACK to Main Menu?");
+        Label messageLabel = new Label("Do you want to CONTINUE your game \nor \nBACK to Main Menu ?");
         messageLabel.setTextFill(Color.WHITE);
         Font messageFont = customFonts.get("Pixel Digivolve");
         if (messageFont != null) {
@@ -132,6 +133,7 @@ public class ExitOverlay extends StackPane {
         } else {
             messageLabel.setFont(Font.font("Arial", 20));
         }
+        messageLabel.setTextAlignment(TextAlignment.CENTER);
         messageLabel.setAlignment(Pos.CENTER);
         messageLabel.setMaxWidth(boxWidth - 40);
 
