@@ -54,7 +54,7 @@ public class UserPlane extends FighterPlane {
 		updatePosition();
 		updateShieldPosition();
 	}
-	// shield only take damage for plane collisions and projectile
+	// shield only take damage for enemy plane projectile
 	public void takeDamageFromProjectile() {
 		if (isShielded) {
 			shieldDamageCounter++;
