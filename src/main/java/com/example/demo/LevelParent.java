@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
 import com.example.demo.mainmenu.StoreManager;
+import com.example.demo.plane.AllyPlane;
 import com.example.demo.plane.FighterPlane;
 import com.example.demo.plane.UserPlane;
 import javafx.animation.KeyFrame;
@@ -36,10 +37,11 @@ public abstract class LevelParent extends Observable {
 	private final Scene scene;
 	private final ImageView background;
 
-	private final List<ActiveActorDestructible> friendlyUnits;
+	protected final List<ActiveActorDestructible> friendlyUnits;
 	private final List<ActiveActorDestructible> enemyUnits;
 	private final List<ActiveActorDestructible> userProjectiles;
 	private final List<ActiveActorDestructible> enemyProjectiles;
+	protected List<ActiveActorDestructible> allyProjectiles; // New property
 
 	protected LevelView levelView;
 
@@ -56,6 +58,7 @@ public abstract class LevelParent extends Observable {
 		this.enemyUnits = new ArrayList<>();
 		this.userProjectiles = new ArrayList<>();
 		this.enemyProjectiles = new ArrayList<>();
+		this.allyProjectiles = new ArrayList<>(); // Initialize allyProjectiles
 		this.Updated = false;
 
 		this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
@@ -247,7 +250,6 @@ public abstract class LevelParent extends Observable {
 		// Pause all active sound effects
 		SettingsManager.getInstance().pauseMusic();
 		SettingsManager.getInstance().muteAllSoundEffects();
-
 	}
 
 	// Method to resume the game
@@ -308,10 +310,6 @@ public abstract class LevelParent extends Observable {
 		return levelName;
 	}
 
-//	public boolean ChangedState(){
-//		return ChangedState;
-//	}
-
 	// ------------ UPDATE SCENE ---------------
 	private void updateScene() {
 		if (gameOver) return;
@@ -325,6 +323,8 @@ public abstract class LevelParent extends Observable {
 		handleEnemyProjectileCollisions();
 		handleProjectileCollisions();
 		handlePlaneCollisions();
+		handleEnemyProjectileCollisionsWithAlly();
+		handleAllyProjectileCollisions();
 		removeAllDestroyedActors();
 		updateLevelView();
 	}
@@ -333,11 +333,10 @@ public abstract class LevelParent extends Observable {
 		updateCustomDisplay(); // Call the abstract method
 	}
 
-	// --------------------- GAME CONCEPT ----------------------------
+	// ----------------------- GAME CONCEPT ----------------------------
 	private boolean canFireProjectiles() {
 		return !gameOver && !isPaused && levelView.getActiveOverlay() == LevelView.ActiveOverlay.NONE;
 	}
-
 
 	private void fireProjectile() {
 		if (!canFireProjectiles()) return; // Prevent firing when not allowed
@@ -373,6 +372,7 @@ public abstract class LevelParent extends Observable {
 		enemyUnits.forEach(enemy -> enemy.updateActor());
 		userProjectiles.forEach(projectile -> projectile.updateActor());
 		enemyProjectiles.forEach(projectile -> projectile.updateActor());
+		allyProjectiles.forEach(projectile -> projectile.updateActor()); // Update ally projectiles
 	}
 
 	// Remove all destroyed actors from the scene and tracking lists
@@ -381,6 +381,7 @@ public abstract class LevelParent extends Observable {
 		removeDestroyedActors(enemyUnits);
 		removeDestroyedActors(userProjectiles);
 		removeDestroyedActors(enemyProjectiles);
+		removeDestroyedActors(allyProjectiles); // Remove destroyed ally projectiles
 	}
 
 	// Helper method to remove destroyed actors from a given list
@@ -391,27 +392,36 @@ public abstract class LevelParent extends Observable {
 		actors.removeAll(destroyedActors);
 	}
 
-	// Modify handlePlaneCollisions()
+	// Handle Plane Collision between all friendly units (UserPlane and AllyPlane) and enemy planes
 	private void handlePlaneCollisions() {
 		if (gameOver) return;
-		for (ActiveActorDestructible friendly : friendlyUnits) {
-			for (ActiveActorDestructible enemy : enemyUnits) {
+		// Create defensive copies to prevent ConcurrentModificationException
+		List<ActiveActorDestructible> friendlyUnitsCopy = new ArrayList<>(friendlyUnits);
+		List<ActiveActorDestructible> enemyUnitsCopy = new ArrayList<>(enemyUnits);
+
+		for (ActiveActorDestructible friendly : friendlyUnitsCopy) {
+			for (ActiveActorDestructible enemy : enemyUnitsCopy) {
 				if (friendly.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
+					// Apply damage to both friendly and enemy
 					friendly.takeDamage();
 					enemy.takeDamage();
+					// Handle destruction and specific actions
 					if (friendly.isDestroyed()) {
 						friendly.setDestroyedBy(ActiveActorDestructible.DestroyedBy.COLLISION_WITH_USER);
 					}
 					if (enemy.isDestroyed()) {
 						enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.COLLISION_WITH_USER);
+						// Handle enemy destruction, e.g., increment score
 					}
 				}
 			}
 		}
 	}
 
-	// Handle projectile collision between user and enemy
+
+	// Handle projectile collision between user, Ally and enemy
 	private void handleProjectileCollisions() {
+		// Handle projectile collision between user and enemy
 		Iterator<ActiveActorDestructible> userProjectileIterator = userProjectiles.iterator();
 		while (userProjectileIterator.hasNext()) {
 			ActiveActorDestructible userProjectile = userProjectileIterator.next();
@@ -427,10 +437,25 @@ public abstract class LevelParent extends Observable {
 				}
 			}
 		}
+		// New: Handle collisions between Ally Projectiles and Enemy Projectiles
+		Iterator<ActiveActorDestructible> allyProjectileIterator = allyProjectiles.iterator();
+		while (allyProjectileIterator.hasNext()) {
+			ActiveActorDestructible allyProjectile = allyProjectileIterator.next();
+			Iterator<ActiveActorDestructible> enemyProjectileIterator = enemyProjectiles.iterator();
+			while (enemyProjectileIterator.hasNext()) {
+				ActiveActorDestructible enemyProjectile = enemyProjectileIterator.next();
+				if (allyProjectile.getBoundsInParent().intersects(enemyProjectile.getBoundsInParent())) {
+					allyProjectile.takeDamage();
+					enemyProjectile.takeDamage();
+					break;
+				}
+			}
+		}
 	}
 
-	// Handle collisions between user projectiles and the enemy
+	// Handle collisions between user & Ally projectiles and the enemy
 	private void handleUserProjectileCollisions() {
+		// Handle collisions between user projectiles and the enemy
 		Iterator<ActiveActorDestructible> projectileIterator = userProjectiles.iterator();
 		while (projectileIterator.hasNext()) {
 			ActiveActorDestructible projectile = projectileIterator.next();
@@ -480,8 +505,56 @@ public abstract class LevelParent extends Observable {
 	private boolean enemyHasPenetratedDefenses(ActiveActorDestructible enemy) {
 		return Math.abs(enemy.getTranslateX()) > screenWidth;
 	}
+	// ------------------------- Ally Plane ------------------------
+	// Add this method to LevelParent to allow adding AllyProjectiles
+	public void addAllyProjectile(ActiveActorDestructible projectile) {
+		allyProjectiles.add(projectile);
+		root.getChildren().add(projectile);
+	}
 
-	// ------------------------ FINISH GAME ----------------------
+
+	// Handle collisions between enemy projectiles and the ally
+	protected void handleEnemyProjectileCollisionsWithAlly() {
+		Iterator<ActiveActorDestructible> enemyProjectileIterator = enemyProjectiles.iterator();
+		while (enemyProjectileIterator.hasNext()) {
+			ActiveActorDestructible enemyProjectile = enemyProjectileIterator.next();
+			// Iterate through all friendly units to check for collisions
+			for (ActiveActorDestructible friendly : friendlyUnits) {
+				if (friendly.isDestroyed()) continue; // Skip if already destroyed
+				if (enemyProjectile.getBoundsInParent().intersects(friendly.getBoundsInParent())) {
+					// Apply damage to the friendly unit
+					friendly.takeDamage();
+					// Destroy the enemy projectile
+					enemyProjectile.takeDamage();
+					break;
+				}
+			}
+		}
+	}
+
+	// Handle collisions between the Ally projectiles and the enemy
+	private void handleAllyProjectileCollisions() {
+		// Handle collisions between Ally Projectiles and Enemies
+		Iterator<ActiveActorDestructible> allyProjIter = allyProjectiles.iterator();
+		while (allyProjIter.hasNext()) {
+			ActiveActorDestructible allyProjectile = allyProjIter.next();
+			Iterator<ActiveActorDestructible> enemyIter = enemyUnits.iterator();
+			while (enemyIter.hasNext()) {
+				ActiveActorDestructible enemy = enemyIter.next();
+				if (allyProjectile.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
+					enemy.takeDamage();
+					allyProjectile.takeDamage();
+					if (enemy.isDestroyed()) {
+						enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.USER_PROJECTILE);
+						user.incrementKillCount(); // Increment kill count here
+					}
+					break; // Move to the next projectile after collision
+				}
+			}
+		}
+	}
+
+	// -------------------------------- FINISH GAME ----------------------------------
 	protected void winGame() {
 		if (gameOver) return;
 		gameOver = true;
@@ -505,6 +578,7 @@ public abstract class LevelParent extends Observable {
 			ftm.updateFastestTime(levelName, currentTimeSeconds);
 			fastestTimeSeconds = currentTimeSeconds;
 		}
+
 		// Step 4: Determine the Achievement Message
 		String achievementMessage;
 		if (currentTimeSeconds < existingFastestTime) {
@@ -521,6 +595,7 @@ public abstract class LevelParent extends Observable {
 		if (nextLevel != null && !nextLevel.isEmpty()) {
 			nextLevelCallback = this::proceedToNextLevel;
 		}
+
 		// Step 6: Show WinOverlay with conditional Next Level callback
 		if (levelView != null) {
 			levelView.showWinOverlay(
@@ -564,12 +639,21 @@ public abstract class LevelParent extends Observable {
 		SettingsManager.getInstance().playDefeatSound(); // Play defeat sound
 	}
 
+	// ----------------------Getter method ----------------------------
 	protected UserPlane getUser() {
 		return user;
 	}
 
 	protected Group getRoot() {
 		return root;
+	}
+
+	protected double getScreenWidth() {
+		return screenWidth;
+	}
+
+	protected boolean userIsDestroyed() {
+		return user.isDestroyed();
 	}
 
 	protected int getCurrentNumberOfEnemies() {
@@ -581,19 +665,10 @@ public abstract class LevelParent extends Observable {
 		root.getChildren().add(enemy);
 	}
 
-	protected double getScreenWidth() {
-		return screenWidth;
-	}
-
-	protected boolean userIsDestroyed() {
-		return user.isDestroyed();
-	}
-
 	private void updateNumberOfEnemies() {
 		currentNumberOfEnemies = enemyUnits.size();
 	}
 
-	// Add this protected getter method
 	protected List<ActiveActorDestructible> getEnemyUnits() {
 		return enemyUnits;
 	}
