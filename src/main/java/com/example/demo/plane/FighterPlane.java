@@ -1,6 +1,7 @@
 package com.example.demo.plane;
 
 import com.example.demo.ActiveActorDestructible;
+import javafx.geometry.Bounds;
 
 public abstract class FighterPlane extends ActiveActorDestructible {
 
@@ -21,12 +22,14 @@ public abstract class FighterPlane extends ActiveActorDestructible {
 		}
 	}
 
-	protected double getProjectileXPosition(double xPositionOffset) {
-		return getLayoutX() + getTranslateX() + xPositionOffset;
+	protected double getProjectileXPosition() {
+		Bounds bounds = localToScene(getBoundsInLocal());
+		return bounds.getMinX();
 	}
 
 	protected double getProjectileYPosition(double yPositionOffset) {
-		return getLayoutY() + getTranslateY() + yPositionOffset;
+		Bounds bounds = localToScene(getBoundsInLocal());
+		return bounds.getMinY() + bounds.getHeight() / 2 + yPositionOffset;
 	}
 
 	private boolean healthAtZero() {

@@ -12,6 +12,7 @@ import com.example.demo.plane.UserPlane;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.*;
@@ -373,6 +374,7 @@ public abstract class LevelParent extends Observable {
 		userProjectiles.forEach(projectile -> projectile.updateActor());
 		enemyProjectiles.forEach(projectile -> projectile.updateActor());
 		allyProjectiles.forEach(projectile -> projectile.updateActor()); // Update ally projectiles
+		checkProjectilesOutOfBounds();
 	}
 
 	// Remove all destroyed actors from the scene and tracking lists
@@ -505,6 +507,32 @@ public abstract class LevelParent extends Observable {
 	private boolean enemyHasPenetratedDefenses(ActiveActorDestructible enemy) {
 		return Math.abs(enemy.getTranslateX()) > screenWidth;
 	}
+
+	private void checkProjectilesOutOfBounds() {
+		checkProjectilesOutOfBounds(userProjectiles);
+		checkProjectilesOutOfBounds(enemyProjectiles);
+		checkProjectilesOutOfBounds(allyProjectiles);
+	}
+
+	private void checkProjectilesOutOfBounds(List<ActiveActorDestructible> projectiles) {
+		for (ActiveActorDestructible projectile : projectiles) {
+			if (isOutOfBounds(projectile)) {
+				projectile.destroy();
+			}
+		}
+	}
+
+	private boolean isOutOfBounds(ActiveActorDestructible actor) {
+		Bounds bounds = actor.localToScene(actor.getBoundsInLocal());
+		double minX = bounds.getMinX();
+		double maxX = bounds.getMaxX();
+		double minY = bounds.getMinY();
+		double maxY = bounds.getMaxY();
+
+		// Actor is out of bounds if it is completely off-screen
+		return maxX < 0 || minX > screenWidth || maxY < 0 || minY > screenHeight;
+	}
+
 	// ------------------------- Ally Plane ------------------------
 	// Add this method to LevelParent to allow adding AllyProjectiles
 	public void addAllyProjectile(ActiveActorDestructible projectile) {

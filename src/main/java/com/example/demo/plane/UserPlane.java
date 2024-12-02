@@ -15,7 +15,7 @@ public class UserPlane extends FighterPlane {
 	private static final int IMAGE_HEIGHT = 40;
 	private static final int VERTICAL_VELOCITY = 8;
 	private static final int PROJECTILE_X_POSITION = 110;
-	private static final int PROJECTILE_Y_POSITION_OFFSET = 20;
+	private static final int PROJECTILE_Y_POSITION_OFFSET = 5;
 	public static final int MAX_SHIELD_DAMAGE = 5; // Maximum damage the shield can absorb
 
 	// Variables
