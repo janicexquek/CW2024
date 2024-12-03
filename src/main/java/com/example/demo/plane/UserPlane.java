@@ -5,144 +5,214 @@ import com.example.demo.shield.UserShieldImage;
 import com.example.demo.projectile.UserProjectile;
 import javafx.geometry.Bounds;
 
+/**
+ * Class representing the user's plane in the game.
+ * Manages the movement, firing, and shield of the user's plane.
+ */
 public class UserPlane extends FighterPlane {
 
-	// Existing constants and variables
-	private static final double Y_UPPER_BOUND = 80;
-	private static final double Y_LOWER_BOUND = 675.0;
-	private static final double INITIAL_X_POSITION = 5.0;
-	private static final double INITIAL_Y_POSITION = 300.0;
-	private static final int IMAGE_HEIGHT = 40;
-	private static final int VERTICAL_VELOCITY = 8;
-	private static final int PROJECTILE_X_POSITION = 110;
-	private static final int PROJECTILE_Y_POSITION_OFFSET = 5;
-	public static final int MAX_SHIELD_DAMAGE = 5; // Maximum damage the shield can absorb
+    // Existing constants and variables
+    private static final double Y_UPPER_BOUND = 80;
+    private static final double Y_LOWER_BOUND = 675.0;
+    private static final double INITIAL_X_POSITION = 5.0;
+    private static final double INITIAL_Y_POSITION = 300.0;
+    private static final int IMAGE_HEIGHT = 40;
+    private static final int VERTICAL_VELOCITY = 8;
+    private static final int PROJECTILE_X_POSITION = 110;
+    private static final int PROJECTILE_Y_POSITION_OFFSET = 5;
+    public static final int MAX_SHIELD_DAMAGE = 5; // Maximum damage the shield can absorb
 
-	// Variables
-	private boolean isShielded;
-	private int shieldDamageCounter;
-	private UserShieldImage userShieldImage;
-	private int health;
-	private int velocityMultiplier;
-	private int numberOfKills;
+    // Variables
+    private boolean isShielded;
+    private int shieldDamageCounter;
+    private UserShieldImage userShieldImage;
+    private int health;
+    private int velocityMultiplier;
+    private int numberOfKills;
 
+    /**
+     * Constructor for UserPlane.
+     *
+     * @param imageName the name of the image representing the plane
+     * @param initialHealth the initial health of the plane
+     */
+    public UserPlane(String imageName, int initialHealth) {
+        super(imageName, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, initialHealth);
+        this.health = initialHealth;
+        velocityMultiplier = 0;
+        shieldDamageCounter = 0;
+        isShielded = false;
+        userShieldImage = new UserShieldImage(0, 0); // Position will be updated later
+        userShieldImage.setVisible(false); // Initially hidden
+    }
 
-	public UserPlane(String imageName, int initialHealth) {
-		super(imageName, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, initialHealth);
-		this.health = initialHealth;
-		velocityMultiplier = 0;
-		shieldDamageCounter = 0;
-		isShielded = false;
-		userShieldImage = new UserShieldImage(0, 0); // Position will be updated later
-		userShieldImage.setVisible(false); // Initially hidden
-	}
+    /**
+     * Updates the position of the user's plane.
+     * Ensures the plane stays within the vertical bounds.
+     */
+    @Override
+    public void updatePosition() {
+        if (isMoving()) {
+            double initialTranslateY = getTranslateY();
+            this.moveVertically(VERTICAL_VELOCITY * velocityMultiplier);
+            double newPosition = getLayoutY() + getTranslateY();
+            if (newPosition < Y_UPPER_BOUND || newPosition > Y_LOWER_BOUND) {
+                this.setTranslateY(initialTranslateY);
+            }
+        }
+    }
 
-	@Override
-	public void updatePosition() {
-		if (isMoving()) {
-			double initialTranslateY = getTranslateY();
-			this.moveVertically(VERTICAL_VELOCITY * velocityMultiplier);
-			double newPosition = getLayoutY() + getTranslateY();
-			if (newPosition < Y_UPPER_BOUND || newPosition > Y_LOWER_BOUND) {
-				this.setTranslateY(initialTranslateY);
-			}
-		}
-	}
+    /**
+     * Updates the state of the user's plane.
+     * Handles position update and shield position update.
+     */
+    @Override
+    public void updateActor() {
+        updatePosition();
+        updateShieldPosition();
+    }
 
-	@Override
-	public void updateActor() {
-		updatePosition();
-		updateShieldPosition();
-	}
-	// shield only take damage for enemy plane projectile
-	public void takeDamageFromProjectile() {
-		if (isShielded) {
-			shieldDamageCounter++;
-			if (shieldDamageCounter >= MAX_SHIELD_DAMAGE) {
-				deactivateShield();
-			}
-		}
-		// If shield is not active, you might want to decrease health directly
-		else {
-			super.takeDamage();
-			health--;
-		}
-	}
+    /**
+     * Takes damage from a projectile and decreases the shield damage counter.
+     * Deactivates the shield if the maximum shield damage is reached.
+     */
+    public void takeDamageFromProjectile() {
+        if (isShielded) {
+            shieldDamageCounter++;
+            if (shieldDamageCounter >= MAX_SHIELD_DAMAGE) {
+                deactivateShield();
+            }
+        } else {
+            super.takeDamage();
+            health--;
+        }
+    }
 
-	public void takeDamageFromPenetration() {
-		super.takeDamage();
-		health--;
-	}
+    /**
+     * Takes damage from penetration and decreases the health of the plane.
+     */
+    public void takeDamageFromPenetration() {
+        super.takeDamage();
+        health--;
+    }
 
-	public UserShieldImage getShieldImage() {
-		return userShieldImage;
-	}
+    /**
+     * Gets the shield image of the user's plane.
+     *
+     * @return the UserShieldImage object
+     */
+    public UserShieldImage getShieldImage() {
+        return userShieldImage;
+    }
 
-	// Method to check if shield is active
-	public boolean isShieldActive() {
-		return isShielded;
-	}
+    /**
+     * Checks if the shield is active.
+     *
+     * @return true if the shield is active, false otherwise
+     */
+    public boolean isShieldActive() {
+        return isShielded;
+    }
 
-	// Public getter method
-	public int getShieldDamageCounter() {
-		return shieldDamageCounter;
-	}
+    /**
+     * Gets the shield damage counter.
+     *
+     * @return the shield damage counter
+     */
+    public int getShieldDamageCounter() {
+        return shieldDamageCounter;
+    }
 
-	private void updateShieldPosition() {
-		// Get the current bounds of the UserPlane in the parent coordinate space
-		Bounds bounds = getBoundsInParent();
+    /**
+     * Updates the shield position to match the user's plane position.
+     */
+    private void updateShieldPosition() {
+        // Get the current bounds of the UserPlane in the parent coordinate space
+        Bounds bounds = getBoundsInParent();
 
-		// Calculate the center position
-		double centerX = bounds.getMinX() + bounds.getWidth() / 2;
-		double centerY = bounds.getMinY() + bounds.getHeight() / 2;
+        // Calculate the center position
+        double centerX = bounds.getMinX() + bounds.getWidth() / 2;
+        double centerY = bounds.getMinY() + bounds.getHeight() / 2;
 
-		// Position the shield so that its center aligns with the UserPlane's center
-		userShieldImage.setLayoutX(centerX - userShieldImage.getFitWidth() / 2);
-		userShieldImage.setLayoutY(centerY - userShieldImage.getFitHeight() / 2);
+        // Position the shield so that its center aligns with the UserPlane's center
+        userShieldImage.setLayoutX(centerX - userShieldImage.getFitWidth() / 2);
+        userShieldImage.setLayoutY(centerY - userShieldImage.getFitHeight() / 2);
 
-		// Ensure the shield is rendered above the UserPlane
-		userShieldImage.toFront();
-	}
+        // Ensure the shield is rendered above the UserPlane
+        userShieldImage.toFront();
+    }
 
-	public void activateShield() {
-		isShielded = true;
-		shieldDamageCounter = 0; // Reset counter when shield is activated
-		userShieldImage.showShield(); // Show the shield image
-	}
+    /**
+     * Activates the shield.
+     */
+    public void activateShield() {
+        isShielded = true;
+        shieldDamageCounter = 0; // Reset counter when shield is activated
+        userShieldImage.showShield(); // Show the shield image
+    }
 
-	private void deactivateShield() {
-		isShielded = false;
-		shieldDamageCounter = 0; // Reset counter when shield is deactivated
-		userShieldImage.hideShield(); // Hide the shield image
-	}
+    /**
+     * Deactivates the shield.
+     */
+    private void deactivateShield() {
+        isShielded = false;
+        shieldDamageCounter = 0; // Reset counter when shield is deactivated
+        userShieldImage.hideShield(); // Hide the shield image
+    }
 
-	@Override
-	public ActiveActorDestructible fireProjectile() {
-		return new UserProjectile(PROJECTILE_X_POSITION, getProjectileYPosition(PROJECTILE_Y_POSITION_OFFSET));
-	}
+    /**
+     * Fires a projectile from the user's plane.
+     *
+     * @return the fired projectile
+     */
+    @Override
+    public ActiveActorDestructible fireProjectile() {
+        return new UserProjectile(PROJECTILE_X_POSITION, getProjectileYPosition(PROJECTILE_Y_POSITION_OFFSET));
+    }
 
-	private boolean isMoving() {
-		return velocityMultiplier != 0;
-	}
+    /**
+     * Checks if the plane is moving.
+     *
+     * @return true if the plane is moving, false otherwise
+     */
+    private boolean isMoving() {
+        return velocityMultiplier != 0;
+    }
 
-	public void moveUp() {
-		velocityMultiplier = -1;
-	}
+    /**
+     * Moves the plane up.
+     */
+    public void moveUp() {
+        velocityMultiplier = -1;
+    }
 
-	public void moveDown() {
-		velocityMultiplier = 1;
-	}
+    /**
+     * Moves the plane down.
+     */
+    public void moveDown() {
+        velocityMultiplier = 1;
+    }
 
-	public void stop() {
-		velocityMultiplier = 0;
-	}
+    /**
+     * Stops the plane's movement.
+     */
+    public void stop() {
+        velocityMultiplier = 0;
+    }
 
-	public int getNumberOfKills() {
-		return numberOfKills;
-	}
+    /**
+     * Gets the number of kills by the user's plane.
+     *
+     * @return the number of kills
+     */
+    public int getNumberOfKills() {
+        return numberOfKills;
+    }
 
-	public void incrementKillCount() {
-		numberOfKills++;
-	}
-
+    /**
+     * Increments the kill count by one.
+     */
+    public void incrementKillCount() {
+        numberOfKills++;
+    }
 }
