@@ -17,11 +17,12 @@ import javafx.util.Duration;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+/**
+ * Class representing the scoreboard page in the game.
+ * Manages the display and interactions of the scoreboard page.
+ */
 public class ScoreboardPage {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background6.jpeg";
 
@@ -39,6 +40,12 @@ public class ScoreboardPage {
     // Map to store loaded fonts for easy access
     private Map<String, Font> customFonts = new HashMap<>();
 
+    /**
+     * Constructor for ScoreboardPage.
+     *
+     * @param stage the primary stage for this application
+     * @param controller the controller to manage interactions
+     */
     public ScoreboardPage(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
@@ -46,17 +53,19 @@ public class ScoreboardPage {
         loadCustomFonts();
     }
 
+    /**
+     * Displays the scoreboard page.
+     */
     public void show() {
         // Load the background image
-        ImageView backgroundImageView = new ImageView(new Image(getClass().getResource(BACKGROUND_IMAGE_NAME).toExternalForm()));
+        ImageView backgroundImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BACKGROUND_IMAGE_NAME)).toExternalForm()));
         backgroundImageView.setFitWidth(stage.getWidth());
         backgroundImageView.setFitHeight(stage.getHeight());
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
 
         // --- Back Button ---
-        StackPane backButton = createCustomButton("Back",
-                "/com/example/demo/images/ButtonText_Small_Round.png", 80, 30);
+        StackPane backButton = createCustomButton();
         backButton.setOnMouseClicked(e -> {
             // Navigate back to the main menu
             MainMenu mainMenu = new MainMenu(stage, controller);
@@ -112,7 +121,7 @@ public class ScoreboardPage {
         // Add headers and separator
         scoresBox.getChildren().addAll(headers, separator);
 
-        // Fetch fastest times from the controller
+        // Fetch the fastest times from the controller
         FastestTimesManager ftm = FastestTimesManager.getInstance();
         Map<String, Long> fastestTimes = ftm.getAllFastestTimes();
 
@@ -166,21 +175,32 @@ public class ScoreboardPage {
         stage.show();
     }
 
+    /**
+     * Formats the time from seconds to a mm:ss format.
+     *
+     * @param totalSeconds the total time in seconds
+     * @return the formatted time string
+     */
     private String formatTime(long totalSeconds) {
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;
         return String.format("%02d:%02d", minutes, seconds);
     }
 
-    private StackPane createCustomButton(String text, String imagePath, double width, double height) {
+    /**
+     * Creates a custom button with an image and text.
+     *
+     * @return the created StackPane representing the button
+     */
+    private StackPane createCustomButton() {
         // Load the button background image
-        ImageView buttonImageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
-        buttonImageView.setFitWidth(width);
-        buttonImageView.setFitHeight(height);
+        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/ButtonText_Small_Round.png")).toExternalForm()));
+        buttonImageView.setFitWidth(80);
+        buttonImageView.setFitHeight(30);
         buttonImageView.setPreserveRatio(false);
 
         // Create a label for the button text
-        Label label = new Label(text);
+        Label label = new Label("Back");
 
         // Set the Sugar Bomb font
         label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
@@ -194,8 +214,8 @@ public class ScoreboardPage {
         stackPane.getStyleClass().add("custom-button-hover");
 
         // Ensure the StackPane size matches the image size
-        stackPane.setMinSize(width, height);
-        stackPane.setMaxSize(width, height);
+        stackPane.setMinSize(80, 30);
+        stackPane.setMaxSize(80, 30);
 
         // Change cursor to hand on hover
         stackPane.setCursor(Cursor.HAND);
@@ -225,6 +245,9 @@ public class ScoreboardPage {
         return stackPane;
     }
 
+    /**
+     * Loads custom fonts from resources.
+     */
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",

@@ -5,20 +5,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
+/**
+ * Manages the fastest times for game levels.
+ * Implements a singleton pattern to ensure a single instance.
+ */
 public class FastestTimesManager {
     private static FastestTimesManager instance;
     private Map<String, Long> fastestTimes;
     private Preferences prefs;
     private static final String PREF_FASTEST_TIMES = "fastestTimes";
 
-    // Private constructor to enforce singleton pattern
+    /**
+     * Private constructor to enforce singleton pattern.
+     * Initializes the fastest times map and loads data from preferences.
+     */
     private FastestTimesManager() {
         fastestTimes = new HashMap<>();
         prefs = Preferences.userNodeForPackage(FastestTimesManager.class);
         loadFastestTimes();
     }
 
-    // Public method to provide access to the singleton instance
+    /**
+     * Provides access to the singleton instance.
+     *
+     * @return the singleton instance of FastestTimesManager
+     */
     public static synchronized FastestTimesManager getInstance() {
         if (instance == null) {
             instance = new FastestTimesManager();
@@ -26,7 +37,9 @@ public class FastestTimesManager {
         return instance;
     }
 
-    // Load the fastest times from Preferences into the map
+    /**
+     * Loads the fastest times from Preferences into the map.
+     */
     private void loadFastestTimes() {
         String storedTimes = prefs.get(PREF_FASTEST_TIMES, "");
         if (!storedTimes.isEmpty()) {
@@ -48,7 +61,9 @@ public class FastestTimesManager {
         }
     }
 
-    // Save the current fastest times map to Preferences
+    /**
+     * Saves the current fastest times map to Preferences.
+     */
     private void saveFastestTimes() {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Long> entry : fastestTimes.entrySet()) {
@@ -57,12 +72,22 @@ public class FastestTimesManager {
         prefs.put(PREF_FASTEST_TIMES, sb.toString());
     }
 
-    // Retrieve the fastest time for a specific level
+    /**
+     * Retrieves the fastest time for a specific level.
+     *
+     * @param levelName the name of the level
+     * @return the fastest time for the level, or Long.MAX_VALUE if not found
+     */
     public long getFastestTime(String levelName) {
         return fastestTimes.getOrDefault(levelName, Long.MAX_VALUE);
     }
 
-    // Update the fastest time for a specific level if the new time is better
+    /**
+     * Updates the fastest time for a specific level if the new time is better.
+     *
+     * @param levelName the name of the level
+     * @param newTime the new time to be considered
+     */
     public void updateFastestTime(String levelName, long newTime) {
         if (!fastestTimes.containsKey(levelName) || newTime < fastestTimes.get(levelName)) {
             fastestTimes.put(levelName, newTime);
@@ -70,7 +95,11 @@ public class FastestTimesManager {
         }
     }
 
-    // Retrieve all fastest times (used for the scoreboard)
+    /**
+     * Retrieves all fastest times (used for the scoreboard).
+     *
+     * @return a map of all fastest times
+     */
     public Map<String, Long> getAllFastestTimes() {
         return new HashMap<>(fastestTimes);
     }

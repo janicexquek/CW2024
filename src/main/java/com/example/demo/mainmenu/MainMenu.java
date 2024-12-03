@@ -20,7 +20,12 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * Class representing the main menu in the game.
+ * Manages the display and interactions of the main menu.
+ */
 public class MainMenu {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background3.jpg";
 
@@ -30,6 +35,12 @@ public class MainMenu {
     // Map to store loaded fonts for easy access
     private Map<String, Font> customFonts = new HashMap<>();
 
+    /**
+     * Constructor for MainMenu.
+     *
+     * @param stage the primary stage for this application
+     * @param controller the controller to manage interactions
+     */
     public MainMenu(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
@@ -37,9 +48,12 @@ public class MainMenu {
         loadCustomFonts();
     }
 
+    /**
+     * Displays the main menu.
+     */
     public void show() {
         // Load the background image
-        ImageView backgroundImageView = new ImageView(new Image(getClass().getResource(BACKGROUND_IMAGE_NAME).toExternalForm()));
+        ImageView backgroundImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BACKGROUND_IMAGE_NAME)).toExternalForm()));
         backgroundImageView.setFitWidth(stage.getWidth());
         backgroundImageView.setFitHeight(stage.getHeight());
         backgroundImageView.setPreserveRatio(false);
@@ -107,7 +121,7 @@ public class MainMenu {
         root.getChildren().addAll(backgroundImageView, mainLayout);
         // --- Add the Quit (x.png) Button in Top-Left Corner ---
         // Load the x.png image
-        ImageView closeImageView = new ImageView(new Image(getClass().getResource("/com/example/demo/images/x.png").toExternalForm()));
+        ImageView closeImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/x.png")).toExternalForm()));
         closeImageView.setFitWidth(30); // Adjust size as needed
         closeImageView.setFitHeight(30);
         closeImageView.setPreserveRatio(true);
@@ -137,6 +151,12 @@ public class MainMenu {
         stage.show();
     }
 
+    /**
+     * Creates a sticker button with an image.
+     *
+     * @param imagePath the path to the image
+     * @return the created StackPane representing the button
+     */
     private StackPane createStickerButton(String imagePath){
         // Load the button background image
         Image buttonImage;
@@ -230,10 +250,15 @@ public class MainMenu {
         return stackPane;
     }
 
-
+    /**
+     * Creates a custom button with an image and text.
+     *
+     * @param text the text to display on the button
+     * @return the created StackPane representing the button
+     */
     private StackPane createCustomButton(String text) {
         // Load the button background image
-        ImageView buttonImageView = new ImageView(new Image(getClass().getResource("/com/example/demo/images/ButtonText_Large_Round.png").toExternalForm()));
+        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/ButtonText_Large_Round.png")).toExternalForm()));
         buttonImageView.setFitWidth(180); // Set desired width
         buttonImageView.setFitHeight(60); // Set desired height
         buttonImageView.setPreserveRatio(false);
@@ -283,7 +308,9 @@ public class MainMenu {
         return stackPane;
     }
 
-
+    /**
+     * Loads custom fonts from resources.
+     */
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",

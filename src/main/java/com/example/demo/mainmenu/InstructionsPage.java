@@ -19,7 +19,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * Class representing the instructions page in the game.
+ * Manages the display and interactions of the instructions page.
+ */
 public class InstructionsPage {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background5.jpg";
 
@@ -29,6 +34,12 @@ public class InstructionsPage {
     // Map to store loaded fonts for easy access
     private Map<String, Font> customFonts = new HashMap<>();
 
+    /**
+     * Constructor for InstructionsPage.
+     *
+     * @param stage the primary stage for this application
+     * @param controller the controller to manage interactions
+     */
     public InstructionsPage(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
@@ -36,20 +47,19 @@ public class InstructionsPage {
         loadCustomFonts();
     }
 
+    /**
+     * Displays the instructions page.
+     */
     public void show() {
         // Load the background image
-        ImageView backgroundImageView = new ImageView(new Image(getClass().getResource(BACKGROUND_IMAGE_NAME).toExternalForm()));
+        ImageView backgroundImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BACKGROUND_IMAGE_NAME)).toExternalForm()));
         backgroundImageView.setFitWidth(stage.getWidth());
         backgroundImageView.setFitHeight(stage.getHeight());
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
 
-        // Initialize MusicManager instance
-        SettingsManager settingsManager = SettingsManager.getInstance();
-
         // --- Back Button ---
-        StackPane backButton = createCustomButton("Back",
-                "/com/example/demo/images/ButtonText_Small_Round.png", 80, 30);
+        StackPane backButton = createCustomButton();
         backButton.setOnMouseClicked(e -> {
             // Navigate back to the main menu
             MainMenu mainMenu = new MainMenu(stage, controller);
@@ -63,7 +73,7 @@ public class InstructionsPage {
         // Instructions Title
         VBox titleVBox = new VBox();
         titleVBox.setAlignment(Pos.TOP_CENTER);
-        titleVBox.setPadding(new Insets(30,0,0,0));
+        titleVBox.setPadding(new Insets(30, 0, 0, 0));
 
         Label instructionsTitle = new Label("Instructions");
         instructionsTitle.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
@@ -83,14 +93,18 @@ public class InstructionsPage {
         // Instructions Text
         VBox textVBox = new VBox();
         textVBox.setAlignment(Pos.TOP_CENTER);
-        textVBox.setPadding(new Insets(20,0,40,0));
+        textVBox.setPadding(new Insets(20, 0, 40, 0));
         Label instructionsText = new Label(
-                "Welcome to SKY BATTLE!\n\n" +
-                        "Use the arrow keys to navigate your spaceship.\n" +
-                        "Press SPACE to shoot enemies.\n" +
-                        "Press ESC to pause your game.\n\n" +
-                        "Avoid incoming fire and destroy all enemies to win.\n\n" +
-                        "Good luck and have fun!"
+                """
+                        Welcome to SKY BATTLE!
+
+                        Use the arrow keys to navigate your spaceship.
+                        Press SPACE to shoot enemies.
+                        Press ESC to pause your game.
+
+                        Avoid incoming fire and destroy all enemies to win.
+
+                        Good luck and have fun!"""
         );
         instructionsText.setTextFill(Color.BLACK);
         instructionsText.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
@@ -128,16 +142,20 @@ public class InstructionsPage {
         stage.show();
     }
 
-    private StackPane createCustomButton(String text, String imagePath, double width, double height) {
-
+    /**
+     * Creates a custom button with an image and text.
+     *
+     * @return the created StackPane representing the button
+     */
+    private StackPane createCustomButton() {
         // Load the button background image
-        ImageView buttonImageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
-        buttonImageView.setFitWidth(width);
-        buttonImageView.setFitHeight(height);
+        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/ButtonText_Small_Round.png")).toExternalForm()));
+        buttonImageView.setFitWidth(80);
+        buttonImageView.setFitHeight(30);
         buttonImageView.setPreserveRatio(false);
 
         // Create a label for the button text
-        Label label = new Label(text);
+        Label label = new Label("Back");
 
         // Set the Sugar Bomb font
         label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
@@ -151,8 +169,8 @@ public class InstructionsPage {
         stackPane.getStyleClass().add("custom-button-hover");
 
         // Ensure the StackPane size matches the image size
-        stackPane.setMinSize(width, height);
-        stackPane.setMaxSize(width, height);
+        stackPane.setMinSize(80, 30);
+        stackPane.setMaxSize(80, 30);
 
         // Change cursor to hand on hover
         stackPane.setCursor(Cursor.HAND);
@@ -182,7 +200,9 @@ public class InstructionsPage {
         return stackPane;
     }
 
-
+    /**
+     * Loads custom fonts from resources.
+     */
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
@@ -208,6 +228,4 @@ public class InstructionsPage {
             }
         }
     }
-
-
 }
