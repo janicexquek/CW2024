@@ -6,6 +6,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 
+/**
+ * Class representing the exit display in the game.
+ * Manages the exit button and its interactions.
+ */
 public class ExitDisplay {
 
     private static final String EXIT_IMAGE_NAME = "/com/example/demo/images/exit.png";
@@ -17,31 +21,41 @@ public class ExitDisplay {
 
     // Callbacks to handle game state
     private Runnable pauseGameCallback;
-    private Runnable resumeGameCallback;
-    private Runnable backToMainMenuCallback;
     private Runnable showExitOverlayCallback;
 
     // Reference to the ExitOverlay
     private ExitOverlay exitOverlay;
 
-    public ExitDisplay(double xPosition, double yPosition, Runnable pauseGameCallback, Runnable resumeGameCallback, Runnable backToMainMenuCallback, Runnable showExitOverlayCallback) {
+    /**
+     * Constructor for ExitDisplay.
+     *
+     * @param xPosition the x position of the container
+     * @param yPosition the y position of the container
+     * @param pauseGameCallback the callback to pause the game
+     * @param showExitOverlayCallback the callback to show the exit overlay
+     */
+    public ExitDisplay(double xPosition, double yPosition, Runnable pauseGameCallback, Runnable showExitOverlayCallback) {
         this.containerXPosition = xPosition;
         this.containerYPosition = yPosition;
         this.pauseGameCallback = pauseGameCallback;
-        this.resumeGameCallback = resumeGameCallback;
-        this.backToMainMenuCallback = backToMainMenuCallback;
         this.showExitOverlayCallback = showExitOverlayCallback;
 
         initializeContainer();
         initializeExit();
     }
 
+    /**
+     * Initializes the container for the exit display.
+     */
     private void initializeContainer() {
         container = new HBox();
         container.setLayoutX(containerXPosition);
         container.setLayoutY(containerYPosition);
     }
 
+    /**
+     * Initializes the exit button and its event handlers.
+     */
     private void initializeExit() {
         ImageView exit = new ImageView(new Image(getClass().getResource(EXIT_IMAGE_NAME).toExternalForm()));
         exit.setFitHeight(EXIT_HEIGHT);
@@ -62,18 +76,23 @@ public class ExitDisplay {
         exit.setCursor(Cursor.HAND);
     }
 
+    /**
+     * Returns the container for the exit display.
+     *
+     * @return the HBox container
+     */
     public HBox getContainer() {
         return container;
     }
 
+    /**
+     * Shows the exit overlay and pauses the game.
+     */
     private void showExitOverlay() {
         // Pause the game
         if (pauseGameCallback != null) {
             pauseGameCallback.run();
         }
-
-        // No need to call initializeButtons; buttons are initialized in ExitOverlay's constructor
-
         // Show the overlay
         exitOverlay.showExitOverlay();
     }

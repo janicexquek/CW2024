@@ -1,7 +1,7 @@
-// ExitOverlay.java
 package com.example.demo.display;
 
 import javafx.animation.ScaleTransition;
+import javafx.event.Event;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,7 +17,12 @@ import javafx.util.Duration;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * Class representing the exit overlay in the game.
+ * Manages the display and interactions of the exit overlay.
+ */
 public class ExitOverlay extends StackPane {
 
     private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png";
@@ -26,14 +31,20 @@ public class ExitOverlay extends StackPane {
     // Map to store loaded fonts
     private Map<String, Font> customFonts = new HashMap<>();
 
-    // Flags to prevent duplicate button initialization
-    private boolean buttonsInitialized = false;
-
     // Callbacks for button actions
     private Runnable resumeGameCallback;
     private Runnable backToMainMenuCallback;
     private Runnable hideOverlayCallback;
 
+    /**
+     * Constructor for ExitOverlay.
+     *
+     * @param screenWidth the width of the screen
+     * @param screenHeight the height of the screen
+     * @param resumeGameCallback the callback to resume the game
+     * @param backToMainMenuCallback the callback to go back to the main menu
+     * @param hideOverlayCallback the callback to hide the overlay
+     */
     public ExitOverlay(double screenWidth, double screenHeight, Runnable resumeGameCallback, Runnable backToMainMenuCallback, Runnable hideOverlayCallback) {
         this.resumeGameCallback = resumeGameCallback;
         this.backToMainMenuCallback = backToMainMenuCallback;
@@ -63,12 +74,13 @@ public class ExitOverlay extends StackPane {
         setVisible(false);
 
         // Add a key event handler to consume ESC key when ExitOverlay is active
-        addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            event.consume(); // Prevent ESC key from triggering other actions
-        });
+        // Prevent ESC key from triggering other actions
+        addEventFilter(KeyEvent.KEY_PRESSED, Event::consume);
     }
 
-    // Method to load all fonts
+    /**
+     * Loads custom fonts from resources.
+     */
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
@@ -91,6 +103,11 @@ public class ExitOverlay extends StackPane {
         }
     }
 
+    /**
+     * Creates the message box with title, message, and buttons.
+     *
+     * @return the created message box as a StackPane
+     */
     private StackPane createMessageBox() {
         // Fixed size for the message box
         double boxWidth = 500;
@@ -99,7 +116,7 @@ public class ExitOverlay extends StackPane {
         // Load box1.png as the background for the message box
         ImageView background;
         try {
-            background = new ImageView(new Image(getClass().getResource(BOX_IMAGE_NAME).toExternalForm()));
+            background = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BOX_IMAGE_NAME)).toExternalForm()));
             background.setFitWidth(boxWidth);
             background.setFitHeight(boxHeight);
         } catch (Exception e) {
@@ -158,7 +175,6 @@ public class ExitOverlay extends StackPane {
             }
         });
 
-
         // Arrange buttons in an HBox
         HBox buttonBox = new HBox(20);
         buttonBox.setAlignment(Pos.CENTER);
@@ -179,25 +195,35 @@ public class ExitOverlay extends StackPane {
         return messageBox;
     }
 
-    // Method to display the overlay
+    /**
+     * Displays the exit overlay.
+     */
     public void showExitOverlay() {
         setVisible(true);
         setMouseTransparent(false); // Enable interactions
         toFront(); // Bring to front
     }
 
-    // Method to hide the overlay
+    /**
+     * Hides the exit overlay.
+     */
     public void hideExitOverlay() {
         setVisible(false);
         setMouseTransparent(true); // Disable interactions
     }
 
-    // Factory method to create a custom button with image and assign its action
+    /**
+     * Creates a custom button with an image and assigns its action.
+     *
+     * @param buttonText the text to display on the button
+     * @param action the action to perform when the button is clicked
+     * @return the created button
+     */
     private Button createCustomButton(String buttonText, Runnable action) {
         Button button = new Button();
         try {
             // Load the button image
-            Image buttonImage = new Image(getClass().getResourceAsStream(BUTTON_IMAGE_NAME));
+            Image buttonImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(BUTTON_IMAGE_NAME)));
             ImageView buttonImageView = new ImageView(buttonImage);
             buttonImageView.setFitWidth(180); // Adjust width as needed
             buttonImageView.setFitHeight(60); // Adjust height as needed
@@ -238,7 +264,11 @@ public class ExitOverlay extends StackPane {
         return button;
     }
 
-    // Method to apply hover effects using ScaleTransition
+    /**
+     * Applies hover effects using ScaleTransition to a StackPane.
+     *
+     * @param stackPane the StackPane to apply hover effects to
+     */
     private void applyHoverEffect(StackPane stackPane) {
         ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
 
@@ -261,7 +291,11 @@ public class ExitOverlay extends StackPane {
         });
     }
 
-    // Overloaded method to apply hover effects to Buttons directly (for fallback)
+    /**
+     * Overloaded method to apply hover effects to Buttons directly (for fallback).
+     *
+     * @param button the Button to apply hover effects to
+     */
     private void applyHoverEffect(Button button) {
         ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), button);
 
