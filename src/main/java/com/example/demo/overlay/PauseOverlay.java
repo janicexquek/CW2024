@@ -10,11 +10,24 @@ import javafx.scene.text.Font;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.Objects;
+
+/**
+ * Class representing a pause overlay in the game.
+ * Manages the display and interactions of the pause overlay.
+ */
 public class PauseOverlay extends StackPane {
 
-    private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png";
-    private static final String FONT_PATH = "/com/example/demo/fonts/Pixel Digivolve.otf";
+    private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png"; // Path to the background image for the message box
+    private static final String FONT_PATH = "/com/example/demo/fonts/Pixel Digivolve.otf"; // Path to the custom font
 
+    /**
+     * Constructor for PauseOverlay.
+     *
+     * @param screenWidth the width of the screen
+     * @param screenHeight the height of the screen
+     * @param togglePauseCallback the callback to run when the pause is toggled
+     */
     public PauseOverlay(double screenWidth, double screenHeight, Runnable togglePauseCallback) {
         // Set the size of the overlay to cover the entire screen
         setPrefSize(screenWidth, screenHeight);
@@ -46,27 +59,38 @@ public class PauseOverlay extends StackPane {
         });
     }
 
-    // Method to load the custom font
-    private Font loadCustomFont(double size) {
+    /**
+     * Loads the custom font for the overlay.
+     *
+     * @return the loaded Font object, or a fallback font if loading fails
+     */
+    private Font loadCustomFont() {
         try {
-            return Font.loadFont(getClass().getResourceAsStream(FONT_PATH), size);
+            return Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 24);
         } catch (Exception e) {
             System.err.println("Failed to load custom font for PauseOverlay.");
             e.printStackTrace();
             // Fallback to Arial
-            return Font.font("Arial", size);
+            return Font.font("Arial", 24);
         }
     }
 
+    /**
+     * Creates the message box with a background image and a message label.
+     *
+     * @param screenWidth the width of the screen
+     * @param screenHeight the height of the screen
+     * @return the created StackPane representing the message box
+     */
     private StackPane createMessageBox(double screenWidth, double screenHeight) {
         // Fixed size for the message box
         double boxWidth = 500;
         double boxHeight = 200;
 
         // Load box1.png as the background for the message box
-        ImageView background = null;
+        ImageView background;
         try {
-            background = new ImageView(new Image(getClass().getResource(BOX_IMAGE_NAME).toExternalForm()));
+            background = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BOX_IMAGE_NAME)).toExternalForm()));
             background.setFitWidth(boxWidth);
             background.setFitHeight(boxHeight);
         } catch (Exception e) {
@@ -82,7 +106,7 @@ public class PauseOverlay extends StackPane {
         // Create the message label
         Label message = new Label("Press ESC to continue the game");
         message.setTextFill(Color.WHITE);
-        message.setFont(loadCustomFont(24));
+        message.setFont(loadCustomFont());
         message.setWrapText(true);
         message.setAlignment(Pos.CENTER);
         message.setMaxWidth(boxWidth - 40); // Padding inside the box

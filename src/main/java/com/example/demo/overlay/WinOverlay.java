@@ -18,7 +18,12 @@ import javafx.util.Duration;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * Class representing a win overlay in the game.
+ * Manages the display and interactions of the win overlay.
+ */
 public class WinOverlay extends StackPane {
 
     private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png";
@@ -35,6 +40,12 @@ public class WinOverlay extends StackPane {
     private Label currentTimeLabel;
     private Label fastestTimeLabel;
 
+    /**
+     * Constructor for WinOverlay.
+     *
+     * @param screenWidth the width of the screen
+     * @param screenHeight the height of the screen
+     */
     public WinOverlay(double screenWidth, double screenHeight) {
         // Set the size of the overlay to cover the entire screen
         setPrefSize(screenWidth, screenHeight);
@@ -67,7 +78,10 @@ public class WinOverlay extends StackPane {
             }
         });
     }
-    // Method to load all fonts
+
+    /**
+     * Loads custom fonts from the resources.
+     */
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
@@ -91,15 +105,22 @@ public class WinOverlay extends StackPane {
         }
     }
 
+    /**
+     * Creates the message box with a background image and a message label.
+     *
+     * @param screenWidth the width of the screen
+     * @param screenHeight the height of the screen
+     * @return the created StackPane representing the message box
+     */
     private StackPane createMessageBox(double screenWidth, double screenHeight) {
         // Fixed size for the message box
         double boxWidth = 500;
         double boxHeight = 500;
 
         // Load box1.png as the background for the message box
-        ImageView background = null;
+        ImageView background;
         try {
-            background = new ImageView(new Image(getClass().getResource(BOX_IMAGE_NAME).toExternalForm()));
+            background = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BOX_IMAGE_NAME)).toExternalForm()));
             background.setFitWidth(boxWidth);
             background.setFitHeight(boxHeight);
         } catch (Exception e) {
@@ -170,20 +191,31 @@ public class WinOverlay extends StackPane {
         return messageBox;
     }
 
-    // Method to display the overlay
+    /**
+     * Displays the overlay.
+     */
     public void showWInOverlay() {
         setVisible(true);
         setMouseTransparent(false); // Enable interactions
         toFront(); // Bring to front
     }
 
-    // Method to hide the overlay
+    /**
+     * Hides the overlay.
+     */
     public void hideWinOverlay() {
         setVisible(false);
         setMouseTransparent(true); // Disable interactions
     }
 
-    // Combined method to create, assign actions, and add buttons to the overlay
+    /**
+     * Initializes buttons and adds them to the overlay.
+     *
+     * @param backCallback the callback to run when the back button is pressed
+     * @param nextCallback the callback to run when the next button is pressed
+     * @param restartCallback the callback to run when the restart button is pressed
+     * @param levelName the name of the level to display
+     */
     public void initializeButtons(Runnable backCallback, Runnable nextCallback, Runnable restartCallback, String levelName) {
         double boxWidth = 500;
         if (buttonsInitialized) {
@@ -218,17 +250,15 @@ public class WinOverlay extends StackPane {
         if (nextButton != null) {
             allButtonBox.getChildren().add(nextButton); // Conditionally add Next Level button
         }
-        if(nextButton == null && completedMessage != null){
+        if(nextButton == null){
             allButtonBox.getChildren().add(completedMessage); // Conditionally add completedMessage
         }
         allButtonBox.getChildren().addAll(buttonBox);
 
         // Add the buttonBox to the overlay's VBox
         // Assuming the messageBox's VBox is the second child (index 1)
-        if (getChildren().size() > 0 && getChildren().get(0) instanceof StackPane) {
-            StackPane messageBox = (StackPane) getChildren().get(0);
-            if (messageBox.getChildren().size() > 1 && messageBox.getChildren().get(1) instanceof VBox) {
-                VBox vbox = (VBox) messageBox.getChildren().get(1);
+        if (!getChildren().isEmpty() && getChildren().get(0) instanceof StackPane messageBox) {
+            if (messageBox.getChildren().size() > 1 && messageBox.getChildren().get(1) instanceof VBox vbox) {
                 // Remove existing HBox if any to prevent duplication
                 vbox.getChildren().removeIf(node -> node instanceof HBox);
                 // Add the new allButtonBox
@@ -240,31 +270,51 @@ public class WinOverlay extends StackPane {
         setLevelInfo(levelName);
     }
 
+    /**
+     * Sets the level information.
+     *
+     * @param levelName the name of the level to display
+     */
     public void setLevelInfo(String levelName) {
         if (levelInfoLabel != null) {
             levelInfoLabel.setText(levelName + " COMPLETED");
         }
     }
-    // Method to set the achievement message
+
+    /**
+     * Sets the achievement message.
+     *
+     * @param message the achievement message to display
+     */
     public void setAchievementMessage(String message) {
-        Platform.runLater(() -> {
-            achievementLabel.setText(message);
-        });
+        Platform.runLater(() -> achievementLabel.setText(message));
     }
 
-    // Method to set current time and fastest time
+    /**
+     * Sets the current time and fastest time.
+     *
+     * @param currentTime the current time to display
+     * @param fastestTime the fastest time to display
+     */
     public void setTimes(String currentTime, String fastestTime) {
         Platform.runLater(() -> {
             currentTimeLabel.setText("Time: " + currentTime);
             fastestTimeLabel.setText("Fastest Time: " + fastestTime);
         });
     }
-    // Factory method to create a custom button with image and assign its action
+
+    /**
+     * Creates a custom button with an image and assigns its action.
+     *
+     * @param buttonText the text to display on the button
+     * @param action the action to run when the button is pressed
+     * @return the created Button
+     */
     private Button createCustomButton(String buttonText, Runnable action) {
         Button button = new Button();
         try {
             // Load the button image
-            Image buttonImage = new Image(getClass().getResourceAsStream(BUTTON_IMAGE_NAME));
+            Image buttonImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(BUTTON_IMAGE_NAME)));
             ImageView buttonImageView = new ImageView(buttonImage);
             buttonImageView.setFitWidth(180); // Adjust width as needed
             buttonImageView.setFitHeight(60); // Adjust width as needed
@@ -300,7 +350,11 @@ public class WinOverlay extends StackPane {
         return button;
     }
 
-    // Method to apply hover effects using ScaleTransition
+    /**
+     * Applies hover effects using ScaleTransition to a StackPane.
+     *
+     * @param stackPane the StackPane to apply hover effects to
+     */
     private void applyHoverEffect(StackPane stackPane) {
         // Create a single ScaleTransition for the StackPane
         ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
@@ -325,7 +379,11 @@ public class WinOverlay extends StackPane {
         });
     }
 
-    // Overloaded method to apply hover effects to Buttons directly (for fallback)
+    /**
+     * Overloaded method to apply hover effects to Buttons directly (for fallback).
+     *
+     * @param button the Button to apply hover effects to
+     */
     private void applyHoverEffect(Button button) {
         // Create a single ScaleTransition for the Button
         ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), button);
