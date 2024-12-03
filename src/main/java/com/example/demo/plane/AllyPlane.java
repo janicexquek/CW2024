@@ -1,4 +1,3 @@
-// AllyPlane.java
 package com.example.demo.plane;
 
 import com.example.demo.ActiveActorDestructible;
@@ -7,6 +6,10 @@ import com.example.demo.projectile.AllyProjectile;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * Class representing an ally plane in the game.
+ * Manages the movement, firing, and health of the ally plane.
+ */
 public class AllyPlane extends FighterPlane {
 
     private static final String IMAGE_NAME = "allyplane.png";
@@ -29,7 +32,12 @@ public class AllyPlane extends FighterPlane {
     private Runnable onDeactivationCallback; // Callback for deactivation
     private Consumer<ActiveActorDestructible> addProjectileCallback; // Callback to add projectiles
 
-
+    /**
+     * Constructor for AllyPlane.
+     *
+     * @param addProjectileCallback the callback to add projectiles
+     * @param onDeactivationCallback the callback to run when the plane is deactivated
+     */
     public AllyPlane(Consumer<ActiveActorDestructible> addProjectileCallback, Runnable onDeactivationCallback) {
         super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
         this.addProjectileCallback = addProjectileCallback;
@@ -40,6 +48,10 @@ public class AllyPlane extends FighterPlane {
         initializeMovePattern();
     }
 
+    /**
+     * Updates the position of the ally plane.
+     * Ensures the plane stays within the vertical bounds.
+     */
     @Override
     public void updatePosition() {
         double initialTranslateY = getTranslateY();
@@ -50,25 +62,37 @@ public class AllyPlane extends FighterPlane {
         }
     }
 
+    /**
+     * Updates the state of the ally plane.
+     * Handles position update and autonomous firing.
+     */
     @Override
     public void updateActor() {
         updatePosition();
         fireProjectile(); // Handle autonomous firing
     }
 
-     // Ally Plane fires a projectile based on its fire rate.
+    /**
+     * Fires a projectile based on the ally plane's fire rate.
+     *
+     * @return the fired projectile, or null if no projectile is fired
+     */
     @Override
     public ActiveActorDestructible fireProjectile() {
         if (!allyFiresInCurrentFrame()) {
             return null;
         }
-        double projectileY = getLayoutY()  + getTranslateY() + PROJECTILE_Y_POSITION_OFFSET;
+        double projectileY = getLayoutY() + getTranslateY() + PROJECTILE_Y_POSITION_OFFSET;
 
         ActiveActorDestructible projectile = new AllyProjectile(projectileY);
         addProjectileCallback.accept(projectile); // Add projectile to LevelParent's list
         return projectile;
     }
-    // Ally plane deactivate either
+
+    /**
+     * Takes damage and decreases the health of the ally plane.
+     * Deactivates the plane if health drops to zero.
+     */
     @Override
     public void takeDamage() {
         super.takeDamage();
@@ -80,15 +104,29 @@ public class AllyPlane extends FighterPlane {
             }
         }
     }
+
+    /**
+     * Gets the current health of the ally plane.
+     *
+     * @return the current health
+     */
     public int getHealth() {
         return health;
     }
 
+    /**
+     * Destroys the ally plane.
+     * Ensures the destroyed flag is set.
+     */
     @Override
     public void destroy() {
         super.destroy(); // Ensure this sets the destroyed flag
     }
 
+    /**
+     * Initializes the move pattern for the ally plane.
+     * Shuffles the move pattern to create random movement.
+     */
     private void initializeMovePattern() {
         for (int i = 0; i < MOVE_FREQUENCY_PER_CYCLE; i++) {
             movePattern.add(VERTICAL_VELOCITY);
@@ -98,6 +136,12 @@ public class AllyPlane extends FighterPlane {
         Collections.shuffle(movePattern);
     }
 
+    /**
+     * Gets the next move for the ally plane.
+     * Shuffles the move pattern if the same move is repeated too many times.
+     *
+     * @return the next move
+     */
     private int getNextMove() {
         int currentMove = movePattern.get(indexOfCurrentMove);
         consecutiveMovesInSameDirection++;
@@ -112,8 +156,12 @@ public class AllyPlane extends FighterPlane {
         return currentMove;
     }
 
+    /**
+     * Determines if the ally plane fires in the current frame.
+     *
+     * @return true if the plane fires, false otherwise
+     */
     private boolean allyFiresInCurrentFrame() {
         return Math.random() < ALLY_FIRE_RATE;
     }
-    // Ally Plane killed by enemy projectile and enemy collisions
 }
