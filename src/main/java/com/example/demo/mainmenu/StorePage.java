@@ -20,7 +20,12 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * Class representing the store page in the game.
+ * Manages the display and interactions of the store page.
+ */
 public class StorePage {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background4.jpeg"; // Background image for store
 
@@ -31,6 +36,12 @@ public class StorePage {
     private Map<String, Font> customFonts = new HashMap<>();
     private Label selectionMessageLabel;
 
+    /**
+     * Constructor for StorePage.
+     *
+     * @param stage the primary stage for this application
+     * @param controller the controller to manage interactions
+     */
     public StorePage(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
@@ -38,17 +49,19 @@ public class StorePage {
         loadCustomFonts();
     }
 
+    /**
+     * Displays the store page.
+     */
     public void show() {
         // Load the background image
-        ImageView backgroundImageView = new ImageView(new Image(getClass().getResource(BACKGROUND_IMAGE_NAME).toExternalForm()));
+        ImageView backgroundImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BACKGROUND_IMAGE_NAME)).toExternalForm()));
         backgroundImageView.setFitWidth(stage.getWidth());
         backgroundImageView.setFitHeight(stage.getHeight());
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
 
         // --- Back Button ---
-        StackPane backButton = createCustomButton("Back",
-                "/com/example/demo/images/ButtonText_Small_Round.png", 80, 30);
+        StackPane backButton = createCustomButton();
         backButton.setOnMouseClicked(e -> {
             // Navigate back to the main menu
             MainMenu mainMenu = new MainMenu(stage, controller);
@@ -152,12 +165,21 @@ public class StorePage {
         stage.show();
     }
 
-    // Updates the selection message label based on the selected plane number.
+    /**
+     * Updates the selection message label based on the selected plane number.
+     *
+     * @param planeNumber the selected plane number
+     */
     private void updateSelectionMessage(int planeNumber) {
         selectionMessageLabel.setText("You have selected plane " + planeNumber);
     }
 
-     // Extracts the plane number from the plane image filename.
+    /**
+     * Extracts the plane number from the plane image filename.
+     *
+     * @param planeImageName the plane image filename
+     * @return the extracted plane number
+     */
     private int getPlaneNumber(String planeImageName) {
         if (planeImageName.equalsIgnoreCase("userplane.png")) {
             return 1;
@@ -175,10 +197,15 @@ public class StorePage {
         return 1; // Default plane number
     }
 
-     // Creates a plane option with hover and click effects, including a plane number overlay.
+    /**
+     * Creates a plane option with hover and click effects, including a plane number overlay.
+     *
+     * @param planeImageName the plane image filename
+     * @return the created StackPane representing the plane option
+     */
     private StackPane createPlaneOption(String planeImageName) {
         // Load the plane image
-        ImageView planeImageView = new ImageView(new Image(getClass().getResource("/com/example/demo/images/" + planeImageName).toExternalForm()));
+        ImageView planeImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/" + planeImageName)).toExternalForm()));
         planeImageView.setFitWidth(150); // Adjust width as needed
         planeImageView.setFitHeight(150); // Adjust height as needed
         planeImageView.setPreserveRatio(true);
@@ -209,7 +236,7 @@ public class StorePage {
         stackPane.setAlignment(Pos.CENTER);
         stackPane.setCursor(Cursor.HAND);
 
-        // Position the plane number label at the top-left corner
+        // Position the plane number label in the top-left corner
         StackPane.setAlignment(planeNumberLabel, Pos.TOP_LEFT);
         StackPane.setMargin(planeNumberLabel, new Insets(5, 0, 0, 10)); // Adjust margins as needed
 
@@ -247,11 +274,9 @@ public class StorePage {
             // Deselect all other planes by hiding their selection borders
             TilePane parent = (TilePane) stackPane.getParent(); // Parent is TilePane
             for (javafx.scene.Node node : parent.getChildren()) {
-                if (node instanceof StackPane) {
-                    StackPane otherPane = (StackPane) node;
+                if (node instanceof StackPane otherPane) {
                     for (javafx.scene.Node child : otherPane.getChildren()) {
-                        if (child instanceof Rectangle) {
-                            Rectangle rect = (Rectangle) child;
+                        if (child instanceof Rectangle rect) {
                             // Hide selection border if it's not the current one
                             if (rect != selectionBorder) {
                                 rect.setVisible(false);
@@ -286,17 +311,20 @@ public class StorePage {
         return stackPane;
     }
 
-
-     // Creates a custom button with hover effects.
-    private StackPane createCustomButton(String text, String imagePath, double width, double height) {
+    /**
+     * Creates a custom button with hover effects.
+     *
+     * @return the created StackPane representing the button
+     */
+    private StackPane createCustomButton() {
         // Load the button background image
-        ImageView buttonImageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
-        buttonImageView.setFitWidth(width);
-        buttonImageView.setFitHeight(height);
+        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/ButtonText_Small_Round.png")).toExternalForm()));
+        buttonImageView.setFitWidth(80);
+        buttonImageView.setFitHeight(30);
         buttonImageView.setPreserveRatio(false);
 
         // Create a label for the button text
-        Label label = new Label(text);
+        Label label = new Label("Back");
         label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
                 Font.font("Arial", 16)).getName(), 16));
 
@@ -308,8 +336,8 @@ public class StorePage {
         stackPane.getStyleClass().add("custom-button-hover");
 
         // Ensure the StackPane size matches the image size
-        stackPane.setMinSize(width, height);
-        stackPane.setMaxSize(width, height);
+        stackPane.setMinSize(80, 30);
+        stackPane.setMaxSize(80, 30);
 
         // Change cursor to hand on hover
         stackPane.setCursor(Cursor.HAND);
@@ -339,14 +367,14 @@ public class StorePage {
         return stackPane;
     }
 
-
-     // Loads custom fonts from the resources.
+    /**
+     * Loads custom fonts from the resources.
+     */
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
                 "/com/example/demo/fonts/Sugar Bomb.ttf",
                 "/com/example/demo/fonts/Pixel Digivolve.otf"
-
         };
 
         for (String fontPath : fontPaths) {

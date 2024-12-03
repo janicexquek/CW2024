@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+/**
+ * Manages the settings for the game, including volume levels and mute states.
+ * Implements a singleton pattern to ensure a single instance.
+ */
 public class SettingsManager {
 
     private static SettingsManager instance;
@@ -29,9 +33,13 @@ public class SettingsManager {
     private boolean soundEffectsMuted = false;
     private boolean countdownSoundMuted = false;
 
-    // track if all sounds are muted
+    // Track if all sounds are muted
     private boolean allMuted = false;
 
+    /**
+     * Private constructor to enforce singleton pattern.
+     * Initializes volume settings and loads preferences.
+     */
     private SettingsManager() {
         prefs = Preferences.userNodeForPackage(SettingsManager.class);
         // Load saved volume settings or use defaults
@@ -52,13 +60,22 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * Provides access to the singleton instance.
+     *
+     * @return the singleton instance of SettingsManager
+     */
     public static SettingsManager getInstance() {
         if (instance == null) {
             instance = new SettingsManager();
         }
         return instance;
     }
-    // --------------------- BACKGROUND MUSIC -----------------------
+
+    /**
+     * Initializes the background music player.
+     * Loads the background music file and sets it to loop indefinitely.
+     */
     private void initializeBackgroundMusic() {
         // Search the audio file
         URL resource = getClass().getResource("/com/example/demo/audios/backgroundmusic1.mp3");
@@ -74,33 +91,39 @@ public class SettingsManager {
             System.err.println("Background music file not found.");
         }
     }
-    // ------------------- BACKGROUND MUSIC ADJUSTMENT ---------------------------
-    // Starts or resumes the background music playback.
+
+    /**
+     * Starts or resumes the background music playback.
+     */
     public void playMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.play();
         }
     }
-    // Pauses the background music playback.
+
+    /**
+     * Pauses the background music playback.
+     */
     public void pauseMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
         }
     }
 
-    // Resumes the background music playback.
+    /**
+     * Resumes the background music playback.
+     */
     public void resumeMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.play();
         }
     }
-    // Stops the background music playback.
-    public void stopMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
-    }
-    // Set the volume for background music and save it
+
+    /**
+     * Sets the volume for background music and saves it to preferences.
+     *
+     * @param volume the new volume level for background music
+     */
     public void setMusicVolume(double volume) {
         this.musicVolume = volume;
         if (mediaPlayer != null) {
@@ -109,13 +132,20 @@ public class SettingsManager {
         prefs.putDouble("musicVolume", volume); // Save the volume setting
     }
 
-    // Get the current background music volume
+    /**
+     * Gets the current background music volume.
+     *
+     * @return the current background music volume
+     */
     public double getMusicVolume() {
         return musicVolume;
     }
 
-    // --------------------- SOUND EFFECT -----------------------
-    // Play general sound effects
+    /**
+     * Plays a general sound effect.
+     *
+     * @param fileName the name of the sound effect file to play
+     */
     public void playSoundEffect(String fileName) {
         if (allMuted || soundEffectsMuted) return; // Do not play if muted
         URL soundUrl = getClass().getResource("/com/example/demo/audios/" + fileName);
@@ -134,26 +164,42 @@ public class SettingsManager {
         }
     }
 
-    // Set sound effect volume and save to preferences
+    /**
+     * Sets the volume for sound effects and saves it to preferences.
+     *
+     * @param volume the new volume level for sound effects
+     */
     public void setSoundEffectVolume(double volume) {
         this.soundEffectVolume = volume;
         prefs.putDouble("soundEffectVolume", volume);
     }
 
+    /**
+     * Gets the current sound effect volume.
+     *
+     * @return the current sound effect volume
+     */
     public double getSoundEffectVolume() {
         return soundEffectVolume;
     }
 
-    // Play victory sound effect
+    /**
+     * Plays the victory sound effect.
+     */
     public void playVictorySound() {
         playSoundEffect("victory.mp3");
     }
-    // Play defeat sound effect
+
+    /**
+     * Plays the defeat sound effect.
+     */
     public void playDefeatSound() {
         playSoundEffect("defeat.mp3");
     }
 
-    // Stop and clear all active sound effects
+    /**
+     * Stops and clears all active sound effects.
+     */
     public void stopAllSoundEffects() {
         for (MediaPlayer soundPlayer : activeSoundEffects) {
             soundPlayer.stop();
@@ -162,8 +208,9 @@ public class SettingsManager {
         activeSoundEffects.clear();
     }
 
-    // --------------------- COUNTDOWN SOUND -----------------------
-    // Play countdown sound effect
+    /**
+     * Plays the countdown sound effect.
+     */
     public void playCountdownSound() {
         URL soundUrl = getClass().getResource("/com/example/demo/audios/countdown.mp3");
         if (soundUrl != null) {
@@ -182,18 +229,28 @@ public class SettingsManager {
         }
     }
 
-    // Set countdown sound effect volume and save to preferences
+    /**
+     * Sets the volume for countdown sound effects and saves it to preferences.
+     *
+     * @param volume the new volume level for countdown sound effects
+     */
     public void setCountdownSoundVolume(double volume) {
         this.countdownSoundVolume = volume;
         prefs.putDouble("countdownSoundVolume", volume);
     }
 
+    /**
+     * Gets the current countdown sound effect volume.
+     *
+     * @return the current countdown sound effect volume
+     */
     public double getCountdownSoundVolume() {
         return countdownSoundVolume;
     }
 
-    // --------------------- MUTE / UNMUTE SOUND -----------------------
-    // Mute all sounds
+    /**
+     * Mutes all sounds and saves the mute state to preferences.
+     */
     public void muteAllSounds() {
         if (!allMuted) {
             allMuted = true;
@@ -213,7 +270,9 @@ public class SettingsManager {
         }
     }
 
-    // Unmute all sounds
+    /**
+     * Unmutes all sounds and restores their volume levels.
+     */
     public void unmuteAllSounds() {
         if (allMuted) {
             allMuted = false;
@@ -233,7 +292,9 @@ public class SettingsManager {
         }
     }
 
-    // Toggle mute all sounds
+    /**
+     * Toggles the mute state for all sounds.
+     */
     public void toggleMuteAll() {
         if (allMuted) {
             unmuteAllSounds();
@@ -242,25 +303,32 @@ public class SettingsManager {
         }
     }
 
-    // Check if all sounds are muted
+    /**
+     * Checks if all sounds are muted.
+     *
+     * @return true if all sounds are muted, false otherwise
+     */
     public boolean isAllMuted() {
         return allMuted;
     }
 
-    // Mute all active sound effects except victory sound
+    /**
+     * Mutes all active sound effects except the victory sound.
+     */
     public void muteAllSoundEffects() {
         soundEffectsMuted = true;
         for (MediaPlayer soundPlayer : activeSoundEffects) {
-                soundPlayer.setVolume(0);
+            soundPlayer.setVolume(0);
         }
     }
 
-    // Unmute all active sound effects by restoring their original volume
+    /**
+     * Unmutes all active sound effects by restoring their original volume.
+     */
     public void unmuteAllSoundEffects() {
         soundEffectsMuted = false;
         for (MediaPlayer soundPlayer : activeSoundEffects) {
             soundPlayer.setVolume(soundEffectVolume);
         }
     }
-
 }

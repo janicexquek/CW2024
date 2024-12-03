@@ -16,7 +16,12 @@ import javafx.scene.text.Font;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * Class representing the settings page in the game.
+ * Manages the display and interactions of the settings page.
+ */
 public class Settings {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background4.jpeg";
     private static final String AUDIO_ON_IMAGE = "/com/example/demo/images/Audio_ON.png";
@@ -33,7 +38,12 @@ public class Settings {
     private Slider sfxVolumeSlider;
     private Slider countdownSfxVolumeSlider;
 
-    // Updated constructor to accept Controller
+    /**
+     * Constructor for Settings.
+     *
+     * @param stage the primary stage for this application
+     * @param controller the controller to manage interactions
+     */
     public Settings(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
@@ -41,9 +51,12 @@ public class Settings {
         loadCustomFonts();
     }
 
+    /**
+     * Displays the settings page.
+     */
     public void show() {
         // Load the background image using the static final String
-        Image backgroundImage = new Image(getClass().getResource(BACKGROUND_IMAGE_NAME).toExternalForm());
+        Image backgroundImage = new Image(Objects.requireNonNull(getClass().getResource(BACKGROUND_IMAGE_NAME)).toExternalForm());
         ImageView backgroundImageView = new ImageView(backgroundImage);
         backgroundImageView.setFitWidth(stage.getWidth()); // Set to scene width
         backgroundImageView.setFitHeight(stage.getHeight()); // Set to scene height
@@ -53,7 +66,7 @@ public class Settings {
         SettingsManager settingsManager = SettingsManager.getInstance();
 
         // --- Back Button ---
-        StackPane backButton = createCustomSettingsButton("Back", 80, 30, "/com/example/demo/images/ButtonText_Small_Round.png");
+        StackPane backButton = createCustomSettingsButton("Back", 80, 30);
         backButton.setOnMouseClicked(e -> {
             // Navigate back to the main menu
             MainMenu mainMenu = new MainMenu(stage, controller);
@@ -63,7 +76,6 @@ public class Settings {
         // Position the back button at top-left
         StackPane.setAlignment(backButton, Pos.TOP_LEFT);
         StackPane.setMargin(backButton, new Insets(30, 0, 0, 30));
-
 
         // --- Settings Title ---
         // --- Top HBox  Title ---
@@ -111,41 +123,32 @@ public class Settings {
         // --- Background Music Volume Controls ---
         musicVolumeSlider = new Slider(0, 1, settingsManager.getMusicVolume());
         musicVolumeSlider.setShowTickLabels(true);
-//        musicVolumeSlider.setShowTickMarks(true);
         musicVolumeSlider.setMajorTickUnit(0.2);
         musicVolumeSlider.setBlockIncrement(0.05);
         musicVolumeSlider.setPrefWidth(300);
 
         // Bind the slider value to MusicManager's music volume
-        musicVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            settingsManager.setMusicVolume(newValue.doubleValue());
-        });
+        musicVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> settingsManager.setMusicVolume(newValue.doubleValue()));
 
         // --- Sound Effects Volume Controls ---
         sfxVolumeSlider = new Slider(0, 1, settingsManager.getSoundEffectVolume());
         sfxVolumeSlider.setShowTickLabels(true);
-//        sfxVolumeSlider.setShowTickMarks(true);
         sfxVolumeSlider.setMajorTickUnit(0.2);
         sfxVolumeSlider.setBlockIncrement(0.05);
         sfxVolumeSlider.setPrefWidth(300);
 
         // Bind the slider value to MusicManager's sound effect volume
-        sfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            settingsManager.setSoundEffectVolume(newValue.doubleValue());
-        });
+        sfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> settingsManager.setSoundEffectVolume(newValue.doubleValue()));
 
         // --- Countdown Sound Effects Volume Controls ---
         countdownSfxVolumeSlider = new Slider(0, 1, settingsManager.getCountdownSoundVolume());
         countdownSfxVolumeSlider.setShowTickLabels(true);
-//        countdownSfxVolumeSlider.setShowTickMarks(true);
         countdownSfxVolumeSlider.setMajorTickUnit(0.2);
         countdownSfxVolumeSlider.setBlockIncrement(0.05);
         countdownSfxVolumeSlider.setPrefWidth(300);
 
         // Bind the slider value to MusicManager's countdown sound effect volume
-        countdownSfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            settingsManager.setCountdownSoundVolume(newValue.doubleValue());
-        });
+        countdownSfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> settingsManager.setCountdownSoundVolume(newValue.doubleValue()));
 
         // --- Mute All Toggle Button ---
         ImageView muteToggleImageView = new ImageView();
@@ -214,13 +217,13 @@ public class Settings {
         contentHBox.setAlignment(Pos.CENTER);
         contentHBox.getChildren().addAll(labelsBox, controlsBox);
 
-        // --- Content all boxes containing conentHBox and muteAllHBox
+        // --- Content all boxes containing contentHBox and muteAllHBox
         VBox allVBox = new VBox(10);
         allVBox.setAlignment(Pos.CENTER);
         allVBox.getChildren().addAll(contentHBox, muteAllHBox);
 
         // --- Defaults Button ---
-        StackPane defaultsButton = createCustomSettingsButton("Defaults", 120, 40, "/com/example/demo/images/ButtonText_Small_Round.png");
+        StackPane defaultsButton = createCustomSettingsButton("Defaults", 120, 40);
         defaultsButton.setOnMouseClicked(e -> {
             // Reset to default settings
             settingsManager.setMusicVolume(SettingsManager.DEFAULT_MUSIC_VOLUME);
@@ -230,7 +233,6 @@ public class Settings {
             sfxVolumeSlider.setValue(SettingsManager.DEFAULT_SOUND_EFFECT_VOLUME);
             countdownSfxVolumeSlider.setValue(SettingsManager.DEFAULT_COUNTDOWN_SOUND_VOLUME);
         });
-
 
         // --- Bottom HBox containing Save and Defaults Buttons ---
         HBox bottomHBox = new HBox(20);
@@ -279,10 +281,17 @@ public class Settings {
         updateSlidersState();
     }
 
-    // Private method to create custom settings buttons
-    private StackPane createCustomSettingsButton(String text, double width, double height, String imagePath) {
+    /**
+     * Creates a custom settings button with an image and text.
+     *
+     * @param text the text to display on the button
+     * @param width the width of the button
+     * @param height the height of the button
+     * @return the created StackPane representing the button
+     */
+    private StackPane createCustomSettingsButton(String text, double width, double height) {
         // Load the button background image
-        ImageView buttonImageView = new ImageView(new Image(getClass().getResource(imagePath).toExternalForm()));
+        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/ButtonText_Small_Round.png")).toExternalForm()));
         buttonImageView.setFitWidth(width);
         buttonImageView.setFitHeight(height);
         buttonImageView.setPreserveRatio(false);
@@ -331,14 +340,21 @@ public class Settings {
         return stackPane;
     }
 
-    // Private method to update the mute toggle image based on the mute state
+    /**
+     * Updates the mute toggle image based on the mute state.
+     *
+     * @param imageView the ImageView to update
+     * @param isMuted the current mute state
+     */
     private void updateMuteToggleImage(ImageView imageView, boolean isMuted) {
         String imagePath = isMuted ? AUDIO_OFF_IMAGE : AUDIO_ON_IMAGE;
-        Image muteImage = new Image(getClass().getResource(imagePath).toExternalForm());
+        Image muteImage = new Image(Objects.requireNonNull(getClass().getResource(imagePath)).toExternalForm());
         imageView.setImage(muteImage);
     }
 
-    // Private method to enable or disable sliders based on mute state
+    /**
+     * Enables or disables sliders based on the mute state.
+     */
     private void updateSlidersState() {
         SettingsManager settingsManager = SettingsManager.getInstance();
         boolean isMuted = settingsManager.isAllMuted();
@@ -349,6 +365,9 @@ public class Settings {
         countdownSfxVolumeSlider.setDisable(isMuted);
     }
 
+    /**
+     * Loads custom fonts from resources.
+     */
     private void loadCustomFonts() {
         String[] fontPaths = {
                 "/com/example/demo/fonts/Cartoon cookies.ttf",
