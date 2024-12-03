@@ -11,6 +11,10 @@ import javafx.scene.Group;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Class representing the fourth level of the game.
+ * Extends LevelParent and provides specific implementations for Level Four.
+ */
 public class LevelFour extends LevelParent {
 
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background2.jpg";
@@ -29,11 +33,19 @@ public class LevelFour extends LevelParent {
     private boolean abilityActivated = false; // New flag
     private AllyPlane activeAllyPlane = null;  // Reference to active Ally Plane
 
-
+    /**
+     * Constructor for LevelFour.
+     *
+     * @param screenHeight the height of the screen
+     * @param screenWidth the width of the screen
+     */
     public LevelFour(double screenHeight, double screenWidth) {
         super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH, "LEVEL FOUR");
     }
 
+    /**
+     * Checks if the game is over by evaluating the destruction status of the user and enemy planes.
+     */
     @Override
     protected void checkIfGameOver() {
         if (userIsDestroyed()) {
@@ -43,6 +55,9 @@ public class LevelFour extends LevelParent {
         }
     }
 
+    /**
+     * Initializes friendly units by adding the user and their shield image to the root group.
+     */
     @Override
     protected void initializeFriendlyUnits() {
         Group userGroup = new Group(getUser(), getUser().getShieldImage());
@@ -50,6 +65,9 @@ public class LevelFour extends LevelParent {
     }
 
     // ------------------------ spawn enemy plane & intermediate plane -------------------------
+    /**
+     * Spawns enemy units based on the current number of enemies and a spawn probability.
+     */
     @Override
     protected void spawnEnemyUnits() {
         int currentNumberOfEnemies = getCurrentNumberOfEnemies();
@@ -72,7 +90,14 @@ public class LevelFour extends LevelParent {
             }
         }
     }
-
+    /**
+     * Instantiates the level view for Level Four.
+     *
+     * @param screenWidth the width of the screen
+     * @param screenHeight the height of the screen
+     * @param timeline the timeline for animations
+     * @return the instantiated LevelView
+     */
     @Override
     protected LevelView instantiateLevelView(double screenWidth, double screenHeight, Timeline timeline) {
         return new LevelView(
@@ -86,22 +111,36 @@ public class LevelFour extends LevelParent {
                 timeline
         );
     }
-
+    /**
+     * Gets the class name of the next level.
+     *
+     * @return the class name of the next level
+     */
     @Override
     protected String getNextLevelClassName() {
         return NEXT_LEVEL;
     }
-
+    /**
+     * Gets the class name of the current level.
+     *
+     * @return the class name of the current level
+     */
     @Override
     protected String getClassName() {
         return this.getClass().getName();
     }
-
+    /**
+     * Gets the display name of the current level.
+     *
+     * @return the display name of the current level
+     */
     @Override
     protected String getLevelDisplayName() {
         return "LEVEL FOUR";
     }
-
+    /**
+     * Removes all destroyed actors from the game.
+     */
     @Override
     protected void removeAllDestroyedActors() {
         List<ActiveActorDestructible> destroyedEnemies = getEnemyUnits().stream()
@@ -126,14 +165,13 @@ public class LevelFour extends LevelParent {
                 .filter(ActiveActorDestructible::isDestroyed)
                 .collect(Collectors.toList());
 
-        for (ActiveActorDestructible friendly : destroyedFriendlies) {
-            if (friendly instanceof AllyPlane) {
-            }
-        }
         super.removeAllDestroyedActors();
     }
 
     // --------------- decide either activate Ally plane or Shield -------------------
+    /**
+     * Decides and activates an ability (either shield or ally plane) based on a random probability.
+     */
     private void decideAndActivateAbility() {
         abilityActivated = true; // Ensure single activation
 
@@ -147,12 +185,18 @@ public class LevelFour extends LevelParent {
     }
 
     // ------------------------ activate shield--------------------------
+    /**
+     * Activates the shield for the user.
+     */
     private void activateShield() {
         getUser().activateShield(); // Assuming UserPlane has this method
     }
 
     // ---------------------------- Ally Plane -----------------------------
     // ------------------------ activate ally plane -------------------------
+    /**
+     * Spawns an ally plane and adds it to the game.
+     */
     private void spawnAllyPlane() {
         // Pass 'this::addAllyProjectile' as the projectile addition callback
         activeAllyPlane = new AllyPlane(this::addAllyProjectile, this::deactivateAllyPlane);
@@ -162,6 +206,9 @@ public class LevelFour extends LevelParent {
     }
 
     // ------------------------ deactivate ally plane -------------------------
+    /**
+     * Deactivates the ally plane by removing it from the game.
+     */
     private void deactivateAllyPlane() {
         if (activeAllyPlane != null) {
             activeAllyPlane.destroy(); // Remove Ally Plane from the game
@@ -171,6 +218,9 @@ public class LevelFour extends LevelParent {
     }
 
     // ------------------ update level view info display ---------------------
+    /**
+     * Updates the custom display information for Level Four.
+     */
     @Override
     protected void updateCustomDisplay() {
         // Format the custom info string for Level Four

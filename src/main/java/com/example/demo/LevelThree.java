@@ -8,6 +8,10 @@ import javafx.animation.Timeline;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Class representing the third level of the game.
+ * Extends LevelParent and provides specific implementations for Level Three.
+ */
 public class LevelThree extends LevelParent {
 
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg"; // Updated to LevelThree background
@@ -28,10 +32,19 @@ public class LevelThree extends LevelParent {
     private int masterPlanesDestroyed = 0;
     private static final int MASTER_TO_WIN_DESTROYED = 2; // Destroy 5 intermediate planes to spawn masters
 
+    /**
+     * Constructor for LevelThree.
+     *
+     * @param screenHeight the height of the screen
+     * @param screenWidth the width of the screen
+     */
     public LevelThree(double screenHeight, double screenWidth) {
         super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH, "LEVEL THREE");
     }
 
+    /**
+     * Checks if the game is over by evaluating the destruction status of the user and enemy planes.
+     */
     @Override
     protected void checkIfGameOver() {
         if (userIsDestroyed()) {
@@ -41,23 +54,39 @@ public class LevelThree extends LevelParent {
         }
     }
 
+    /**
+     * Initializes friendly units by adding the user to the root group.
+     */
     @Override
     protected void initializeFriendlyUnits() {
         getRoot().getChildren().add(getUser());
     }
 
+    /**
+     * Gets the current number of intermediate planes.
+     *
+     * @return the number of intermediate planes
+     */
     private int getCurrentNumberOfIntermediatePlanes() {
         return (int) getEnemyUnits().stream()
                 .filter(enemy -> enemy instanceof IntermediatePlane)
                 .count();
     }
 
+    /**
+     * Gets the current number of master planes.
+     *
+     * @return the number of master planes
+     */
     private int getCurrentNumberOfMasterPlanes() {
         return (int) getEnemyUnits().stream()
                 .filter(enemy -> enemy instanceof MasterPlane)
                 .count();
     }
 
+    /**
+     * Spawns enemy units based on the current wave and spawn probability.
+     */
     @Override
     protected void spawnEnemyUnits() {
         // Activate intermediate wave if conditions are met
@@ -80,6 +109,14 @@ public class LevelThree extends LevelParent {
         }
     }
 
+    /**
+     * Instantiates the level view for Level Three.
+     *
+     * @param screenWidth the width of the screen
+     * @param screenHeight the height of the screen
+     * @param timeline the timeline for animations
+     * @return the instantiated LevelView
+     */
     @Override
     protected LevelView instantiateLevelView(double screenWidth, double screenHeight, Timeline timeline) {
         return new LevelView(
@@ -94,23 +131,39 @@ public class LevelThree extends LevelParent {
         );
     }
 
+    /**
+     * Gets the class name of the next level.
+     *
+     * @return the class name of the next level
+     */
     @Override
     protected String getNextLevelClassName() {
         return NEXT_LEVEL; // Could be main menu or a final screen
     }
 
+    /**
+     * Gets the class name of the current level.
+     *
+     * @return the class name of the current level
+     */
     @Override
     protected String getClassName() {
         return this.getClass().getName();
     }
 
+    /**
+     * Gets the display name of the current level.
+     *
+     * @return the display name of the current level
+     */
     @Override
     protected String getLevelDisplayName() {
         return "LEVEL THREE";
     }
 
-
-    // Spawn methods for different waves
+    /**
+     * Spawns normal planes based on the spawn probability.
+     */
     private void spawnNormalPlanes() {
         int TOTAL_NORMAL_PLANES = 5;
         double ENEMY_SPAWN_PROBABILITY = 0.25;
@@ -123,6 +176,9 @@ public class LevelThree extends LevelParent {
         }
     }
 
+    /**
+     * Spawns intermediate planes based on the spawn probability.
+     */
     private void spawnIntermediatePlanes() {
         int TOTAL_INTERMEDIATE_PLANES = 3;
         double ENEMY_SPAWN_PROBABILITY = 0.15;
@@ -137,6 +193,9 @@ public class LevelThree extends LevelParent {
         }
     }
 
+    /**
+     * Spawns master planes based on the spawn probability.
+     */
     private void spawnMasterPlanes() {
         int TOTAL_MASTER_PLANES = 2;
         double ENEMY_SPAWN_PROBABILITY = 0.10;
@@ -151,6 +210,9 @@ public class LevelThree extends LevelParent {
         }
     }
 
+    /**
+     * Removes all destroyed actors from the game and updates the destruction counts.
+     */
     @Override
     protected void removeAllDestroyedActors() {
         // Step 1: Track destroyed planes before they are removed
@@ -175,6 +237,9 @@ public class LevelThree extends LevelParent {
         super.removeAllDestroyedActors();
     }
 
+    /**
+     * Updates the custom display information for Level Three.
+     */
     @Override
     protected void updateCustomDisplay() {
         // Display current wave and objectives
