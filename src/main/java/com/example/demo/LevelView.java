@@ -380,6 +380,7 @@ public class LevelView {
         return activeOverlay;
     }
 
+
     /**
      * Gets the pause overlay.
      *

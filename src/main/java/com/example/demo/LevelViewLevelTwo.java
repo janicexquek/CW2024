@@ -17,7 +17,6 @@ public class LevelViewLevelTwo extends LevelView {
 
     /**
      * Constructor for LevelViewLevelTwo.
-     *
      * @param root the root group of the scene
      * @param heartsToDisplay the number of hearts to display for the player's health
      * @param backToMainMenuCallback the callback to return to the main menu
