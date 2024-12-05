@@ -9,7 +9,6 @@ import com.example.demo.plane.FighterPlane;
 import com.example.demo.plane.UserPlane;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -34,6 +33,7 @@ public abstract class LevelParent extends Observable {
 	private int currentNumberOfEnemies;
 	private GameTimer gameTimer;
 	private String levelName;
+	private InputHandler inputHandler;
 
 	private final Group root;
 	private final Timeline timeline;
@@ -74,6 +74,7 @@ public abstract class LevelParent extends Observable {
 		this.enemyProjectiles = new ArrayList<>();
 		this.allyProjectiles = new ArrayList<>(); // Initialize allyProjectiles
 		this.Updated = false;
+		this.inputHandler = new InputHandler(user, this);
 
 		this.background = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(backgroundImageName)).toExternalForm()));
 		this.screenHeight = screenHeight;
@@ -186,24 +187,8 @@ public abstract class LevelParent extends Observable {
 		background.setFocusTraversable(true);
 		background.setFitHeight(screenHeight);
 		background.setFitWidth(screenWidth);
-		background.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			// Handle key presses for user movement and firing
-			public void handle(KeyEvent e) {
-				KeyCode kc = e.getCode();
-				if (kc == KeyCode.UP) user.moveUp();
-				if (kc == KeyCode.DOWN) user.moveDown();
-				if (kc == KeyCode.SPACE) fireProjectile();
-				if (kc == KeyCode.ESCAPE) {
-					togglePause();
-				}
-			}
-		});
-		background.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			public void handle(KeyEvent e) {
-				KeyCode kc = e.getCode();
-				if (kc == KeyCode.UP || kc == KeyCode.DOWN) user.stop();
-			}
-		});
+		inputHandler.attachInputHandlers(background);
+
 		// Check if background is already added
 		if (!root.getChildren().contains(background)) {
 			root.getChildren().add(background);
@@ -334,7 +319,7 @@ public abstract class LevelParent extends Observable {
 	 * If the game is not paused, pauses the game and shows the pause overlay.
 	 * If the game is paused, resumes the game and hides the pause overlay.
 	 */
-	private void togglePause() {
+	protected void togglePause() {
 		// Check if any overlay is active
 		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN ||
 				levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER ||
@@ -448,7 +433,7 @@ public abstract class LevelParent extends Observable {
 	 * If a projectile is fired, it is added to the scene and the user projectiles list.
 	 * Also plays the sound effect for firing a bullet.
 	 */
-	private void fireProjectile() {
+	protected void fireProjectile() {
 		if (!canFireProjectiles()) return; // Prevent firing when not allowed
 		ActiveActorDestructible projectile = user.fireProjectile();
 		if (projectile != null) {
