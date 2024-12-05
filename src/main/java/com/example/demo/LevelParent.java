@@ -2,7 +2,6 @@ package com.example.demo;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
 import com.example.demo.mainmenu.StoreManager;
@@ -33,8 +32,7 @@ public abstract class LevelParent extends Observable {
 	private boolean isPaused = false;
 	private boolean gameOver = false;
 	private int currentNumberOfEnemies;
-	private long elapsedSeconds = 0;
-	private Timeline timerTimeline;
+	private GameTimer gameTimer;
 	private String levelName;
 
 	private final Group root;
@@ -64,6 +62,7 @@ public abstract class LevelParent extends Observable {
 		this.root = new Group();
 		this.scene = new Scene(root, screenWidth, screenHeight);
 		this.timeline = new Timeline();
+		this.gameTimer = new GameTimer();
 		int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
 		String selectedPlaneFilename = mapPlaneNumberToFilename(selectedPlaneNumber);
 
@@ -82,7 +81,6 @@ public abstract class LevelParent extends Observable {
 		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
 		this.levelName = levelName;
-		initializeTimer();
 		initializeTimeline();
 		friendlyUnits.add(user);
 		SettingsManager.getInstance().resumeMusic();
@@ -165,15 +163,6 @@ public abstract class LevelParent extends Observable {
 		return scene;
 	}
 
-	/**
-	 * Initializes the game timer.
-	 * Creates a new Timeline that increments the elapsedSeconds counter every second.
-	 * The timeline runs indefinitely.
-	 */
-	private void initializeTimer() {
-		timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> elapsedSeconds++));
-		timerTimeline.setCycleCount(Timeline.INDEFINITE);
-	}
 
 	/**
 	 * Initializes the game timeline (game loop).
@@ -222,44 +211,6 @@ public abstract class LevelParent extends Observable {
 		levelView.bringInfoDisplayToFront();
 	}
 
-	// ----------------	TIMER --------------------
-
-	/**
-	 * Starts the game timer.
-	 */
-	public void startTimer() {
-		if (timerTimeline != null) {
-			timerTimeline.play();
-		}
-	}
-
-	/**
-	 * Pauses the game timer.
-	 */
-	public void pauseTimer() {
-		if (timerTimeline != null) {
-			timerTimeline.pause();
-		}
-	}
-
-	/**
-	 * Resumes the game timer.
-	 */
-	public void resumeTimer() {
-		if (timerTimeline != null) {
-			timerTimeline.play();
-		}
-	}
-
-	/**
-	 * Stops the game timer.
-	 */
-	public void stopTimer() {
-		if (timerTimeline != null) {
-			timerTimeline.stop();
-		}
-	}
-
 	//  --------- Maps the plane number to its corresponding filename. -----------
 
 	/**
@@ -301,7 +252,7 @@ public abstract class LevelParent extends Observable {
 	private void startGameAfterCountdown() {
 		// Start the game timeline
 		startGame(); // Existing game start logic
-		startTimer();
+		gameTimer.start();
 	}
 
 	/**
@@ -330,7 +281,7 @@ public abstract class LevelParent extends Observable {
 	public void stopGame() {
 		if (timeline != null) {
 			timeline.stop();
-			stopTimer();
+			gameTimer.stop();
 		}
 		// Perform additional cleanup if necessary
 		removeAllDestroyedActors(); // Clean up any remaining actors
@@ -356,7 +307,7 @@ public abstract class LevelParent extends Observable {
 	public void pauseGame() {
 		if (timeline != null) {
 			timeline.pause();
-			pauseTimer();
+			gameTimer.pause();
 		}
 		// Pause all active sound effects
 		SettingsManager.getInstance().pauseMusic();
@@ -371,7 +322,7 @@ public abstract class LevelParent extends Observable {
 	public void resumeGame() {
 		if (timeline != null) {
 			timeline.play();
-			resumeTimer();
+			gameTimer.resume();
 		}
 		SettingsManager.getInstance().resumeMusic();
 		SettingsManager.getInstance().unmuteAllSoundEffects();
@@ -832,13 +783,13 @@ public abstract class LevelParent extends Observable {
 		if (gameOver) return;
 		gameOver = true;
 		timeline.stop();
-		stopTimer();
+		gameTimer.stop();
 		setChanged();
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		SettingsManager.getInstance().playVictorySound(); // Play victory sound
 
 		// Step 1: Retrieve Current Time
-		long currentTimeSeconds = elapsedSeconds;
+		long currentTimeSeconds = gameTimer.getElapsedTime();
 		String levelName = getLevelName();
 
 		// Step 2: Access Preferences to Get Existing Fastest Time
@@ -897,11 +848,11 @@ public abstract class LevelParent extends Observable {
 		if (gameOver) return;
 		gameOver = true;
 		timeline.stop();
-		stopTimer();
+		gameTimer.stop();
 		setChanged();
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		// Step 1: Retrieve Current Time
-		long currentTimeSeconds = elapsedSeconds;
+		long currentTimeSeconds = gameTimer.getElapsedTime();
 		String levelName = getLevelName();
 		// Step 2: Access Preferences to Get Existing Fastest Time
 		FastestTimesManager ftm = FastestTimesManager.getInstance();
