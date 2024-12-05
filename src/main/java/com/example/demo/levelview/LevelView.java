@@ -310,16 +310,14 @@ public class LevelView {
      * @param restartCallback the callback to restart the level
      * @param levelName the name of the level
      * @param currentTimeSeconds the current time in seconds
-     * @param fastestTimeSeconds the fastest time in seconds
      */
     public void showGameOverOverlay(Runnable backToMainMenuCallback, Runnable restartCallback,
-                                    String levelName, long currentTimeSeconds, long fastestTimeSeconds) {
+                                    String levelName, long currentTimeSeconds, String fastestTimeDisplay) {
         if (activeOverlay == ActiveOverlay.NONE) {
             gameOverOverlay.initializeButtons(backToMainMenuCallback, restartCallback, levelName);
             // Format times
             String currentTime = formatTime(currentTimeSeconds);
-            String fastestTime = formatTime(fastestTimeSeconds);
-            gameOverOverlay.setTimes(currentTime, fastestTime);
+            gameOverOverlay.setTimes(currentTime, fastestTimeDisplay);
             gameOverOverlay.showOverlay();
             activeOverlay = ActiveOverlay.GAME_OVER;
         }

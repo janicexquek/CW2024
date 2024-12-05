@@ -620,10 +620,20 @@ public abstract class LevelParent extends Observable {
 		// Step 1: Retrieve Current Time
 		long currentTimeSeconds = gameTimer.getElapsedTime();
 		String levelName = getLevelName();
-		// Step 2: Access Preferences to Get Existing Fastest Time
+
+		// Step 2: Access Fastest Time
 		FastestTimesManager ftm = FastestTimesManager.getInstance();
 		long existingFastestTime = ftm.getFastestTime(levelName);
-		long fastestTimeSeconds = existingFastestTime;
+
+		// Step 3: Determine Fastest Time Display Message
+		String fastestTimeDisplay;
+		if (existingFastestTime != Long.MAX_VALUE) {
+			// Fastest time exists
+			fastestTimeDisplay = formatTime(existingFastestTime);
+		} else {
+			// No fastest time recorded
+			fastestTimeDisplay = "No fastest time recorded";
+		}
 
 		// Instead of show GameOverlay
 		if (levelView != null) {
@@ -632,10 +642,23 @@ public abstract class LevelParent extends Observable {
 					this::restartGame,    // Restart callback
 					getLevelDisplayName(),   // Current level display name
 					currentTimeSeconds,    // Current Time in seconds
-					fastestTimeSeconds
+					fastestTimeDisplay
 			);
 		}
 		SettingsManager.getInstance().playDefeatSound(); // Play defeat sound
+	}
+
+
+	/**
+	 * Formats time from seconds to MM:SS.
+	 *
+	 * @param totalSeconds the total seconds to format
+	 * @return the formatted time string
+	 */
+	private String formatTime(long totalSeconds) {
+		long minutes = totalSeconds / 60;
+		long seconds = totalSeconds % 60;
+		return String.format("%02d:%02d", minutes, seconds);
 	}
 
 	// ----------------------Getter methods ----------------------------
