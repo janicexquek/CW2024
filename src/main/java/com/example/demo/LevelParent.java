@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import com.example.demo.gamemanager.CollisionManager;
 import com.example.demo.gamemanager.GameTimer;
 import com.example.demo.gamemanager.InputHandler;
+import com.example.demo.levelview.LevelView;
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
 import com.example.demo.mainmenu.StoreManager;

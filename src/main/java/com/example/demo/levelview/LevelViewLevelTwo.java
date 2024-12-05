@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.levelview;
 
 import com.example.demo.shield.BossShieldImage;
 import javafx.animation.Timeline;
