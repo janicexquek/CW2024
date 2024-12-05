@@ -1,11 +1,8 @@
 package com.example.demo.gamemanager;
 
 import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import com.example.demo.gamemanager.InputHandler;
-import com.example.demo.levelview.LevelView;
 
 import java.util.Objects;
 
@@ -20,7 +17,6 @@ public class SceneInitializer {
     private final double screenWidth;
     private final double screenHeight;
     private final InputHandler inputHandler;
-    protected LevelView levelView;
 
     /**
      * Constructs a new SceneInitializer with the specified parameters.
