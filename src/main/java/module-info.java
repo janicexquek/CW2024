@@ -14,4 +14,5 @@ module com.example.demo {
     opens com.example.demo.projectile to javafx.fxml;
     opens com.example.demo.shield to javafx.fxml;
     opens com.example.demo.level to javafx.fxml;
+    opens com.example.demo.gamemanager to javafx.fxml;
 }

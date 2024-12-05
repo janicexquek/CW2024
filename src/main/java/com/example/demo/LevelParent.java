@@ -2,6 +2,8 @@ package com.example.demo;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import com.example.demo.gamemanager.GameTimer;
+import com.example.demo.gamemanager.InputHandler;
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
 import com.example.demo.mainmenu.StoreManager;
@@ -13,7 +15,6 @@ import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.*;
-import javafx.scene.input.*;
 import javafx.util.Duration;
 
 /**
@@ -319,7 +320,7 @@ public abstract class LevelParent extends Observable {
 	 * If the game is not paused, pauses the game and shows the pause overlay.
 	 * If the game is paused, resumes the game and hides the pause overlay.
 	 */
-	protected void togglePause() {
+	public void togglePause() {
 		// Check if any overlay is active
 		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN ||
 				levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER ||
@@ -433,7 +434,7 @@ public abstract class LevelParent extends Observable {
 	 * If a projectile is fired, it is added to the scene and the user projectiles list.
 	 * Also plays the sound effect for firing a bullet.
 	 */
-	protected void fireProjectile() {
+	public void fireProjectile() {
 		if (!canFireProjectiles()) return; // Prevent firing when not allowed
 		ActiveActorDestructible projectile = user.fireProjectile();
 		if (projectile != null) {

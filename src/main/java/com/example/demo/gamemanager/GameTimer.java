@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.gamemanager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -6,7 +6,7 @@ import javafx.util.Duration;
 
 public class GameTimer {
     private long elapsedSeconds = 0;
-    private Timeline timerTimeline;
+    private final Timeline timerTimeline;
 
     public GameTimer() {
         timerTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> elapsedSeconds++));

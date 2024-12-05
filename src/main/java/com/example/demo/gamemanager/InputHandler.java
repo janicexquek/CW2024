@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.example.demo.gamemanager;
 
+import com.example.demo.LevelParent;
 import com.example.demo.plane.UserPlane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -12,8 +13,8 @@ import javafx.scene.input.KeyEvent;
  */
 public class InputHandler {
 
-    private UserPlane user;
-    private LevelParent levelParent;
+    private final UserPlane user;
+    private final LevelParent levelParent;
 
     /**
      * Constructs a new InputHandler.
