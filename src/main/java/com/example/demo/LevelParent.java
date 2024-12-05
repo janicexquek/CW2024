@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import com.example.demo.gamemanager.CollisionManager;
 import com.example.demo.gamemanager.GameTimer;
 import com.example.demo.gamemanager.InputHandler;
+import com.example.demo.gamemanager.SceneInitializer;
 import com.example.demo.levelview.LevelView;
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
@@ -43,6 +44,7 @@ public abstract class LevelParent extends Observable {
 	private final UserPlane user;
 	private final Scene scene;
 	private final ImageView background;
+	private final SceneInitializer sceneInitializer;
 
 	protected final List<ActiveActorDestructible> friendlyUnits;
 	private final List<ActiveActorDestructible> enemyUnits;
@@ -78,6 +80,7 @@ public abstract class LevelParent extends Observable {
 		this.allyProjectiles = new ArrayList<>(); // Initialize allyProjectiles
 		this.Updated = false;
 		this.inputHandler = new InputHandler(user, this);
+		this.sceneInitializer = new SceneInitializer(root, backgroundImageName, screenWidth, screenHeight, inputHandler);
 		this.collisionManager = new CollisionManager(
 				this,
 				user,
@@ -159,7 +162,7 @@ public abstract class LevelParent extends Observable {
 	 */
 	protected abstract void updateCustomDisplay();
 
-	// --------- INITIALIZE SCENE, TIMER, TIMELINE & BACKGROUND --------------
+	// --------- INITIALIZE SCENE, TIMER, TIMELINE  --------------
 
 	/**
 	 * Initializes the game scene, including background, friendly units, and overlays.
@@ -169,11 +172,11 @@ public abstract class LevelParent extends Observable {
 	 * @return The initialized Scene.
 	 */
 	public Scene initializeScene() {
-		initializeBackground();
+		sceneInitializer.initializeBackground();
 		initializeFriendlyUnits();
 		levelView.showHeartDisplay();
 		levelView.showExitDisplay();
-		// Start the countdown before starting the game
+		levelView.bringInfoDisplayToFront();
 		levelView.startCountdown(this::startGameAfterCountdown);
 		return scene;
 	}
@@ -190,25 +193,6 @@ public abstract class LevelParent extends Observable {
 		timeline.getKeyFrames().add(gameLoop);
 	}
 
-	/**
-	 * Initializes the background image and sets up key event handlers.
-	 * Sets the background image to be focus traversable and adjusts its size to fit the screen dimensions.
-	 * Adds key event handlers for user movement, firing projectiles, and toggling pause.
-	 * Ensures the background is added to the root group if not already present.
-	 * Brings the information display to the front.
-	 */
-	private void initializeBackground() {
-		background.setFocusTraversable(true);
-		background.setFitHeight(screenHeight);
-		background.setFitWidth(screenWidth);
-		inputHandler.attachInputHandlers(background);
-
-		// Check if background is already added
-		if (!root.getChildren().contains(background)) {
-			root.getChildren().add(background);
-		}
-		levelView.bringInfoDisplayToFront();
-	}
 
 	//  --------- Maps the plane number to its corresponding filename. -----------
 
