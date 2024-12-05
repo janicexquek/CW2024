@@ -2,6 +2,7 @@ package com.example.demo;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import com.example.demo.gamemanager.CollisionManager;
 import com.example.demo.gamemanager.GameTimer;
 import com.example.demo.gamemanager.InputHandler;
 import com.example.demo.mainmenu.FastestTimesManager;
@@ -11,7 +12,6 @@ import com.example.demo.plane.FighterPlane;
 import com.example.demo.plane.UserPlane;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.*;
@@ -35,6 +35,7 @@ public abstract class LevelParent extends Observable {
 	private GameTimer gameTimer;
 	private String levelName;
 	private InputHandler inputHandler;
+	private CollisionManager collisionManager;
 
 	private final Group root;
 	private final Timeline timeline;
@@ -76,6 +77,17 @@ public abstract class LevelParent extends Observable {
 		this.allyProjectiles = new ArrayList<>(); // Initialize allyProjectiles
 		this.Updated = false;
 		this.inputHandler = new InputHandler(user, this);
+		this.collisionManager = new CollisionManager(
+				this,
+				user,
+				friendlyUnits,
+				enemyUnits,
+				userProjectiles,
+				enemyProjectiles,
+				allyProjectiles,
+				screenWidth,
+				screenHeight,
+				root);
 
 		this.background = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(backgroundImageName)).toExternalForm()));
 		this.screenHeight = screenHeight;
@@ -390,6 +402,17 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Updates the game scene, including actor states and collisions.
+	 * This method is called periodically by the game loop to update the state of the game.
+	 * It performs the following actions:
+	 * - Checks if the game is over.
+	 * - Checks if the game over conditions are met.
+	 * - Spawns enemy units.
+	 * - Updates all active actors.
+	 * - Generates enemy fire.
+	 * - Updates the number of enemies.
+	 * - Handles various types of collisions.
+	 * - Removes all destroyed actors from the scene.
+	 * - Updates the LevelView with the latest game state.
 	 */
 	private void updateScene() {
 		if (gameOver) return;
@@ -398,19 +421,21 @@ public abstract class LevelParent extends Observable {
 		updateActors();
 		generateEnemyFire();
 		updateNumberOfEnemies();
-		handleEnemyPenetration();
-		handleUserProjectileCollisions();
-		handleEnemyProjectileCollisions();
-		handleProjectileCollisions();
-		handlePlaneCollisions();
-		handleEnemyProjectileCollisionsWithAlly();
-		handleAllyProjectileCollisions();
+		collisionManager.handleEnemyPenetration();
+		collisionManager.handleUserProjectileCollisions();
+		collisionManager.handleEnemyProjectileCollisions();
+		collisionManager.handleProjectileCollisions();
+		collisionManager.handlePlaneCollisions();
+		collisionManager.handleEnemyProjectileCollisionsWithAlly();
+		collisionManager.handleAllyProjectileCollisions();
 		removeAllDestroyedActors();
 		updateLevelView();
 	}
 
 	/**
 	 * Updates the LevelView with the latest game state.
+	 * Removes hearts from the LevelView based on the user's current health.
+	 * Calls the abstract method updateCustomDisplay to update custom display elements.
 	 */
 	private void updateLevelView() {
 		levelView.removeHearts(user.getHealth());
@@ -482,8 +507,8 @@ public abstract class LevelParent extends Observable {
 		enemyUnits.forEach(enemy -> enemy.updateActor());
 		userProjectiles.forEach(projectile -> projectile.updateActor());
 		enemyProjectiles.forEach(projectile -> projectile.updateActor());
-		allyProjectiles.forEach(projectile -> projectile.updateActor()); // Update ally projectiles
-		checkProjectilesOutOfBounds();
+		allyProjectiles.forEach(projectile -> projectile.updateActor());
+		collisionManager.checkProjectilesOutOfBounds();
 	}
 
 	/**
@@ -513,184 +538,6 @@ public abstract class LevelParent extends Observable {
 		actors.removeAll(destroyedActors);
 	}
 
-	/**
-	 * Handles collisions between friendly units and enemy planes.
-	 * If a collision is detected, applies damage to both friendly and enemy units.
-	 * Marks the units as destroyed if applicable.
-	 */
-	private void handlePlaneCollisions() {
-		if (gameOver) return;
-		// Create defensive copies to prevent ConcurrentModificationException
-		List<ActiveActorDestructible> friendlyUnitsCopy = new ArrayList<>(friendlyUnits);
-		List<ActiveActorDestructible> enemyUnitsCopy = new ArrayList<>(enemyUnits);
-
-		for (ActiveActorDestructible friendly : friendlyUnitsCopy) {
-			for (ActiveActorDestructible enemy : enemyUnitsCopy) {
-				if (friendly.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
-					// Apply damage to both friendly and enemy
-					friendly.takeDamage();
-					enemy.takeDamage();
-					// Handle destruction and specific actions
-					if (friendly.isDestroyed()) {
-						friendly.setDestroyedBy(ActiveActorDestructible.DestroyedBy.COLLISION_WITH_USER);
-					}
-					if (enemy.isDestroyed()) {
-						enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.COLLISION_WITH_USER);
-						// Handle enemy destruction, e.g., increment score
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Handles collisions between projectiles.
-	 * Iterates through all user and the ally projectiles and checks for intersections with enemy projectiles.
-	 * If a collision is detected, applies damage to both projectiles involved.
-	 */
-	private void handleProjectileCollisions() {
-		// Handle projectile collision between user and enemy
-		Iterator<ActiveActorDestructible> userProjectileIterator = userProjectiles.iterator();
-		while (userProjectileIterator.hasNext()) {
-			ActiveActorDestructible userProjectile = userProjectileIterator.next();
-			Iterator<ActiveActorDestructible> enemyProjectileIterator = enemyProjectiles.iterator();
-			while (enemyProjectileIterator.hasNext()) {
-				ActiveActorDestructible enemyProjectile = enemyProjectileIterator.next();
-				if (userProjectile.getBoundsInParent().intersects(enemyProjectile.getBoundsInParent())) {
-					// Mark both projectiles as destroyed
-					userProjectile.takeDamage();
-					enemyProjectile.takeDamage();
-
-					break;
-				}
-			}
-		}
-		// Handle collisions between Ally Projectiles and Enemy Projectiles
-		Iterator<ActiveActorDestructible> allyProjectileIterator = allyProjectiles.iterator();
-		while (allyProjectileIterator.hasNext()) {
-			ActiveActorDestructible allyProjectile = allyProjectileIterator.next();
-			Iterator<ActiveActorDestructible> enemyProjectileIterator = enemyProjectiles.iterator();
-			while (enemyProjectileIterator.hasNext()) {
-				ActiveActorDestructible enemyProjectile = enemyProjectileIterator.next();
-				if (allyProjectile.getBoundsInParent().intersects(enemyProjectile.getBoundsInParent())) {
-					allyProjectile.takeDamage();
-					enemyProjectile.takeDamage();
-					break;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Handles collisions between user projectiles and enemy units.
-	 * Iterates through all user projectiles and checks for intersections with enemy units.
-	 * If a collision is detected, applies damage to the enemy unit and the user projectile.
-	 * If the enemy is destroyed, increments the user's kill count.
-	 */
-	private void handleUserProjectileCollisions() {
-		// Handle collisions between user projectiles and the enemy
-		Iterator<ActiveActorDestructible> projectileIterator = userProjectiles.iterator();
-		while (projectileIterator.hasNext()) {
-			ActiveActorDestructible projectile = projectileIterator.next();
-			Iterator<ActiveActorDestructible> enemyIterator = enemyUnits.iterator();
-			while (enemyIterator.hasNext()) {
-				ActiveActorDestructible enemy = enemyIterator.next();
-				if (projectile.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
-					enemy.takeDamage();
-					projectile.takeDamage();
-					if (enemy.isDestroyed()) {
-						enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.USER_PROJECTILE);
-						user.incrementKillCount(); // Increment kill count here
-					}
-					break; // Move to the next projectile after collision
-				}
-			}
-		}
-	}
-
-	/**
-	 * Handles collisions between enemy projectiles and the user's plane.
-	 * Iterates through all enemy projectiles and checks for intersections with the user's plane.
-	 * If a collision is detected, applies damage to the user's plane and destroys the enemy projectile.
-	 */
-	private void handleEnemyProjectileCollisions() {
-		Iterator<ActiveActorDestructible> projectileIterator = enemyProjectiles.iterator();
-		while (projectileIterator.hasNext()) {
-			ActiveActorDestructible projectile = projectileIterator.next();
-			if (projectile.getBoundsInParent().intersects(getUser().getBoundsInParent())) {
-				getUser().takeDamageFromProjectile(); // Shield absorbs damage
-				projectile.takeDamage();
-				projectileIterator.remove();
-				root.getChildren().remove(projectile);
-			}
-		}
-	}
-
-	/**
-	 * Handles enemy planes penetrating the player's defenses.
-	 * If an enemy penetrates the defenses, the player takes damage and the enemy is destroyed.
-	 */
-	private void handleEnemyPenetration() {
-		if (gameOver) return;
-		for (ActiveActorDestructible enemy : enemyUnits) {
-			if (enemyHasPenetratedDefenses(enemy)) {
-				user.takeDamageFromPenetration(); // Directly damage the player
-				enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.PENETRATION);
-				enemy.destroy();
-			}
-		}
-	}
-
-	/**
-	 * Checks if an enemy has penetrated the player's defenses.
-	 *
-	 * @param enemy The enemy to check.
-	 * @return True if the enemy has penetrated, false otherwise.
-	 */
-	private boolean enemyHasPenetratedDefenses(ActiveActorDestructible enemy) {
-		return Math.abs(enemy.getTranslateX()) > screenWidth;
-	}
-
-	/**
-	 * Checks if any projectiles in the user, enemy, or ally projectile lists are out of bounds.
-	 * If a projectile is out of bounds, it is destroyed.
-	 */
-	private void checkProjectilesOutOfBounds() {
-		checkProjectilesOutOfBounds(userProjectiles);
-		checkProjectilesOutOfBounds(enemyProjectiles);
-		checkProjectilesOutOfBounds(allyProjectiles);
-	}
-
-	/**
-	 * Checks if projectiles in the given list are out of bounds.
-	 * If a projectile is out of bounds, it is destroyed.
-	 *
-	 * @param projectiles The list of projectiles to check.
-	 */
-	private void checkProjectilesOutOfBounds(List<ActiveActorDestructible> projectiles) {
-		for (ActiveActorDestructible projectile : projectiles) {
-			if (isOutOfBounds(projectile)) {
-				projectile.destroy();
-			}
-		}
-	}
-
-	/**
-	 * Determines if an actor is out of bounds.
-	 *
-	 * @param actor The actor to check.
-	 * @return True if the actor is out of bounds, false otherwise.
-	 */
-	private boolean isOutOfBounds(ActiveActorDestructible actor) {
-		Bounds bounds = actor.localToScene(actor.getBoundsInLocal());
-		double minX = bounds.getMinX();
-		double maxX = bounds.getMaxX();
-		double minY = bounds.getMinY();
-		double maxY = bounds.getMaxY();
-
-		// Actor is out of bounds if it is completely off-screen
-		return maxX < 0 || minX > screenWidth || maxY < 0 || minY > screenHeight;
-	}
 
 	// ------------------------- Ally Plane ------------------------
 
@@ -702,56 +549,6 @@ public abstract class LevelParent extends Observable {
 	public void addAllyProjectile(ActiveActorDestructible projectile) {
 		allyProjectiles.add(projectile);
 		root.getChildren().add(projectile);
-	}
-
-	/**
-	 * Handles collisions between enemy projectiles and friendly units (allies).
-	 * Iterates through all enemy projectiles and checks for intersections with friendly units.
-	 * If a collision is detected, applies damage to the friendly unit and destroys the enemy projectile.
-	 */
-	protected void handleEnemyProjectileCollisionsWithAlly() {
-		Iterator<ActiveActorDestructible> enemyProjectileIterator = enemyProjectiles.iterator();
-		while (enemyProjectileIterator.hasNext()) {
-			ActiveActorDestructible enemyProjectile = enemyProjectileIterator.next();
-			// Iterate through all friendly units to check for collisions
-			for (ActiveActorDestructible friendly : friendlyUnits) {
-				if (friendly.isDestroyed()) continue; // Skip if already destroyed
-				if (enemyProjectile.getBoundsInParent().intersects(friendly.getBoundsInParent())) {
-					// Apply damage to the friendly unit
-					friendly.takeDamage();
-					// Destroy the enemy projectile
-					enemyProjectile.takeDamage();
-					break;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Handles collisions between the Ally projectiles and enemy units.
-	 * Iterates through all the Ally projectiles and checks for intersections with enemy units.
-	 * If a collision is detected, applies damage to the enemy unit and the ally projectile.
-	 * If the enemy is destroyed, increments the user's kill count.
-	 */
-	private void handleAllyProjectileCollisions() {
-		// Handle collisions between Ally Projectiles and Enemies
-		Iterator<ActiveActorDestructible> allyProjIter = allyProjectiles.iterator();
-		while (allyProjIter.hasNext()) {
-			ActiveActorDestructible allyProjectile = allyProjIter.next();
-			Iterator<ActiveActorDestructible> enemyIter = enemyUnits.iterator();
-			while (enemyIter.hasNext()) {
-				ActiveActorDestructible enemy = enemyIter.next();
-				if (allyProjectile.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
-					enemy.takeDamage();
-					allyProjectile.takeDamage();
-					if (enemy.isDestroyed()) {
-						enemy.setDestroyedBy(ActiveActorDestructible.DestroyedBy.USER_PROJECTILE);
-						user.incrementKillCount(); // Increment kill count here
-					}
-					break; // Move to the next projectile after collision
-				}
-			}
-		}
 	}
 
 	// -------------------------------- FINISH GAME ----------------------------------
@@ -821,13 +618,11 @@ public abstract class LevelParent extends Observable {
 	}
 
 	/**
-	 * Handles the lose condition for the game.
+	 * Handles the game over condition for the game.
 	 * Stops the game and displays the game over overlay.
-	 *
 	 * If the game is already over, the method returns immediately.
 	 * Otherwise, it stops the game timeline and timer, sets the game over flag,
 	 * and updates the fastest time if the current time is faster.
-	 *
 	 * Displays the game over overlay with the appropriate callbacks.
 	 */
 	protected void loseGame() {
@@ -929,5 +724,14 @@ public abstract class LevelParent extends Observable {
 	 */
 	protected List<ActiveActorDestructible> getEnemyUnits() {
 		return enemyUnits;
+	}
+
+	/**
+	 * Checks if the game is over.
+	 *
+	 * @return true if the game is over, false otherwise.
+	 */
+	public boolean isGameOver() {
+		return gameOver;
 	}
 }
