@@ -1,5 +1,8 @@
-package com.example.demo;
+package com.example.demo.level;
 
+import com.example.demo.ActiveActorDestructible;
+import com.example.demo.LevelParent;
+import com.example.demo.LevelView;
 import com.example.demo.plane.EnemyPlane;
 import com.example.demo.plane.IntermediatePlane;
 import com.example.demo.plane.MasterPlane;
@@ -15,7 +18,7 @@ import java.util.stream.Collectors;
 public class LevelThree extends LevelParent {
 
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg"; // Updated to LevelThree background
-    private static final String NEXT_LEVEL = "com.example.demo.LevelFour";
+    private static final String NEXT_LEVEL = "com.example.demo.level.LevelFour";
     private static final int PLAYER_INITIAL_HEALTH = 5;
     private static final double Y_UPPER_BOUND = 80;
     private static final double Y_LOWER_BOUND = 600.0;

@@ -1,6 +1,9 @@
 // LevelFour.java
-package com.example.demo;
+package com.example.demo.level;
 
+import com.example.demo.ActiveActorDestructible;
+import com.example.demo.LevelParent;
+import com.example.demo.LevelView;
 import com.example.demo.plane.AllyPlane;
 import com.example.demo.plane.EnemyPlane;
 import com.example.demo.plane.IntermediatePlane;
