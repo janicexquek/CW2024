@@ -11,6 +11,7 @@ import com.example.demo.levelview.LevelView;
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
 import com.example.demo.mainmenu.StoreManager;
+import com.example.demo.overlay.OverlayManager;
 import com.example.demo.plane.FighterPlane;
 import com.example.demo.plane.UserPlane;
 import javafx.animation.KeyFrame;
@@ -272,10 +273,6 @@ public abstract class LevelParent extends Observable {
 			levelView.hideGameOverOverlay();
 			levelView.hideWinOverlay();
 			levelView.hidePauseOverlay();
-			// Remove overlays from the scene graph
-			sceneManager.getRoot().getChildren().remove(levelView.getPauseOverlay());
-			sceneManager.getRoot().getChildren().remove(levelView.getWinOverlay());
-			sceneManager.getRoot().getChildren().remove(levelView.getGameOverOverlay());
 		}
 	}
 
@@ -310,10 +307,10 @@ public abstract class LevelParent extends Observable {
 	 */
 	public void togglePause() {
 		// Check if any overlay is active
-		if (levelView.getActiveOverlay() == LevelView.ActiveOverlay.WIN ||
-				levelView.getActiveOverlay() == LevelView.ActiveOverlay.GAME_OVER ||
-				levelView.getActiveOverlay() == LevelView.ActiveOverlay.COUNTDOWN ||
-				levelView.getActiveOverlay() == LevelView.ActiveOverlay.EXIT) { // Add EXIT state
+		if (levelView.getActiveOverlay() == OverlayManager.ActiveOverlay.WIN ||
+				levelView.getActiveOverlay() == OverlayManager.ActiveOverlay.GAME_OVER ||
+				levelView.getActiveOverlay() == OverlayManager.ActiveOverlay.COUNTDOWN ||
+				levelView.getActiveOverlay() == OverlayManager.ActiveOverlay.EXIT) { // Add EXIT state
 			return;
 		}
 
@@ -426,7 +423,7 @@ public abstract class LevelParent extends Observable {
 	 * @return True if the player can fire, false otherwise.
 	 */
 	private boolean canFireProjectiles() {
-		return !gameOver && !isPaused && levelView.getActiveOverlay() == LevelView.ActiveOverlay.NONE;
+		return !gameOver && !isPaused && levelView.getActiveOverlay() == OverlayManager.ActiveOverlay.NONE;
 	}
 
 	/**
