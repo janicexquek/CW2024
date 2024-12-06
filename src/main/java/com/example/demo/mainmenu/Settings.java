@@ -1,6 +1,8 @@
 package com.example.demo.mainmenu;
 
 import com.example.demo.controller.Controller;
+import com.example.demo.styles.ButtonFactory;
+import com.example.demo.styles.FontManager;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -11,11 +13,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.scene.text.Font;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -30,8 +29,8 @@ public class Settings {
     private final Stage stage; // Reference to the primary stage
     private final Controller controller; // Reference to the Controller
 
-    // Map to store loaded fonts for easy access
-    private Map<String, Font> customFonts = new HashMap<>();
+    private final FontManager fontManager;
+    private final ButtonFactory buttonFactory;
 
     // Instance variables for sliders to enable/disable them based on mute state
     private Slider musicVolumeSlider;
@@ -41,32 +40,31 @@ public class Settings {
     /**
      * Constructor for Settings.
      *
-     * @param stage the primary stage for this application
+     * @param stage      the primary stage for this application
      * @param controller the controller to manage interactions
      */
     public Settings(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
-        // Load custom fonts
-        loadCustomFonts();
+        this.fontManager = FontManager.getInstance();
+        this.buttonFactory = new ButtonFactory();
     }
 
     /**
      * Displays the settings page.
      */
     public void show() {
-        // Load the background image using the static final String
-        Image backgroundImage = new Image(Objects.requireNonNull(getClass().getResource(BACKGROUND_IMAGE_NAME)).toExternalForm());
-        ImageView backgroundImageView = new ImageView(backgroundImage);
+        // Load the background image
+        ImageView backgroundImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BACKGROUND_IMAGE_NAME)).toExternalForm()));
         backgroundImageView.setFitWidth(stage.getWidth()); // Set to scene width
         backgroundImageView.setFitHeight(stage.getHeight()); // Set to scene height
         backgroundImageView.setPreserveRatio(false); // Stretch to fill
 
-        // Initialize MusicManager instance
+        // Initialize SettingsManager instance
         SettingsManager settingsManager = SettingsManager.getInstance();
 
         // --- Back Button ---
-        StackPane backButton = createCustomSettingsButton("Back", 80, 30);
+        StackPane backButton = buttonFactory.createCustomButton("Back", "Sugar Bomb", 16, 80, 30, "/com/example/demo/images/ButtonText_Small_Round.png");
         backButton.setOnMouseClicked(e -> {
             // Navigate back to the main menu
             MainMenu mainMenu = new MainMenu(stage, controller);
@@ -78,14 +76,13 @@ public class Settings {
         StackPane.setMargin(backButton, new Insets(30, 0, 0, 30));
 
         // --- Settings Title ---
-        // --- Top HBox  Title ---
+        // --- Top HBox Title ---
         HBox topHBox = new HBox();
         topHBox.setAlignment(Pos.TOP_CENTER);
         topHBox.setPadding(new Insets(30, 0, 0, 0));
 
         Label titleLabel = new Label("SETTINGS");
-        titleLabel.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
-                Font.font("Arial", 100)).getName(), 100));
+        titleLabel.setFont(fontManager.getFont("Cartoon cookies", 100));
         titleLabel.getStyleClass().add("title-text");
 
         topHBox.getChildren().add(titleLabel);
@@ -104,15 +101,12 @@ public class Settings {
         Label countdownSoundEffectsLabel = new Label("Countdown Music:");
 
         // Apply custom font to labels
-        Font settingsLabelFont = customFonts.get("Cartoon cookies");
         backgroundEffectsLabel.setTextFill(Color.DARKGRAY);
         soundEffectsLabel.setTextFill(Color.DARKGRAY);
         countdownSoundEffectsLabel.setTextFill(Color.DARKGRAY);
-        if (settingsLabelFont != null) {
-            backgroundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
-            soundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
-            countdownSoundEffectsLabel.setFont(Font.font(settingsLabelFont.getName(), 25));
-        }
+        backgroundEffectsLabel.setFont(fontManager.getFont("Cartoon cookies", 25));
+        soundEffectsLabel.setFont(fontManager.getFont("Cartoon cookies", 25));
+        countdownSoundEffectsLabel.setFont(fontManager.getFont("Cartoon cookies", 25));
 
         labelsBox.getChildren().addAll(backgroundEffectsLabel, soundEffectsLabel, countdownSoundEffectsLabel);
 
@@ -127,7 +121,7 @@ public class Settings {
         musicVolumeSlider.setBlockIncrement(0.05);
         musicVolumeSlider.setPrefWidth(300);
 
-        // Bind the slider value to MusicManager's music volume
+        // Bind the slider value to SettingsManager's music volume
         musicVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> settingsManager.setMusicVolume(newValue.doubleValue()));
 
         // --- Sound Effects Volume Controls ---
@@ -137,7 +131,7 @@ public class Settings {
         sfxVolumeSlider.setBlockIncrement(0.05);
         sfxVolumeSlider.setPrefWidth(300);
 
-        // Bind the slider value to MusicManager's sound effect volume
+        // Bind the slider value to SettingsManager's sound effect volume
         sfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> settingsManager.setSoundEffectVolume(newValue.doubleValue()));
 
         // --- Countdown Sound Effects Volume Controls ---
@@ -147,7 +141,7 @@ public class Settings {
         countdownSfxVolumeSlider.setBlockIncrement(0.05);
         countdownSfxVolumeSlider.setPrefWidth(300);
 
-        // Bind the slider value to MusicManager's countdown sound effect volume
+        // Bind the slider value to SettingsManager's countdown sound effect volume
         countdownSfxVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> settingsManager.setCountdownSoundVolume(newValue.doubleValue()));
 
         // --- Mute All Toggle Button ---
@@ -203,8 +197,7 @@ public class Settings {
         // Create the "Mute All" label
         Label muteAllLabel = new Label("Mute All:");
         muteAllLabel.setTextFill(Color.DARKGRAY);
-        muteAllLabel.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
-                Font.font("Arial", 25)).getName(), 25));
+        muteAllLabel.setFont(fontManager.getFont("Cartoon cookies", 25));
 
         // Add the label and toggle button to the HBox
         muteAllHBox.getChildren().addAll(muteAllLabel, muteToggleButton);
@@ -223,7 +216,7 @@ public class Settings {
         allVBox.getChildren().addAll(contentHBox, muteAllHBox);
 
         // --- Defaults Button ---
-        StackPane defaultsButton = createCustomSettingsButton("Defaults", 120, 40);
+        StackPane defaultsButton = buttonFactory.createCustomButton("Defaults", "Sugar Bomb", 16, 120, 40, "/com/example/demo/images/ButtonText_Small_Round.png");
         defaultsButton.setOnMouseClicked(e -> {
             // Reset to default settings
             settingsManager.setMusicVolume(SettingsManager.DEFAULT_MUSIC_VOLUME);
@@ -240,19 +233,19 @@ public class Settings {
         bottomHBox.getChildren().addAll(defaultsButton);
 
         // ---- Second Main VBox contained content box and bottom box
-        VBox secondmainVBox = new VBox(80);
-        secondmainVBox.setAlignment(Pos.CENTER);
-        secondmainVBox.setPadding(new Insets(20));
-        secondmainVBox.setMaxWidth(650);
-        secondmainVBox.setPrefHeight(400); // Set to desired height
-        secondmainVBox.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 10;");
-        secondmainVBox.getChildren().addAll(allVBox, bottomHBox);
+        VBox secondMainVBox = new VBox(80);
+        secondMainVBox.setAlignment(Pos.CENTER);
+        secondMainVBox.setPadding(new Insets(20));
+        secondMainVBox.setMaxWidth(650);
+        secondMainVBox.setPrefHeight(400); // Set to desired height
+        secondMainVBox.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 10;");
+        secondMainVBox.getChildren().addAll(allVBox, bottomHBox);
 
         // --- Main VBox containing everything ---
         VBox mainVBox = new VBox(20);
         mainVBox.setAlignment(Pos.TOP_CENTER);
         mainVBox.setPadding(new Insets(10));
-        mainVBox.getChildren().addAll(topHBox, secondmainVBox);
+        mainVBox.getChildren().addAll(topHBox, secondMainVBox);
 
         // --- Main Layout ---
         BorderPane mainLayout = new BorderPane();
@@ -282,69 +275,10 @@ public class Settings {
     }
 
     /**
-     * Creates a custom settings button with an image and text.
-     *
-     * @param text the text to display on the button
-     * @param width the width of the button
-     * @param height the height of the button
-     * @return the created StackPane representing the button
-     */
-    private StackPane createCustomSettingsButton(String text, double width, double height) {
-        // Load the button background image
-        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/ButtonText_Small_Round.png")).toExternalForm()));
-        buttonImageView.setFitWidth(width);
-        buttonImageView.setFitHeight(height);
-        buttonImageView.setPreserveRatio(false);
-
-        // Create a label for the button text
-        Label label = new Label(text);
-        // Set the Sugar Bomb font
-        label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
-                Font.font("Arial", 16)).getName(), 16));
-        label.getStyleClass().add("button-label");
-
-        // Create a StackPane to stack the image and the label
-        StackPane stackPane = new StackPane(buttonImageView, label);
-        stackPane.setAlignment(Pos.CENTER);
-        stackPane.getStyleClass().add("custom-button-hover");
-
-        // Ensure the StackPane size matches the image size
-        stackPane.setMinSize(width, height);
-        stackPane.setMaxSize(width, height);
-
-        // Prevent mouse events on transparent areas
-        stackPane.setPickOnBounds(false);
-
-        // Create a single ScaleTransition for hover effects
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
-
-        // Add hover effects
-        stackPane.setOnMouseEntered(e -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.05);
-            scaleTransition.setToY(1.05);
-            scaleTransition.playFromStart();
-        });
-
-        stackPane.setOnMouseExited(e -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.0);
-            scaleTransition.setToY(1.0);
-            scaleTransition.playFromStart();
-        });
-
-        return stackPane;
-    }
-
-    /**
      * Updates the mute toggle image based on the mute state.
      *
      * @param imageView the ImageView to update
-     * @param isMuted the current mute state
+     * @param isMuted   the current mute state
      */
     private void updateMuteToggleImage(ImageView imageView, boolean isMuted) {
         String imagePath = isMuted ? AUDIO_OFF_IMAGE : AUDIO_ON_IMAGE;
@@ -363,30 +297,5 @@ public class Settings {
         musicVolumeSlider.setDisable(isMuted);
         sfxVolumeSlider.setDisable(isMuted);
         countdownSfxVolumeSlider.setDisable(isMuted);
-    }
-
-    /**
-     * Loads custom fonts from resources.
-     */
-    private void loadCustomFonts() {
-        String[] fontPaths = {
-                "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf" // Add the new font path here
-        };
-
-        for (String fontPath : fontPaths) {
-            try {
-                Font font = Font.loadFont(getClass().getResourceAsStream(fontPath), 10);
-                if (font == null) {
-                    System.err.println("Failed to load font: " + fontPath);
-                } else {
-                    // Store the font with its name for later use
-                    customFonts.put(font.getName(), font);
-                }
-            } catch (Exception e) {
-                System.err.println("Error loading font: " + fontPath);
-                e.printStackTrace();
-            }
-        }
     }
 }
