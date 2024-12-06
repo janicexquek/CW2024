@@ -32,11 +32,13 @@ public class LevelView {
     private final Group root;
     private final HeartDisplay heartDisplay;
     private final ExitDisplay exitDisplay;
-    private final ExitOverlay exitOverlay; // New WinOverlay
+    private final ExitOverlay exitOverlay; // New ExitOverlay
     private final PauseOverlay pauseOverlay; // New member variable
     private final WinOverlay winOverlay; // New WinOverlay
     private final GameOverOverlay gameOverOverlay;
     private CountdownOverlay countdownOverlay;
+    private final Runnable resumeGameCallback;
+    private final Runnable backToMainMenuCallback;
 
     private Runnable startGameCallback;
     private Timeline timeline; // Reference to the game loop timeline
@@ -59,13 +61,16 @@ public class LevelView {
         this.root = root;
         this.timeline = timeline;
         this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
+        // Assign callbacks to instance variables
+        this.resumeGameCallback = resumeGameCallback;
+        this.backToMainMenuCallback = backToMainMenuCallback;
         this.exitOverlay = new ExitOverlay(screenWidth, screenHeight, resumeGameCallback, backToMainMenuCallback, this::hideExitOverlay);
-        this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION, pauseGameCallback, this::showExitOverlay);
+        this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION, pauseGameCallback, this::handleShowExitOverlay);
 
         // Initialize the Pause, Win, GameOver Overlay with screen dimensions
         this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, pauseGameCallback);
         this.winOverlay = new WinOverlay(screenWidth, screenHeight); // Initialize WinOverlay
-        this.gameOverOverlay = new GameOverOverlay(screenWidth, screenHeight); // Initialize WinOverlay
+        this.gameOverOverlay = new GameOverOverlay(screenWidth, screenHeight); // Initialize GameOverOverlay
         // Initialize the CountdownOverlay
         this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
         // Initialize the infoDisplay Text node
@@ -218,9 +223,13 @@ public class LevelView {
 
     /**
      * Shows the exit overlay.
+     *
+     * @param resumeGameCallback     the callback to resume the game
+     * @param backToMainMenuCallback the callback to go back to the main menu
      */
-    public void showExitOverlay() {
+    public void showExitOverlay(Runnable resumeGameCallback, Runnable backToMainMenuCallback) {
         if (activeOverlay == ActiveOverlay.NONE) {
+            exitOverlay.initializeButtons(resumeGameCallback, backToMainMenuCallback, this::hideExitOverlay);
             exitOverlay.showExitOverlay();
             activeOverlay = ActiveOverlay.EXIT;
         }
@@ -234,6 +243,13 @@ public class LevelView {
             exitOverlay.hideExitOverlay();
             activeOverlay = ActiveOverlay.NONE;
         }
+    }
+    /**
+     * Handler method to show the exit overlay.
+     * This method matches the Runnable interface.
+     */
+    private void handleShowExitOverlay() {
+        showExitOverlay(resumeGameCallback, backToMainMenuCallback);
     }
 
     /**
