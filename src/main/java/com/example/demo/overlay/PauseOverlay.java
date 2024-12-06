@@ -1,5 +1,6 @@
 package com.example.demo.overlay;
 
+import com.example.demo.styles.FontManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -19,16 +20,18 @@ import java.util.Objects;
 public class PauseOverlay extends StackPane {
 
     private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png"; // Path to the background image for the message box
-    private static final String FONT_PATH = "/com/example/demo/fonts/Pixel Digivolve.otf"; // Path to the custom font
+    private final FontManager fontManager;
 
     /**
      * Constructor for PauseOverlay.
      *
-     * @param screenWidth the width of the screen
-     * @param screenHeight the height of the screen
-     * @param togglePauseCallback the callback to run when the pause is toggled
+     * @param screenWidth          the width of the screen
+     * @param screenHeight         the height of the screen
+     * @param togglePauseCallback  the callback to run when the pause is toggled
      */
     public PauseOverlay(double screenWidth, double screenHeight, Runnable togglePauseCallback) {
+        this.fontManager = FontManager.getInstance();
+
         // Set the size of the overlay to cover the entire screen
         setPrefSize(screenWidth, screenHeight);
         setMaxSize(screenWidth, screenHeight);
@@ -57,22 +60,6 @@ public class PauseOverlay extends StackPane {
                 event.consume();
             }
         });
-    }
-
-    /**
-     * Loads the custom font for the overlay.
-     *
-     * @return the loaded Font object, or a fallback font if loading fails
-     */
-    private Font loadCustomFont() {
-        try {
-            return Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 24);
-        } catch (Exception e) {
-            System.err.println("Failed to load custom font for PauseOverlay.");
-            e.printStackTrace();
-            // Fallback to Arial
-            return Font.font("Arial", 24);
-        }
     }
 
     /**
@@ -106,7 +93,7 @@ public class PauseOverlay extends StackPane {
         // Create the message label
         Label message = new Label("Press ESC to continue the game");
         message.setTextFill(Color.WHITE);
-        message.setFont(loadCustomFont());
+        message.setFont(fontManager.getFont("Pixel Digivolve", 24));
         message.setWrapText(true);
         message.setAlignment(Pos.CENTER);
         message.setMaxWidth(boxWidth - 40); // Padding inside the box
@@ -124,5 +111,4 @@ public class PauseOverlay extends StackPane {
 
         return messageBox;
     }
-
 }
