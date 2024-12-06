@@ -1,6 +1,6 @@
 // File: com/example/demo/display/ExitOverlay.java
 
-package com.example.demo.display;
+package com.example.demo.overlay;
 
 import com.example.demo.styles.ButtonFactory;
 import com.example.demo.styles.FontManager;

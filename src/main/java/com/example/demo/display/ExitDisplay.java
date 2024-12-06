@@ -1,5 +1,6 @@
 package com.example.demo.display;
 
+import com.example.demo.overlay.ExitOverlay;
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
