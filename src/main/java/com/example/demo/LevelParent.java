@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import com.example.demo.gamemanager.CollisionManager;
 import com.example.demo.gamemanager.GameTimer;
 import com.example.demo.gamemanager.InputHandler;
-import com.example.demo.gamemanager.SceneInitializer;
+import com.example.demo.gamemanager.SceneManager;
 import com.example.demo.levelview.LevelView;
 import com.example.demo.mainmenu.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
@@ -16,7 +16,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.*;
 import javafx.util.Duration;
 
 /**
@@ -39,12 +38,9 @@ public abstract class LevelParent extends Observable {
 	private InputHandler inputHandler;
 	private CollisionManager collisionManager;
 
-	private final Group root;
+	private final SceneManager sceneManager; // New SceneManager instance
 	private final Timeline timeline;
 	private final UserPlane user;
-	private final Scene scene;
-	private final ImageView background;
-	private final SceneInitializer sceneInitializer;
 
 	protected final List<ActiveActorDestructible> friendlyUnits;
 	private final List<ActiveActorDestructible> enemyUnits;
@@ -64,8 +60,8 @@ public abstract class LevelParent extends Observable {
 	 * @param levelName           The name of the level.
 	 */
 	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth, String levelName) {
-		this.root = new Group();
-		this.scene = new Scene(root, screenWidth, screenHeight);
+		this.screenHeight = screenHeight;
+		this.screenWidth = screenWidth;
 		this.timeline = new Timeline();
 		this.gameTimer = new GameTimer();
 		int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
@@ -79,8 +75,16 @@ public abstract class LevelParent extends Observable {
 		this.enemyProjectiles = new ArrayList<>();
 		this.allyProjectiles = new ArrayList<>(); // Initialize allyProjectiles
 		this.Updated = false;
+
+		// Initialize SceneManager
 		this.inputHandler = new InputHandler(user, this);
-		this.sceneInitializer = new SceneInitializer(root, backgroundImageName, screenWidth, screenHeight, inputHandler);
+		this.sceneManager = new SceneManager(backgroundImageName, screenWidth, screenHeight, inputHandler);
+		this.sceneManager.initializeScene(); // Initialize scene and background
+
+		// Retrieve root and scene from SceneManager
+		Group root = this.sceneManager.getRoot();
+		Scene scene = this.sceneManager.getScene();
+
 		this.collisionManager = new CollisionManager(
 				this,
 				user,
@@ -93,9 +97,6 @@ public abstract class LevelParent extends Observable {
 				screenHeight,
 				root);
 
-		this.background = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(backgroundImageName)).toExternalForm()));
-		this.screenHeight = screenHeight;
-		this.screenWidth = screenWidth;
 		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
 		this.levelName = levelName;
@@ -172,13 +173,12 @@ public abstract class LevelParent extends Observable {
 	 * @return The initialized Scene.
 	 */
 	public Scene initializeScene() {
-		sceneInitializer.initializeBackground();
 		initializeFriendlyUnits();
 		levelView.showHeartDisplay();
 		levelView.showExitDisplay();
 		levelView.bringInfoDisplayToFront();
 		levelView.startCountdown(this::startGameAfterCountdown);
-		return scene;
+		return sceneManager.getScene();
 	}
 
 
@@ -243,7 +243,11 @@ public abstract class LevelParent extends Observable {
 	 * Requests focus for the background and plays the game timeline.
 	 */
 	public void startGame() {
-		background.requestFocus();
+		Scene scene = sceneManager.getScene();
+		// Assuming the background is the first child in root
+		if (!scene.getRoot().getChildrenUnmodifiable().isEmpty()) {
+			scene.getRoot().getChildrenUnmodifiable().get(0).requestFocus();
+		}
 		timeline.play();
 	}
 
@@ -276,9 +280,9 @@ public abstract class LevelParent extends Observable {
 			levelView.hideWinOverlay();
 			levelView.hidePauseOverlay();
 			// Remove overlays from the scene graph
-			root.getChildren().remove(levelView.getPauseOverlay());
-			root.getChildren().remove(levelView.getWinOverlay());
-			root.getChildren().remove(levelView.getGameOverOverlay());
+			sceneManager.getRoot().getChildren().remove(levelView.getPauseOverlay());
+			sceneManager.getRoot().getChildren().remove(levelView.getWinOverlay());
+			sceneManager.getRoot().getChildren().remove(levelView.getGameOverOverlay());
 		}
 	}
 
@@ -448,7 +452,7 @@ public abstract class LevelParent extends Observable {
 		if (!canFireProjectiles()) return; // Prevent firing when not allowed
 		ActiveActorDestructible projectile = user.fireProjectile();
 		if (projectile != null) {
-			root.getChildren().add(projectile);
+			sceneManager.getRoot().getChildren().add(projectile);
 			userProjectiles.add(projectile);
 			// Play user bullet sound
 			SettingsManager.getInstance().playSoundEffect("bullet.mp3");
@@ -477,7 +481,7 @@ public abstract class LevelParent extends Observable {
 	 */
 	private void spawnEnemyProjectile(ActiveActorDestructible projectile) {
 		if (projectile != null) {
-			root.getChildren().add(projectile);
+			sceneManager.getRoot().getChildren().add(projectile);
 			enemyProjectiles.add(projectile);
 		}
 	}
@@ -517,9 +521,9 @@ public abstract class LevelParent extends Observable {
 	 * @param actors The list of actors to check and remove if destroyed.
 	 */
 	private void removeDestroyedActors(List<ActiveActorDestructible> actors) {
-		List<ActiveActorDestructible> destroyedActors = actors.stream().filter(actor -> actor.isDestroyed())
+		List<ActiveActorDestructible> destroyedActors = actors.stream().filter(ActiveActorDestructible::isDestroyed)
 				.collect(Collectors.toList());
-		root.getChildren().removeAll(destroyedActors);
+		sceneManager.getRoot().getChildren().removeAll(destroyedActors);
 		actors.removeAll(destroyedActors);
 	}
 
@@ -533,7 +537,7 @@ public abstract class LevelParent extends Observable {
 	 */
 	public void addAllyProjectile(ActiveActorDestructible projectile) {
 		allyProjectiles.add(projectile);
-		root.getChildren().add(projectile);
+		sceneManager.getRoot().getChildren().add(projectile);
 	}
 
 	// -------------------------------- FINISH GAME ----------------------------------
@@ -678,7 +682,7 @@ public abstract class LevelParent extends Observable {
 	 * @return The root Group.
 	 */
 	protected Group getRoot() {
-		return root;
+		return sceneManager.getRoot();
 	}
 
 	/**
@@ -715,7 +719,7 @@ public abstract class LevelParent extends Observable {
 	 */
 	protected void addEnemyUnit(ActiveActorDestructible enemy) {
 		enemyUnits.add(enemy);
-		root.getChildren().add(enemy);
+		sceneManager.getRoot().getChildren().add(enemy);
 	}
 
 	/**
