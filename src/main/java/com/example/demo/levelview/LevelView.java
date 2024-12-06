@@ -8,6 +8,7 @@ import com.example.demo.overlay.CountdownOverlay;
 import com.example.demo.overlay.GameOverOverlay;
 import com.example.demo.overlay.PauseOverlay;
 import com.example.demo.overlay.WinOverlay;
+import com.example.demo.styles.FontManager;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
@@ -39,6 +40,7 @@ public class LevelView {
     private CountdownOverlay countdownOverlay;
     private final Runnable resumeGameCallback;
     private final Runnable backToMainMenuCallback;
+    private final FontManager fontManager;
 
     private Runnable startGameCallback;
     private Timeline timeline; // Reference to the game loop timeline
@@ -60,6 +62,8 @@ public class LevelView {
     public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight, Timeline timeline) {
         this.root = root;
         this.timeline = timeline;
+        this.fontManager = FontManager.getInstance();
+
         this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
         // Assign callbacks to instance variables
         this.resumeGameCallback = resumeGameCallback;
@@ -75,8 +79,7 @@ public class LevelView {
         this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
         // Initialize the infoDisplay Text node
         this.infoDisplay = new Text();
-        // Load the custom font
-        loadCustomFont();
+        setCustomFont(); // Set font using FontManager
         root.getChildren().addAll(exitOverlay, pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
         root.getChildren().add(infoDisplay);
         infoDisplay.toFront(); // Bring infoDisplay to the front
@@ -84,28 +87,12 @@ public class LevelView {
     }
 
     /**
-     * Loads a custom font for the info display.
+     * Sets a custom font for the info display using FontManager.
      */
-    private void loadCustomFont() {
-        // Adjusted font loading code to handle spaces in file name
-        String fontPath = "/com/example/demo/fonts/Pixel Digivolve.otf";
-        InputStream fontStream = getClass().getResourceAsStream(fontPath);
-
-        if (fontStream == null) {
-            System.out.println("Font file not found at: " + fontPath);
-        } else {
-            Font font = Font.loadFont(fontStream, 20);
-            if (font == null) {
-                System.out.println("Failed to load font from: " + fontPath);
-            } else {
-                this.infoDisplay.setFont(font);
-            }
-        }
-
-        // Set default font if custom font fails to load
-        if (this.infoDisplay.getFont() == null) {
-            this.infoDisplay.setFont(Font.font("Verdana", 20));
-        }
+    private void setCustomFont() {
+        // Retrieve the desired font from FontManager
+        Font customFont = fontManager.getFont("Pixel Digivolve", 20);
+        this.infoDisplay.setFont(customFont);
     }
 
     /**
