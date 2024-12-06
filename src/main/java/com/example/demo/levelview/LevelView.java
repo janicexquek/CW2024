@@ -287,7 +287,7 @@ public class LevelView {
             String fastestTime = formatTime(fastestTimeSeconds);
             winOverlay.setTimes(currentTime, fastestTime);
             winOverlay.setAchievementMessage(achievementMessage); // Set the achievement message
-            winOverlay.showWInOverlay();
+            winOverlay.showWinOverlay();
             activeOverlay = ActiveOverlay.WIN;
         }
     }
