@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 
 import java.util.Objects;
 
@@ -70,6 +71,7 @@ public class MessageBox extends StackPane {
         subtitleLabel.setFont(fontManager.getFont("Sugar Bomb", 20));
         subtitleLabel.setWrapText(true);
         subtitleLabel.setAlignment(Pos.CENTER);
+        subtitleLabel.setTextAlignment(TextAlignment.CENTER);
         subtitleLabel.setMaxWidth(boxWidth - 40); // Padding
 
         if (achievementText != null && !achievementText.trim().isEmpty()) {
