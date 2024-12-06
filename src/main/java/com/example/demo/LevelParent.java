@@ -3,6 +3,7 @@ package com.example.demo;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.example.demo.gamemanager.CollisionManager;
+import com.example.demo.gamemanager.GameStateManager;
 import com.example.demo.gamemanager.GameTimer;
 import com.example.demo.gamemanager.InputHandler;
 import com.example.demo.gamemanager.SceneManager;
@@ -33,13 +34,14 @@ public abstract class LevelParent extends Observable {
 	private boolean isPaused = false;
 	private boolean gameOver = false;
 	private int currentNumberOfEnemies;
-	private GameTimer gameTimer;
 	private String levelName;
 	private InputHandler inputHandler;
 	private CollisionManager collisionManager;
 
-	private final SceneManager sceneManager; // New SceneManager instance
+	private final SceneManager sceneManager; // SceneManager instance
 	private final Timeline timeline;
+	private final GameTimer gameTimer;
+	private final GameStateManager gameStateManager; // New GameStateManager instance
 	private final UserPlane user;
 
 	protected final List<ActiveActorDestructible> friendlyUnits;
@@ -64,6 +66,7 @@ public abstract class LevelParent extends Observable {
 		this.screenWidth = screenWidth;
 		this.timeline = new Timeline();
 		this.gameTimer = new GameTimer();
+		this.gameStateManager = new GameStateManager(timeline, gameTimer); // Initialize GameStateManager
 		int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
 		String selectedPlaneFilename = mapPlaneNumberToFilename(selectedPlaneNumber);
 
@@ -95,7 +98,8 @@ public abstract class LevelParent extends Observable {
 				allyProjectiles,
 				screenWidth,
 				screenHeight,
-				root);
+				root
+		);
 
 		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
 		this.currentNumberOfEnemies = 0;
@@ -233,22 +237,14 @@ public abstract class LevelParent extends Observable {
 	 * Starts the game after the countdown finishes.
 	 */
 	private void startGameAfterCountdown() {
-		// Start the game timeline
-		startGame(); // Existing game start logic
-		gameTimer.start();
-	}
-
-	/**
-	 * Starts the game.
-	 * Requests focus for the background and plays the game timeline.
-	 */
-	public void startGame() {
+		// Start the game timeline and timer via GameStateManager
+		gameStateManager.start();
+		// Handle UI focus separately
 		Scene scene = sceneManager.getScene();
 		// Assuming the background is the first child in root
 		if (!scene.getRoot().getChildrenUnmodifiable().isEmpty()) {
 			scene.getRoot().getChildrenUnmodifiable().get(0).requestFocus();
 		}
-		timeline.play();
 	}
 
 	/**
@@ -261,15 +257,12 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Stops the game and performs cleanup.
-	 * If the timeline is not null, it stops the game timeline and timer.
+	 * Stops the game timeline and timer via GameStateManager.
 	 * Removes all destroyed actors, observers, and hides overlays to prevent stacking.
 	 * Also removes overlays from the scene graph.
 	 */
 	public void stopGame() {
-		if (timeline != null) {
-			timeline.stop();
-			gameTimer.stop();
-		}
+		gameStateManager.stop();
 		// Perform additional cleanup if necessary
 		removeAllDestroyedActors(); // Clean up any remaining actors
 		// Remove observers if any
@@ -288,14 +281,11 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Pauses the game.
-	 * If the timeline is not null, it pauses the game timeline and timer.
+	 * Pauses the game timeline and timer via GameStateManager.
 	 * Also pauses the background music and mutes all sound effects.
 	 */
 	public void pauseGame() {
-		if (timeline != null) {
-			timeline.pause();
-			gameTimer.pause();
-		}
+		gameStateManager.pause();
 		// Pause all active sound effects
 		SettingsManager.getInstance().pauseMusic();
 		SettingsManager.getInstance().muteAllSoundEffects();
@@ -303,14 +293,11 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Resumes the game.
-	 * If the timeline is not null, it resumes the game timeline and timer.
+	 * Resumes the game timeline and timer via GameStateManager.
 	 * Also resumes the background music and unmutes all sound effects.
 	 */
 	public void resumeGame() {
-		if (timeline != null) {
-			timeline.play();
-			gameTimer.resume();
-		}
+		gameStateManager.resume();
 		SettingsManager.getInstance().resumeMusic();
 		SettingsManager.getInstance().unmuteAllSoundEffects();
 	}
@@ -521,7 +508,8 @@ public abstract class LevelParent extends Observable {
 	 * @param actors The list of actors to check and remove if destroyed.
 	 */
 	private void removeDestroyedActors(List<ActiveActorDestructible> actors) {
-		List<ActiveActorDestructible> destroyedActors = actors.stream().filter(ActiveActorDestructible::isDestroyed)
+		List<ActiveActorDestructible> destroyedActors = actors.stream()
+				.filter(ActiveActorDestructible::isDestroyed)
 				.collect(Collectors.toList());
 		sceneManager.getRoot().getChildren().removeAll(destroyedActors);
 		actors.removeAll(destroyedActors);
@@ -546,16 +534,15 @@ public abstract class LevelParent extends Observable {
 	 * Handles the win condition for the game.
 	 * Stops the game, updates fastest times, and displays the win overlay.
 	 * If the game is already over, the method returns immediately.
-	 * Otherwise, it stops the game timeline and timer, sets the game over flag,
-	 * and updates the fastest time if the current time is faster.
+	 * Otherwise, it stops the game timeline and timer via GameStateManager,
+	 * sets the game over flag, and updates the fastest time if the current time is faster.
 	 * Displays the win overlay with the appropriate achievement message and
 	 * conditional next level callback.
 	 */
 	protected void winGame() {
 		if (gameOver) return;
 		gameOver = true;
-		timeline.stop();
-		gameTimer.stop();
+		gameStateManager.stop();
 		setChanged();
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		SettingsManager.getInstance().playVictorySound(); // Play victory sound
@@ -610,15 +597,14 @@ public abstract class LevelParent extends Observable {
 	 * Handles the game over condition for the game.
 	 * Stops the game and displays the game over overlay.
 	 * If the game is already over, the method returns immediately.
-	 * Otherwise, it stops the game timeline and timer, sets the game over flag,
-	 * and updates the fastest time if the current time is faster.
+	 * Otherwise, it stops the game timeline and timer via GameStateManager,
+	 * sets the game over flag, and updates the fastest time if the current time is faster.
 	 * Displays the game over overlay with the appropriate callbacks.
 	 */
 	protected void loseGame() {
 		if (gameOver) return;
 		gameOver = true;
-		timeline.stop();
-		gameTimer.stop();
+		gameStateManager.stop();
 		setChanged();
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
 		// Step 1: Retrieve Current Time
