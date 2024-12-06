@@ -1,23 +1,13 @@
+// File: com/example/demo/levelview/LevelView.java
+
 package com.example.demo.levelview;
 
-import com.example.demo.display.ExitDisplay;
-import com.example.demo.overlay.ExitOverlay;
-import com.example.demo.display.HeartDisplay;
+import com.example.demo.display.DisplayManager;
+import com.example.demo.overlay.*;
 import com.example.demo.mainmenu.SettingsManager;
-import com.example.demo.overlay.CountdownOverlay;
-import com.example.demo.overlay.GameOverOverlay;
-import com.example.demo.overlay.PauseOverlay;
-import com.example.demo.overlay.WinOverlay;
-import com.example.demo.styles.FontManager;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
-import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.effect.GaussianBlur;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-
-import java.io.InputStream;
 
 /**
  * Class representing the view for a game level.
@@ -25,89 +15,62 @@ import java.io.InputStream;
  */
 public class LevelView {
 
-    private static final double HEART_DISPLAY_X_POSITION = 5;
-    private static final double HEART_DISPLAY_Y_POSITION = 25;
-    private static final double EXIT_DISPLAY_X_POSITION = 1200; // Adjust based on your screen width
-    private static final double EXIT_DISPLAY_Y_POSITION = 25;
 
     private final Group root;
-    private final HeartDisplay heartDisplay;
-    private final ExitDisplay exitDisplay;
-    private final ExitOverlay exitOverlay; // New ExitOverlay
-    private final PauseOverlay pauseOverlay; // New member variable
-    private final WinOverlay winOverlay; // New WinOverlay
-    private final GameOverOverlay gameOverOverlay;
-    private CountdownOverlay countdownOverlay;
+    private final ExitOverlay exitOverlay; // ExitOverlay instance
+    private final PauseOverlay pauseOverlay; // PauseOverlay instance
+    private final WinOverlay winOverlay; // WinOverlay instance
+    private final GameOverOverlay gameOverOverlay; // GameOverOverlay instance
+    private final CountdownOverlay countdownOverlay; // CountdownOverlay instance
+    private final DisplayManager displayManager; // DisplayManager instance
+
     private final Runnable resumeGameCallback;
     private final Runnable backToMainMenuCallback;
-    private final FontManager fontManager;
 
     private Runnable startGameCallback;
     private Timeline timeline; // Reference to the game loop timeline
     private ActiveOverlay activeOverlay = ActiveOverlay.NONE;
-    private Text infoDisplay; // New Text node for displaying information
 
     /**
      * Constructor for LevelView.
      *
-     * @param root the root group of the scene
-     * @param heartsToDisplay the number of hearts to display for the player's health
+     * @param root                   the root group of the scene
+     * @param heartsToDisplay        the number of hearts to display for the player's health
      * @param backToMainMenuCallback the callback to return to the main menu
-     * @param pauseGameCallback the callback to pause the game
-     * @param resumeGameCallback the callback to resume the game
-     * @param screenWidth the width of the screen
-     * @param screenHeight the height of the screen
-     * @param timeline the timeline for animations
+     * @param pauseGameCallback      the callback to pause the game
+     * @param resumeGameCallback     the callback to resume the game
+     * @param screenWidth            the width of the screen
+     * @param screenHeight           the height of the screen
+     * @param timeline               the timeline for animations
      */
-    public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight, Timeline timeline) {
+    public LevelView(Group root, int heartsToDisplay,
+                     Runnable backToMainMenuCallback, Runnable pauseGameCallback,
+                     Runnable resumeGameCallback, double screenWidth, double screenHeight,
+                     Timeline timeline) {
         this.root = root;
         this.timeline = timeline;
-        this.fontManager = FontManager.getInstance();
 
-        this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
         // Assign callbacks to instance variables
         this.resumeGameCallback = resumeGameCallback;
         this.backToMainMenuCallback = backToMainMenuCallback;
-        this.exitOverlay = new ExitOverlay(screenWidth, screenHeight, resumeGameCallback, backToMainMenuCallback, this::hideExitOverlay);
-        this.exitDisplay = new ExitDisplay(EXIT_DISPLAY_X_POSITION, EXIT_DISPLAY_Y_POSITION, pauseGameCallback, this::handleShowExitOverlay);
 
-        // Initialize the Pause, Win, GameOver Overlay with screen dimensions
+        // Initialize DisplayManager with necessary callbacks
+        this.displayManager = new DisplayManager(root, heartsToDisplay, screenWidth, screenHeight,
+                pauseGameCallback, this::handleShowExitOverlay);
+
+        // Initialize overlays
+        this.exitOverlay = new ExitOverlay(screenWidth, screenHeight, resumeGameCallback, backToMainMenuCallback, this::hideExitOverlay);
         this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, pauseGameCallback);
         this.winOverlay = new WinOverlay(screenWidth, screenHeight); // Initialize WinOverlay
         this.gameOverOverlay = new GameOverOverlay(screenWidth, screenHeight); // Initialize GameOverOverlay
         // Initialize the CountdownOverlay
         this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
-        // Initialize the infoDisplay Text node
-        this.infoDisplay = new Text();
-        setCustomFont(); // Set font using FontManager
+
+        // Add all overlays to the scene graph
         root.getChildren().addAll(exitOverlay, pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
-        root.getChildren().add(infoDisplay);
-        infoDisplay.toFront(); // Bring infoDisplay to the front
-        positionInfoDisplay();
+        displayManager.bringInfoDisplayToFront(); // Ensure infoDisplay is on top
     }
 
-    /**
-     * Sets a custom font for the info display using FontManager.
-     */
-    private void setCustomFont() {
-        // Retrieve the desired font from FontManager
-        Font customFont = fontManager.getFont("Pixel Digivolve", 20);
-        this.infoDisplay.setFont(customFont);
-    }
-
-    /**
-     * Positions the info display on the screen.
-     */
-    private void positionInfoDisplay() {
-        Platform.runLater(() -> {
-            Bounds heartBounds = heartDisplay.getContainer().getBoundsInParent();
-            double heartRightX = heartBounds.getMaxX();
-            double heartY = heartBounds.getMinY();
-
-            infoDisplay.setX(heartRightX + 10); // Adjust as needed
-            infoDisplay.setY(heartY + 40); // Align vertically with the heart display
-        });
-    }
 
     /**
      * Formats time from seconds to MM:SS.
@@ -119,18 +82,6 @@ public class LevelView {
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;
         return String.format("%02d:%02d", minutes, seconds);
-    }
-
-    /**
-     * Enum representing the active overlay state.
-     */
-    public enum ActiveOverlay {
-        NONE,
-        PAUSE,
-        WIN,
-        GAME_OVER,
-        COUNTDOWN,
-        EXIT
     }
 
     /**
@@ -190,22 +141,15 @@ public class LevelView {
     }
 
     /**
-     * Shows the heart display.
+     * Enum representing the active overlay state.
      */
-    public void showHeartDisplay() {
-        root.getChildren().add(heartDisplay.getContainer());
-    }
-
-    /**
-     * Removes hearts from the display.
-     *
-     * @param heartsRemaining the number of hearts remaining
-     */
-    public void removeHearts(int heartsRemaining) {
-        int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
-        for (int i = 0; i < currentNumberOfHearts - heartsRemaining; i++) {
-            heartDisplay.removeHeart();
-        }
+    public enum ActiveOverlay {
+        NONE,
+        PAUSE,
+        WIN,
+        GAME_OVER,
+        COUNTDOWN,
+        EXIT
     }
 
     /**
@@ -237,13 +181,6 @@ public class LevelView {
      */
     private void handleShowExitOverlay() {
         showExitOverlay(resumeGameCallback, backToMainMenuCallback);
-    }
-
-    /**
-     * Shows the exit display.
-     */
-    public void showExitDisplay() {
-        root.getChildren().add(exitDisplay.getContainer());
     }
 
     /**
@@ -344,7 +281,7 @@ public class LevelView {
      * @param killsToAdvance the number of kills required to advance
      */
     public void updateKillCount(int currentKills, int killsToAdvance) {
-        Platform.runLater(() -> this.infoDisplay.setText("Kills: " + currentKills + " / " + killsToAdvance));
+        displayManager.updateKillCount(currentKills, killsToAdvance);
     }
 
     /**
@@ -353,7 +290,7 @@ public class LevelView {
      * @param currentHealth the current health of the boss
      */
     public void updateBossHealth(int currentHealth) {
-        Platform.runLater(() -> this.infoDisplay.setText("Boss Health: " + currentHealth));
+        displayManager.updateBossHealth(currentHealth);
     }
 
     /**
@@ -362,14 +299,37 @@ public class LevelView {
      * @param info the custom information to display
      */
     public void updateCustomInfo(String info) {
-        Platform.runLater(() -> this.infoDisplay.setText(info));
+        displayManager.updateCustomInfo(info);
+    }
+
+    /**
+     * Removes a specified number of hearts from the display.
+     *
+     * @param heartsRemaining the number of hearts remaining
+     */
+    public void removeHearts(int heartsRemaining) {
+        displayManager.removeHearts(heartsRemaining);
+    }
+
+    /**
+     * Shows the heart display.
+     */
+    public void showHeartDisplay() {
+        displayManager.showHeartDisplay();
+    }
+
+    /**
+     * Shows the exit display.
+     */
+    public void showExitDisplay() {
+        displayManager.showExitDisplay();
     }
 
     /**
      * Brings the info display to the front.
      */
     public void bringInfoDisplayToFront() {
-        infoDisplay.toFront();
+        displayManager.bringInfoDisplayToFront();
     }
 
     /**
@@ -380,7 +340,6 @@ public class LevelView {
     public ActiveOverlay getActiveOverlay() {
         return activeOverlay;
     }
-
 
     /**
      * Gets the pause overlay.
