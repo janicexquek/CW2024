@@ -1,33 +1,20 @@
-// File: com/example/demo/display/ExitOverlay.java
+// File: com/example/demo/overlay/ExitOverlay.java
 
 package com.example.demo.overlay;
 
-import com.example.demo.styles.ButtonFactory;
-import com.example.demo.styles.FontManager;
-import javafx.event.Event;
+import com.example.demo.styles.MessageBox;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
-import java.net.URL;
-import java.util.Objects;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 /**
  * Class representing the exit overlay in the game.
  * Manages the display and interactions of the exit overlay.
  */
-public class ExitOverlay extends StackPane {
+public class ExitOverlay extends BaseOverlay {
 
-    private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png";
-    private static final String BUTTON_IMAGE_NAME = "/com/example/demo/images/ButtonText_Small_Blue_Round.png";
-
-    private final FontManager fontManager;
-    private final ButtonFactory buttonFactory;
+    private MessageBox messageBox;
 
     // Callbacks for button actions
     private Runnable resumeGameCallback;
@@ -47,136 +34,91 @@ public class ExitOverlay extends StackPane {
                        Runnable resumeGameCallback,
                        Runnable backToMainMenuCallback,
                        Runnable hideOverlayCallback) {
+        super(screenWidth, screenHeight);
         this.resumeGameCallback = resumeGameCallback;
         this.backToMainMenuCallback = backToMainMenuCallback;
         this.hideOverlayCallback = hideOverlayCallback;
-
-        this.fontManager = FontManager.getInstance();
-        this.buttonFactory = new ButtonFactory();
-
-        // Set the size of the overlay to cover the entire screen
-        setPrefSize(screenWidth, screenHeight);
-        setMaxSize(screenWidth, screenHeight);
-        setMinSize(screenWidth, screenHeight);
-
-        // Make the overlay non-focusable and ignore mouse events when not visible
-        setFocusTraversable(false);
-        setMouseTransparent(true);
-
-        // Semi-transparent background
-        setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);"); // 50% opacity
-
-        // Create the message box
-        StackPane messageBox = createMessageBox();
-
-        // Add the message box to the center of the overlay
-        getChildren().add(messageBox);
-
-        // Initially, the overlay is not visible
-        setVisible(false);
-
-        // Link the CSS stylesheet
-        linkStylesheet();
-
-        // Add a key event handler to consume ESC key when ExitOverlay is active
-        // Prevent ESC key from triggering other actions
-        addEventFilter(KeyEvent.KEY_PRESSED, Event::consume);
     }
 
-    /**
-     * Links the CSS stylesheet to this ExitOverlay.
-     */
-    private void linkStylesheet() {
-        URL cssResource = getClass().getResource("/com/example/demo/styles/styles.css");
-        if (cssResource == null) {
-            System.err.println("CSS file not found!");
-        } else {
-            getStylesheets().add(cssResource.toExternalForm());
-        }
-    }
-
-    /**
-     * Creates the message box with title, message, and buttons.
-     *
-     * @return the created message box as a StackPane
-     */
-    private StackPane createMessageBox() {
-        // Fixed size for the message box
+    @Override
+    protected StackPane createMessageBox() {
+        // Define message box parameters
         double boxWidth = 500;
         double boxHeight = 500;
+        String titleText = "Exit Game ?";
+        String subtitleText = "Do you want to CONTINUE your game \nor \nBACK to Main Menu ?";
+        String achievementText = null; // No achievement message for exit
+        String timeText = ""; // Not applicable
+        String fastestTimeText = ""; // Not applicable
 
-        // Load box1.png as the background for the message box
-        ImageView background;
-        try {
-            background = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(BOX_IMAGE_NAME)).toExternalForm()));
-            background.setFitWidth(boxWidth);
-            background.setFitHeight(boxHeight);
-        } catch (Exception e) {
-            System.err.println("Failed to load ExitOverlay background image: " + BOX_IMAGE_NAME);
-            e.printStackTrace();
-            // Fallback to a semi-transparent dark box
-            background = new ImageView();
-            background.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8);");
-            background.setFitWidth(boxWidth);
-            background.setFitHeight(boxHeight);
+        // Create MessageBox instance
+        messageBox = new MessageBox(boxWidth, boxHeight, titleText, subtitleText,
+                achievementText, timeText, fastestTimeText);
+
+        return messageBox;
+    }
+
+    /**
+     * Initializes buttons and adds them to the overlay.
+     *
+     * @param resumeGameCallback     the callback to run when the resume button is pressed
+     * @param backToMainMenuCallback the callback to run when the back to main menu button is pressed
+     * @param hideOverlayCallback    the callback to run when the overlay needs to be hidden
+     */
+    public void initializeButtons(Runnable resumeGameCallback, Runnable backToMainMenuCallback, Runnable hideOverlayCallback) {
+        if (buttonsInitialized) {
+            return;
         }
 
-        // Create the title label
-        Label titleLabel = new Label("Exit Game ?");
-        titleLabel.setTextFill(Color.WHITE);
-        titleLabel.setFont(fontManager.getFont("Cartoon cookies", 50));
-        titleLabel.setAlignment(Pos.TOP_CENTER);
-        titleLabel.setMaxWidth(boxWidth - 40);
+        // Update callbacks if provided
+        if (resumeGameCallback != null) {
+            this.resumeGameCallback = resumeGameCallback;
+        }
+        if (backToMainMenuCallback != null) {
+            this.backToMainMenuCallback = backToMainMenuCallback;
+        }
+        if (hideOverlayCallback != null) {
+            this.hideOverlayCallback = hideOverlayCallback;
+        }
 
-        // Create the message label
-        Label messageLabel = new Label("Do you want to CONTINUE your game \nor \nBACK to Main Menu ?");
-        messageLabel.setTextFill(Color.WHITE);
-        messageLabel.setFont(fontManager.getFont("Pixel Digivolve", 20));
-        messageLabel.setTextAlignment(TextAlignment.CENTER);
-        messageLabel.setAlignment(Pos.CENTER);
-        messageLabel.setMaxWidth(boxWidth - 40);
+        // Create the buttons using ButtonFactory
+        StackPane continueButton = buttonFactory.createCustomButton("Continue", "Sugar Bomb", 16, 150, 60, "/com/example/demo/images/ButtonText_Small_Blue_Round.png");
+        StackPane mainMenuButton = buttonFactory.createCustomButton("Main Menu", "Sugar Bomb", 16, 150, 60, "/com/example/demo/images/ButtonText_Small_Blue_Round.png");
 
-        // Create buttons with actions that hide the overlay and then run the callbacks
-        StackPane continueButton = buttonFactory.createCustomButton("Continue", "Sugar Bomb", 16, 180, 60, BUTTON_IMAGE_NAME);
+        // Assign actions to the buttons
         continueButton.setOnMouseClicked(e -> {
-            hideExitOverlay(); // Hide the overlay
+            if (hideOverlayCallback != null) {
+                hideOverlayCallback.run(); // Hide the overlay via callback
+            }
             if (resumeGameCallback != null) {
                 resumeGameCallback.run(); // Resume the game
             }
-            if (hideOverlayCallback != null) {
-                hideOverlayCallback.run(); // Notify LevelView or other components
-            }
         });
 
-        StackPane backButton = buttonFactory.createCustomButton("Main Menu", "Sugar Bomb", 16, 180, 60, BUTTON_IMAGE_NAME);
-        backButton.setOnMouseClicked(e -> {
-            hideExitOverlay(); // Hide the overlay
+        mainMenuButton.setOnMouseClicked(e -> {
+            if (hideOverlayCallback != null) {
+                hideOverlayCallback.run(); // Hide the overlay via callback
+            }
             if (backToMainMenuCallback != null) {
                 backToMainMenuCallback.run(); // Go back to the main menu
             }
-            if (hideOverlayCallback != null) {
-                hideOverlayCallback.run(); // Notify LevelView or other components
-            }
         });
 
-        // Arrange buttons in an HBox
-        HBox buttonBox = new HBox(20);
+        // Create an HBox to hold the buttons horizontally
+        HBox buttonBox = new HBox(20); // 20px spacing between buttons
         buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.getChildren().addAll(continueButton, backButton);
+        buttonBox.getChildren().addAll(continueButton, mainMenuButton);
 
-        // Create a VBox to hold the labels and buttons
-        VBox vbox = new VBox(40); // Spacing between elements
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setPrefSize(boxWidth, boxHeight);
-        vbox.setMaxSize(boxWidth, boxHeight);
-        vbox.setMinSize(boxWidth, boxHeight);
-        vbox.getChildren().addAll(titleLabel, messageLabel, buttonBox);
+        // Create a VBox to hold the buttons vertically (if needed)
+        VBox allButtonBox = new VBox(10);
+        allButtonBox.setAlignment(Pos.CENTER);
+        allButtonBox.getChildren().add(buttonBox);
 
-        // Stack the background and the message box
-        StackPane messageBox = new StackPane(background, vbox);
-        messageBox.setAlignment(Pos.CENTER);
-
-        return messageBox;
+        // Add the allButtonBox to the overlay's VBox within the MessageBox
+        // Assuming the messageBox's VBox is the second child (index 1)
+        VBox messageVBox = (VBox) messageBox.getChildren().get(1); // Accessing the VBox inside MessageBox
+        messageVBox.getChildren().add(allButtonBox);
+        buttonsInitialized = true;
     }
 
     /**
