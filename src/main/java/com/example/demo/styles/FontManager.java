@@ -53,6 +53,7 @@ public class FontManager {
      * Retrieves a loaded font by its name.
      *
      * @param name the name of the font
+     * @param size the desired font size
      * @return the Font object, or a default font if not found
      */
     public Font getFont(String name, double size) {

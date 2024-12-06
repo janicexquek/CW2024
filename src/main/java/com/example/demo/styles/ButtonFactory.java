@@ -2,21 +2,17 @@
 
 package com.example.demo.styles;
 
-import com.example.demo.styles.FontManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
 import javafx.util.Duration;
 
-import java.net.URL;
 import java.util.Objects;
 
 public class ButtonFactory {
