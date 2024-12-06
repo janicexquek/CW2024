@@ -11,15 +11,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import com.example.demo.styles.ButtonFactory;
+import com.example.demo.styles.FontManager;
 import com.example.demo.controller.Controller;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -32,8 +31,9 @@ public class StorePage {
     private final Stage stage;
     private final Controller controller;
 
-    // Map to store loaded fonts for easy access
-    private Map<String, Font> customFonts = new HashMap<>();
+
+    private final FontManager fontManager;
+    private final ButtonFactory buttonFactory;
     private Label selectionMessageLabel;
 
     /**
@@ -45,8 +45,8 @@ public class StorePage {
     public StorePage(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
-        // Load custom fonts
-        loadCustomFonts();
+        this.fontManager = FontManager.getInstance();
+        this.buttonFactory = new ButtonFactory();
     }
 
     /**
@@ -61,7 +61,7 @@ public class StorePage {
         backgroundImageView.setSmooth(true);
 
         // --- Back Button ---
-        StackPane backButton = createCustomButton();
+        StackPane backButton = buttonFactory.createCustomButton("Back", "Sugar Bomb", 16, 80, 30, "/com/example/demo/images/ButtonText_Small_Round.png");
         backButton.setOnMouseClicked(e -> {
             // Navigate back to the main menu
             MainMenu mainMenu = new MainMenu(stage, controller);
@@ -78,19 +78,16 @@ public class StorePage {
         titleVBox.setPadding(new Insets(30, 0, 0, 0));
 
         Label storeTitle = new Label("Welcome to the Plane Store");
-        storeTitle.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
-                Font.font("Arial", 60)).getName(), 60));
+        storeTitle.setFont(fontManager.getFont("Cartoon cookies", 60));
         storeTitle.getStyleClass().add("title-text");
 
         Label storeText = new Label("Please choose your own plane");
-        storeText.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
-                Font.font("Arial", 40)).getName(), 40));
+        storeText.setFont(fontManager.getFont("Cartoon cookies", 40));
         storeText.getStyleClass().add("title-text");
 
         // --- Selection Message Label ---
         selectionMessageLabel = new Label();
-        selectionMessageLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                Font.font("Arial", 25)).getName(), 25));
+        selectionMessageLabel.setFont(fontManager.getFont("Pixel Digivolve", 25));
         selectionMessageLabel.getStyleClass().add("title-text");
 
         titleVBox.getChildren().addAll(storeTitle, storeText, selectionMessageLabel);
@@ -228,8 +225,7 @@ public class StorePage {
         int planeNumber = getPlaneNumber(planeImageName);
         Label planeNumberLabel = new Label(String.valueOf(planeNumber));
         planeNumberLabel.setTextFill(Color.WHITE); // Gold color for visibility
-        planeNumberLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                Font.font("Arial", 20)).getName(), 20)); // Use Pixel Digivolve font
+        planeNumberLabel.setFont(fontManager.getFont("Pixel Digivolve", 20)); // Use Pixel Digivolve font
 
         // Create a StackPane to layer the plane image, hover overlay, selection border, and plane number
         StackPane stackPane = new StackPane(planeImageView, hoverOverlay, selectionBorder, planeNumberLabel);
@@ -309,87 +305,5 @@ public class StorePage {
         });
 
         return stackPane;
-    }
-
-    /**
-     * Creates a custom button with hover effects.
-     *
-     * @return the created StackPane representing the button
-     */
-    private StackPane createCustomButton() {
-        // Load the button background image
-        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/ButtonText_Small_Round.png")).toExternalForm()));
-        buttonImageView.setFitWidth(80);
-        buttonImageView.setFitHeight(30);
-        buttonImageView.setPreserveRatio(false);
-
-        // Create a label for the button text
-        Label label = new Label("Back");
-        label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
-                Font.font("Arial", 16)).getName(), 16));
-
-        label.getStyleClass().add("button-label");
-
-        // Create a StackPane to stack the image and the label
-        StackPane stackPane = new StackPane(buttonImageView, label);
-        stackPane.setAlignment(Pos.CENTER);
-        stackPane.getStyleClass().add("custom-button-hover");
-
-        // Ensure the StackPane size matches the image size
-        stackPane.setMinSize(80, 30);
-        stackPane.setMaxSize(80, 30);
-
-        // Change cursor to hand on hover
-        stackPane.setCursor(Cursor.HAND);
-
-        // Create a single ScaleTransition
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
-
-        // Add hover effects
-        stackPane.setOnMouseEntered(ev -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.05);
-            scaleTransition.setToY(1.05);
-            scaleTransition.playFromStart();
-        });
-
-        stackPane.setOnMouseExited(ev -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.0);
-            scaleTransition.setToY(1.0);
-            scaleTransition.playFromStart();
-        });
-
-        return stackPane;
-    }
-
-    /**
-     * Loads custom fonts from the resources.
-     */
-    private void loadCustomFonts() {
-        String[] fontPaths = {
-                "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf",
-                "/com/example/demo/fonts/Pixel Digivolve.otf"
-        };
-
-        for (String fontPath : fontPaths) {
-            try {
-                Font font = Font.loadFont(getClass().getResourceAsStream(fontPath), 10);
-                if (font == null) {
-                    System.err.println("Failed to load font: " + fontPath);
-                } else {
-                    // Store the font with its name for later use
-                    customFonts.put(font.getName(), font);
-                }
-            } catch (Exception e) {
-                System.err.println("Error loading font: " + fontPath);
-                e.printStackTrace();
-            }
-        }
     }
 }
