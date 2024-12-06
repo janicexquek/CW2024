@@ -63,7 +63,7 @@ public class GameOverOverlay extends StackPane {
         linkStylesheet();
 
         // Create the message box
-        StackPane messageBox = createMessageBox(screenWidth, screenHeight);
+        StackPane messageBox = createMessageBox();
 
         // Add the message box to the center of the overlay
         getChildren().add(messageBox);
@@ -95,11 +95,9 @@ public class GameOverOverlay extends StackPane {
     /**
      * Creates the message box with a background image and a message label.
      *
-     * @param screenWidth the width of the screen
-     * @param screenHeight the height of the screen
      * @return the created StackPane representing the message box
      */
-    private StackPane createMessageBox(double screenWidth, double screenHeight) {
+    private StackPane createMessageBox() {
         // Fixed size for the message box
         double boxWidth = 500;
         double boxHeight = 500;
