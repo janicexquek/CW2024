@@ -1,21 +1,18 @@
 package com.example.demo.mainmenu;
 
+import com.example.demo.controller.Controller;
+import com.example.demo.styles.ButtonFactory;
+import com.example.demo.styles.FontManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import com.example.demo.controller.Controller;
-import javafx.animation.ScaleTransition;
-import javafx.util.Duration;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
@@ -37,20 +34,20 @@ public class ScoreboardPage {
     private final Stage stage;
     private final Controller controller;
 
-    // Map to store loaded fonts for easy access
-    private Map<String, Font> customFonts = new HashMap<>();
+    private final FontManager fontManager;
+    private final ButtonFactory buttonFactory;
 
     /**
      * Constructor for ScoreboardPage.
      *
-     * @param stage the primary stage for this application
+     * @param stage      the primary stage for this application
      * @param controller the controller to manage interactions
      */
     public ScoreboardPage(Stage stage, Controller controller) {
         this.stage = stage;
         this.controller = controller;
-        // Load custom fonts
-        loadCustomFonts();
+        this.fontManager = FontManager.getInstance();
+        this.buttonFactory = new ButtonFactory();
     }
 
     /**
@@ -65,7 +62,7 @@ public class ScoreboardPage {
         backgroundImageView.setSmooth(true);
 
         // --- Back Button ---
-        StackPane backButton = createCustomButton();
+        StackPane backButton = buttonFactory.createCustomButton("Back", "Sugar Bomb", 16, 80, 30, "/com/example/demo/images/ButtonText_Small_Round.png");
         backButton.setOnMouseClicked(e -> {
             // Navigate back to the main menu
             MainMenu mainMenu = new MainMenu(stage, controller);
@@ -82,9 +79,7 @@ public class ScoreboardPage {
         titleVBox.setPadding(new Insets(30, 0, 0, 0));
 
         Label scoreboardTitle = new Label("Scoreboard");
-        scoreboardTitle.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies",
-                Font.font("Arial", 100)).getName(), 100));
-
+        scoreboardTitle.setFont(fontManager.getFont("Cartoon cookies", 100));
         scoreboardTitle.getStyleClass().add("title-text");
         titleVBox.getChildren().add(scoreboardTitle);
 
@@ -95,13 +90,11 @@ public class ScoreboardPage {
         headers.setPadding(new Insets(10, 0, 10, 0));
 
         Label levelHeader = new Label("Level");
-        levelHeader.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                Font.font("Arial", 24)).getName(), 24));
+        levelHeader.setFont(fontManager.getFont("Pixel Digivolve", 24));
         levelHeader.setTextFill(Color.BLACK);
 
         Label timeHeader = new Label("Fastest Time (s)");
-        timeHeader.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                Font.font("Arial", 24)).getName(), 24));
+        timeHeader.setFont(fontManager.getFont("Pixel Digivolve", 24));
         timeHeader.setTextFill(Color.BLACK);
 
         headers.getChildren().addAll(levelHeader, timeHeader);
@@ -133,15 +126,13 @@ public class ScoreboardPage {
             row.setPadding(new Insets(5, 0, 5, 0));
 
             Label levelLabel = new Label(levelName);
-            levelLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                    Font.font("Arial", 20)).getName(), 20));
+            levelLabel.setFont(fontManager.getFont("Pixel Digivolve", 20));
             levelLabel.setTextFill(Color.BLACK);
 
             long timeValue = fastestTimes.getOrDefault(levelName, Long.MAX_VALUE);
             String timeStr = timeValue < Long.MAX_VALUE ? formatTime(timeValue) : "N/A";
             Label timeLabel = new Label(timeStr);
-            timeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve",
-                    Font.font("Arial", 20)).getName(), 20));
+            timeLabel.setFont(fontManager.getFont("Pixel Digivolve", 20));
             timeLabel.setTextFill(Color.BLACK);
 
             row.getChildren().addAll(levelLabel, timeLabel);
@@ -185,92 +176,5 @@ public class ScoreboardPage {
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;
         return String.format("%02d:%02d", minutes, seconds);
-    }
-
-    /**
-     * Creates a custom button with an image and text.
-     *
-     * @return the created StackPane representing the button
-     */
-    private StackPane createCustomButton() {
-        // Load the button background image
-        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/ButtonText_Small_Round.png")).toExternalForm()));
-        buttonImageView.setFitWidth(80);
-        buttonImageView.setFitHeight(30);
-        buttonImageView.setPreserveRatio(false);
-
-        // Create a label for the button text
-        Label label = new Label("Back");
-
-        // Set the Sugar Bomb font
-        label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb",
-                Font.font("Arial", 16)).getName(), 16));
-
-        label.getStyleClass().add("button-label");
-
-        // Create a StackPane to stack the image and the label
-        StackPane stackPane = new StackPane(buttonImageView, label);
-        stackPane.setAlignment(Pos.CENTER);
-        stackPane.getStyleClass().add("custom-button-hover");
-
-        // Ensure the StackPane size matches the image size
-        stackPane.setMinSize(80, 30);
-        stackPane.setMaxSize(80, 30);
-
-        // Change cursor to hand on hover
-        stackPane.setCursor(Cursor.HAND);
-
-        // Create a single ScaleTransition
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
-
-        // Add hover effects
-        stackPane.setOnMouseEntered(e -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.05);
-            scaleTransition.setToY(1.05);
-            scaleTransition.playFromStart();
-        });
-
-        stackPane.setOnMouseExited(e -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.0);
-            scaleTransition.setToY(1.0);
-            scaleTransition.playFromStart();
-        });
-
-        return stackPane;
-    }
-
-    /**
-     * Loads custom fonts from resources.
-     */
-    private void loadCustomFonts() {
-        String[] fontPaths = {
-                "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Pixel Digivolve.otf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf" // Ensure this font is available
-        };
-
-        for (String fontPath : fontPaths) {
-            try (InputStream fontStream = getClass().getResourceAsStream(fontPath)) {
-                if (fontStream == null) {
-                    System.err.println("Font not found: " + fontPath);
-                    continue;
-                }
-                Font font = Font.loadFont(fontStream, 10);
-                if (font == null) {
-                    System.err.println("Failed to load font: " + fontPath);
-                } else {
-                    customFonts.put(font.getName(), font);
-                }
-            } catch (Exception e) {
-                System.err.println("Error loading font: " + fontPath);
-                e.printStackTrace();
-            }
-        }
     }
 }
