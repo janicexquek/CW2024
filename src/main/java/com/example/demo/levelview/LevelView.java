@@ -318,7 +318,7 @@ public class LevelView {
             // Format times
             String currentTime = formatTime(currentTimeSeconds);
             gameOverOverlay.setTimes(currentTime, fastestTimeDisplay);
-            gameOverOverlay.showOverlay();
+            gameOverOverlay.showGameOverOverlay();
             activeOverlay = ActiveOverlay.GAME_OVER;
         }
     }
@@ -330,7 +330,7 @@ public class LevelView {
         if (activeOverlay != ActiveOverlay.GAME_OVER) {
             return;
         }
-        gameOverOverlay.hideOverlay();
+        gameOverOverlay.hideGameOverOverlay();
         activeOverlay = ActiveOverlay.NONE;
     }
 

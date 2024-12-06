@@ -1,22 +1,20 @@
+// File: com/example/demo/overlay/GameOverOverlay.java
+
 package com.example.demo.overlay;
 
-import javafx.animation.ScaleTransition;
+import com.example.demo.styles.ButtonFactory;
+import com.example.demo.styles.FontManager;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.util.Duration;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URL;
 import java.util.Objects;
 
 /**
@@ -28,12 +26,13 @@ public class GameOverOverlay extends StackPane {
     private static final String BOX_IMAGE_NAME = "/com/example/demo/images/box1.png"; // Path to the background image for the message box
     private static final String BUTTON_IMAGE_NAME = "/com/example/demo/images/ButtonText_Small_Blue_Round.png"; // Path to the button image
 
-    // Map to store loaded fonts
-    private Map<String, Font> customFonts = new HashMap<>();
+    private final FontManager fontManager;
+    private final ButtonFactory buttonFactory;
 
     // Flags to prevent duplicate button initialization
     private boolean buttonsInitialized = false;
-    // New Label to display level information
+
+    // Labels to display information
     private Label levelInfoLabel;
     private Label currentTimeLabel;
     private Label fastestTimeLabel;
@@ -41,10 +40,13 @@ public class GameOverOverlay extends StackPane {
     /**
      * Constructor for GameOverOverlay.
      *
-     * @param screenWidth the width of the screen
-     * @param screenHeight the height of the screen
+     * @param screenWidth            the width of the screen
+     * @param screenHeight           the height of the screen
      */
     public GameOverOverlay(double screenWidth, double screenHeight) {
+        this.fontManager = FontManager.getInstance();
+        this.buttonFactory = new ButtonFactory();
+
         // Set the size of the overlay to cover the entire screen
         setPrefSize(screenWidth, screenHeight);
         setMaxSize(screenWidth, screenHeight);
@@ -57,7 +59,8 @@ public class GameOverOverlay extends StackPane {
         // Semi-transparent background
         setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);"); // 50% opacity
 
-        loadCustomFonts();
+        // Link the CSS stylesheet
+        linkStylesheet();
 
         // Create the message box
         StackPane messageBox = createMessageBox(screenWidth, screenHeight);
@@ -78,28 +81,14 @@ public class GameOverOverlay extends StackPane {
     }
 
     /**
-     * Loads custom fonts from the resources.
+     * Links the CSS stylesheet to this GameOverOverlay.
      */
-    private void loadCustomFonts() {
-        String[] fontPaths = {
-                "/com/example/demo/fonts/Cartoon cookies.ttf",
-                "/com/example/demo/fonts/Sugar Bomb.ttf",
-                "/com/example/demo/fonts/Pixel Digivolve.otf",
-        };
-
-        for (String fontPath : fontPaths) {
-            try (InputStream fontStream = getClass().getResourceAsStream(fontPath)) {
-                if (fontStream == null) {
-                    System.err.println("Font not found: " + fontPath);
-                    continue;
-                }
-
-                Font font = Font.loadFont(fontStream, 10); // Initial size; actual size set when applied
-                customFonts.put(font != null ? font.getName() : "Unknown", font);
-            } catch (Exception e) {
-                System.err.println("Error loading font: " + fontPath);
-                e.printStackTrace();
-            }
+    private void linkStylesheet() {
+        URL cssResource = getClass().getResource("/com/example/demo/styles/styles.css");
+        if (cssResource == null) {
+            System.err.println("CSS file not found!");
+        } else {
+            getStylesheets().add(cssResource.toExternalForm());
         }
     }
 
@@ -132,10 +121,9 @@ public class GameOverOverlay extends StackPane {
         }
 
         // Create the game over message label
-        Label gameOverMessage = new Label("DEFEAT");
+        Label gameOverMessage = new Label("GAME OVER");
         gameOverMessage.setTextFill(Color.web("#f5f551"));
-        // Use 'Cartoon cookies' or fallback
-        gameOverMessage.setFont(Font.font(customFonts.getOrDefault("Cartoon cookies", Font.font("Arial")).getName(), 50));
+        gameOverMessage.setFont(fontManager.getFont("Cartoon cookies", 50));
         gameOverMessage.setWrapText(true);
         gameOverMessage.setAlignment(Pos.TOP_CENTER);
         gameOverMessage.setMaxWidth(boxWidth - 40); // Padding inside the box
@@ -143,7 +131,7 @@ public class GameOverOverlay extends StackPane {
         // Create the level info label
         levelInfoLabel = new Label("TRY AGAIN LEVEL X"); // Placeholder text
         levelInfoLabel.setTextFill(Color.WHITE);
-        levelInfoLabel.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 20)); // Use 'Sugar Bomb' or fallback
+        levelInfoLabel.setFont(fontManager.getFont("Sugar Bomb", 20)); // Use 'Sugar Bomb' or fallback
         levelInfoLabel.setWrapText(true);
         levelInfoLabel.setAlignment(Pos.CENTER);
         levelInfoLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
@@ -151,7 +139,7 @@ public class GameOverOverlay extends StackPane {
         // Current Time Label
         currentTimeLabel = new Label("Time: 00:00");
         currentTimeLabel.setTextFill(Color.WHITE);
-        currentTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 16));
+        currentTimeLabel.setFont(fontManager.getFont("Pixel Digivolve", 16));
         currentTimeLabel.setWrapText(true);
         currentTimeLabel.setAlignment(Pos.CENTER);
         currentTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
@@ -159,7 +147,7 @@ public class GameOverOverlay extends StackPane {
         // Fastest Time Label
         fastestTimeLabel = new Label("Fastest Time: 00:00");
         fastestTimeLabel.setTextFill(Color.WHITE);
-        fastestTimeLabel.setFont(Font.font(customFonts.getOrDefault("Pixel Digivolve", Font.font("Arial")).getName(), 16));
+        fastestTimeLabel.setFont(fontManager.getFont("Pixel Digivolve", 16));
         fastestTimeLabel.setWrapText(true);
         fastestTimeLabel.setAlignment(Pos.CENTER);
         fastestTimeLabel.setMaxWidth(boxWidth - 40); // Padding inside the box
@@ -183,7 +171,7 @@ public class GameOverOverlay extends StackPane {
     /**
      * Displays the overlay.
      */
-    public void showOverlay() {
+    public void showGameOverOverlay() {
         setVisible(true);
         setMouseTransparent(false); // Enable interactions
         toFront(); // Bring to front
@@ -192,7 +180,7 @@ public class GameOverOverlay extends StackPane {
     /**
      * Hides the overlay.
      */
-    public void hideOverlay() {
+    public void hideGameOverOverlay() {
         setVisible(false);
         setMouseTransparent(true); // Disable interactions
     }
@@ -200,9 +188,9 @@ public class GameOverOverlay extends StackPane {
     /**
      * Initializes buttons and adds them to the overlay.
      *
-     * @param backCallback the callback to run when the back button is pressed
+     * @param backCallback    the callback to run when the back button is pressed
      * @param restartCallback the callback to run when the restart button is pressed
-     * @param levelName the name of the level to display
+     * @param levelName       the name of the level to display
      */
     public void initializeButtons(Runnable backCallback, Runnable restartCallback, String levelName) {
         if (buttonsInitialized) {
@@ -210,9 +198,22 @@ public class GameOverOverlay extends StackPane {
         }
 
         // Create the back to main menu button with image background and assign action
-        Button backButton = createCustomButton("Main Menu", backCallback);
+        StackPane backButton = buttonFactory.createCustomButton("Main Menu", "Sugar Bomb", 16, 150, 60, BUTTON_IMAGE_NAME);
+        backButton.setOnMouseClicked(e -> {
+            hideGameOverOverlay(); // Hide the overlay
+            if (backCallback != null) {
+                backCallback.run(); // Go back to the main menu
+            }
+        });
+
         // Create the "Restart" button
-        Button restartButton = createCustomButton("Restart", restartCallback);
+        StackPane restartButton = buttonFactory.createCustomButton("Restart", "Sugar Bomb", 16, 150, 60, BUTTON_IMAGE_NAME);
+        restartButton.setOnMouseClicked(e -> {
+            hideGameOverOverlay(); // Hide the overlay
+            if (restartCallback != null) {
+                restartCallback.run(); // Restart the game
+            }
+        });
 
         // Create an HBox to hold the button horizontally
         HBox buttonBox = new HBox(20); // 20px spacing between buttons if more are added
@@ -255,111 +256,6 @@ public class GameOverOverlay extends StackPane {
         Platform.runLater(() -> {
             currentTimeLabel.setText("Time: " + currentTime);
             fastestTimeLabel.setText("Fastest Time: " + fastestTime);
-        });
-    }
-
-    /**
-     * Creates a custom button with an image and assigns its action.
-     *
-     * @param buttonText the text to display on the button
-     * @param action the action to run when the button is pressed
-     * @return the created Button
-     */
-    private Button createCustomButton(String buttonText, Runnable action) {
-        Button button = new Button();
-        try {
-            // Load the button image
-            Image buttonImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(BUTTON_IMAGE_NAME)));
-            ImageView buttonImageView = new ImageView(buttonImage);
-            buttonImageView.setFitWidth(180); // Adjust width as needed
-            buttonImageView.setFitHeight(60); // Adjust height as needed
-            buttonImageView.setPreserveRatio(true);
-
-            // Create label for button text
-            Label label = new Label(buttonText);
-            label.setTextFill(Color.WHITE);
-            label.setFont(Font.font(customFonts.getOrDefault("Sugar Bomb", Font.font("Arial")).getName(), 16)); // Font or fallback
-
-            // Create a StackPane to overlay text on the image
-            StackPane stack = new StackPane(buttonImageView, label);
-
-            // Set the StackPane as the button's graphic
-            button.setGraphic(stack);
-
-            // Remove default button styling and assign the action
-            button.setStyle("-fx-background-color: transparent;");
-            button.setOnAction(e -> action.run());
-
-            // Apply hover effects
-            applyHoverEffect(stack);
-        } catch (Exception e) {
-            System.err.println("Failed to load button image: " + BUTTON_IMAGE_NAME);
-            e.printStackTrace();
-            // Fallback to a simple styled button
-            button.setText(buttonText);
-            button.setStyle("-fx-background-color: blue; -fx-text-fill: white;");
-            button.setOnAction(event -> action.run()); // Assign the callback
-            // Apply hover effects directly to the button
-            applyHoverEffect(button);
-        }
-        return button;
-    }
-
-    /**
-     * Applies hover effects using ScaleTransition to a StackPane.
-     *
-     * @param stackPane the StackPane to apply hover effects to
-     */
-    private void applyHoverEffect(StackPane stackPane) {
-        // Create a single ScaleTransition for the StackPane
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
-
-        // Add hover effects
-        stackPane.setOnMouseEntered(e -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.05);
-            scaleTransition.setToY(1.05);
-            scaleTransition.playFromStart();
-        });
-
-        stackPane.setOnMouseExited(e -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.0);
-            scaleTransition.setToY(1.0);
-            scaleTransition.playFromStart();
-        });
-    }
-
-    /**
-     * Overloaded method to apply hover effects to Buttons directly (for fallback).
-     *
-     * @param button the Button to apply hover effects to
-     */
-    private void applyHoverEffect(Button button) {
-        // Create a single ScaleTransition for the Button
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), button);
-
-        // Add hover effects
-        button.setOnMouseEntered(e -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(button.getScaleX());
-            scaleTransition.setFromY(button.getScaleY());
-            scaleTransition.setToX(1.05);
-            scaleTransition.setToY(1.05);
-            scaleTransition.playFromStart();
-        });
-
-        button.setOnMouseExited(e -> {
-            scaleTransition.stop();
-            scaleTransition.setFromX(button.getScaleX());
-            scaleTransition.setFromY(button.getScaleY());
-            scaleTransition.setToX(1.0);
-            scaleTransition.setToY(1.0);
-            scaleTransition.playFromStart();
         });
     }
 }
