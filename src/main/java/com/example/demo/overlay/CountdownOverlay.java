@@ -1,16 +1,16 @@
+// File: com/example/demo/overlay/CountdownOverlay.java
+
 package com.example.demo.overlay;
 
 import com.example.demo.mainmenu.SettingsManager;
+import com.example.demo.styles.FontManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.util.Duration;
-
-import java.io.InputStream; // Ensure this import is present
 
 /**
  * Class representing a countdown overlay in the game.
@@ -22,15 +22,18 @@ public class CountdownOverlay extends StackPane {
     private Timeline timeline;
     private Runnable onCountdownFinished;
 
+    private final FontManager fontManager;
+
     /**
      * Constructor for CountdownOverlay.
      *
-     * @param screenWidth the width of the screen
-     * @param screenHeight the height of the screen
-     * @param onCountdownFinished the callback to run when the countdown finishes
+     * @param screenWidth          the width of the screen
+     * @param screenHeight         the height of the screen
+     * @param onCountdownFinished  the callback to run when the countdown finishes
      */
     public CountdownOverlay(double screenWidth, double screenHeight, Runnable onCountdownFinished) {
         this.onCountdownFinished = onCountdownFinished;
+        this.fontManager = FontManager.getInstance();
 
         // Set size to cover the entire screen
         setPrefSize(screenWidth, screenHeight);
@@ -44,9 +47,7 @@ public class CountdownOverlay extends StackPane {
         countdownLabel = new Label("Game starts in 3");
         countdownLabel.setTextFill(Color.WHITE);
         countdownLabel.setAlignment(Pos.CENTER);
-
-        // Load and set custom font
-        loadCustomFont();
+        countdownLabel.setFont(fontManager.getFont("Pixel Digivolve", 50));
 
         // Add a background to the label to ensure visibility
         countdownLabel.setStyle("-fx-background-color: rgba(0, 0, 0, 0.3); -fx-padding: 20px;");
@@ -57,33 +58,6 @@ public class CountdownOverlay extends StackPane {
         // Initially hidden
         setVisible(false);
         setMouseTransparent(true);
-    }
-
-    /**
-     * Loads a custom font for the countdown label.
-     * Falls back to Arial if the custom font fails to load.
-     */
-    private void loadCustomFont() {
-        try {
-            // Ensure the font file is in the correct path: src/main/resources/com/example/demo/fonts/Pixel Digivolve.otf
-            InputStream fontStream = getClass().getResourceAsStream("/com/example/demo/fonts/Pixel Digivolve.otf");
-            if (fontStream == null) {
-                System.err.println("Font resource not found: /com/example/demo/fonts/Pixel Digivolve.otf");
-                countdownLabel.setFont(new Font("Arial", 50)); // Fallback font
-                return;
-            }
-            Font customFont = Font.loadFont(fontStream, 50);
-            if (customFont != null) {
-                countdownLabel.setFont(customFont);
-            } else {
-                // Fallback font if custom font fails to load
-                countdownLabel.setFont(new Font("Arial", 50));
-                System.err.println("Failed to load custom font. Using default font.");
-            }
-        } catch (Exception e) {
-            countdownLabel.setFont(new Font("Arial", 50));
-            System.err.println("Exception while loading custom font: " + e.getMessage());
-        }
     }
 
     /**
