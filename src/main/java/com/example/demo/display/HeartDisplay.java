@@ -13,12 +13,12 @@ import java.util.Objects;
 public class HeartDisplay {
 
     private static final String HEART_IMAGE_NAME = "/com/example/demo/images/heart1.png";
-    private static final int HEART_HEIGHT = 50;
+    protected static final int HEART_HEIGHT = 50;
     private static final int INDEX_OF_FIRST_ITEM = 0;
-    private HBox container;
+    protected HBox container;
     private double containerXPosition;
     private double containerYPosition;
-    private int numberOfHeartsToDisplay;
+    protected int numberOfHeartsToDisplay;
 
     /**
      * Constructor for HeartDisplay.
@@ -38,7 +38,7 @@ public class HeartDisplay {
     /**
      * Initializes the container for the heart display.
      */
-    private void initializeContainer() {
+    protected void initializeContainer() {
         container = new HBox();
         container.setLayoutX(containerXPosition);
         container.setLayoutY(containerYPosition);
@@ -47,12 +47,12 @@ public class HeartDisplay {
     /**
      * Initializes the heart images and adds them to the container.
      */
-    private void initializeHearts() {
+    protected void initializeHearts() {
         Image heartImage;
         try {
             // Ensure the resource is not null
             heartImage = new Image(Objects.requireNonNull(getClass().getResource(HEART_IMAGE_NAME),
-                "Heart image resource not found: " + HEART_IMAGE_NAME
+                    "Heart image resource not found: " + HEART_IMAGE_NAME
             ).toExternalForm());
         } catch (NullPointerException e) {
             System.err.println(e.getMessage());
