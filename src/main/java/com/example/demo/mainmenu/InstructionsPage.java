@@ -63,6 +63,7 @@ public class InstructionsPage {
             MainMenu mainMenu = new MainMenu(stage, controller);
             mainMenu.show();
         });
+        backButton.setId("backButton");
 
         // Position the back button at top-left
         StackPane.setAlignment(backButton, Pos.TOP_LEFT);
