@@ -10,8 +10,7 @@ public class LevelView {
 
     private final DisplayManager displayManager;
     private final OverlayManager overlayManager;
-    private final Runnable resumeGameCallback;
-    private final Runnable backToMainMenuCallback;
+
     /**
      * Constructor for LevelView.
      *
@@ -26,9 +25,7 @@ public class LevelView {
      */
     public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback,
                      Runnable resumeGameCallback, double screenWidth, double screenHeight, Timeline timeline) {
-        // Assign callbacks to instance variables
-        this.resumeGameCallback = resumeGameCallback;
-        this.backToMainMenuCallback = backToMainMenuCallback;
+
         this.displayManager = new DisplayManager(root, heartsToDisplay, screenWidth, screenHeight, pauseGameCallback, this::showExitOverlay);
         this.overlayManager = new OverlayManager(root, screenWidth, screenHeight, timeline, resumeGameCallback, backToMainMenuCallback);
     }
