@@ -86,15 +86,4 @@ public class ExitDisplay {
         return container;
     }
 
-    /**
-     * Shows the exit overlay and pauses the game.
-     */
-    private void showExitOverlay() {
-        // Pause the game
-        if (pauseGameCallback != null) {
-            pauseGameCallback.run();
-        }
-        // Show the overlay
-        exitOverlay.showExitOverlay();
-    }
 }
