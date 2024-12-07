@@ -1,25 +1,20 @@
 package com.example.demo.mainmenu;
 
+import com.example.demo.controller.Controller;
+import com.example.demo.styles.ButtonFactory;
+import com.example.demo.styles.FontManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import com.example.demo.styles.ButtonFactory;
-import com.example.demo.styles.FontManager;
-import com.example.demo.controller.Controller;
-import javafx.animation.ScaleTransition;
-import javafx.util.Duration;
 
 import java.net.URL;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Class representing the store page in the game.
@@ -31,15 +26,16 @@ public class StorePage {
     private final Stage stage;
     private final Controller controller;
 
-
     private final FontManager fontManager;
     private final ButtonFactory buttonFactory;
     private Label selectionMessageLabel;
 
+    private final List<PlaneOption> planeOptions = new ArrayList<>();
+
     /**
      * Constructor for StorePage.
      *
-     * @param stage the primary stage for this application
+     * @param stage      the primary stage for this application
      * @param controller the controller to manage interactions
      */
     public StorePage(Stage stage, Controller controller) {
@@ -61,79 +57,13 @@ public class StorePage {
         backgroundImageView.setSmooth(true);
 
         // --- Back Button ---
-        StackPane backButton = buttonFactory.createCustomButton("Back", "Sugar Bomb", 16, 80, 30, "/com/example/demo/images/ButtonText_Small_Round.png");
-        backButton.setOnMouseClicked(e -> {
-            // Navigate back to the main menu
-            MainMenu mainMenu = new MainMenu(stage, controller);
-            mainMenu.show();
-        });
+        StackPane backButton = createBackButton();
 
-        // Position the back button at top-left
-        StackPane.setAlignment(backButton, Pos.TOP_LEFT);
-        StackPane.setMargin(backButton, new Insets(30, 0, 0, 30)); // Adjust as needed
-
-        // --- Store Title ---
-        VBox titleVBox = new VBox(10);
-        titleVBox.setAlignment(Pos.TOP_CENTER);
-        titleVBox.setPadding(new Insets(30, 0, 0, 0));
-
-        Label storeTitle = new Label("Welcome to the Plane Store");
-        storeTitle.setFont(fontManager.getFont("Cartoon cookies", 60));
-        storeTitle.getStyleClass().add("title-text");
-
-        Label storeText = new Label("Please choose your own plane");
-        storeText.setFont(fontManager.getFont("Cartoon cookies", 40));
-        storeText.getStyleClass().add("title-text");
-
-        // --- Selection Message Label ---
-        selectionMessageLabel = new Label();
-        selectionMessageLabel.setFont(fontManager.getFont("Pixel Digivolve", 25));
-        selectionMessageLabel.getStyleClass().add("title-text");
-
-        titleVBox.getChildren().addAll(storeTitle, storeText, selectionMessageLabel);
-
-        // Initialize the selection message based on current selection
-        int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
-        updateSelectionMessage(selectedPlaneNumber);
+        // --- Store Title and Selection Message ---
+        VBox titleVBox = createTitleSection();
 
         // --- Planes Display Area ---
-        TilePane planesBox = new TilePane();
-        planesBox.setAlignment(Pos.CENTER);
-        planesBox.setPadding(new Insets(20));
-        planesBox.setHgap(120); // Horizontal gap between tiles
-        planesBox.setVgap(20); // Vertical gap between tiles
-        planesBox.setPrefColumns(2); // Fixed number of columns to 2
-        planesBox.setMaxWidth(600); // Adjust as needed
-
-        // Load plane images into planesBox
-        String[] planeImages = { "userplane.png", "userplane1.png", "userplane2.png", "userplane3.png", "userplane4.png",
-                "userplane5.png", "userplane6.png" }; // Add more plane images as needed
-        for (String planeImage : planeImages) {
-            StackPane planePane = createPlaneOption(planeImage);
-            planesBox.getChildren().add(planePane);
-        }
-
-        // --- ScrollPane for Planes ---
-        ScrollPane scrollPane = new ScrollPane();
-        VBox contentBox = new VBox(planesBox);
-        contentBox.setAlignment(Pos.CENTER);
-        scrollPane.setContent(contentBox);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setPannable(true);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
-        // Set preferred size
-        scrollPane.setPrefWidth(600); // Adjust as needed
-        scrollPane.setPrefHeight(400); // Adjust as needed
-
-        // Bind ScrollPane size to 60% of window width and 50% of window height for responsiveness
-        scrollPane.prefWidthProperty().bind(stage.widthProperty().multiply(0.6));
-        scrollPane.prefHeightProperty().bind(stage.heightProperty().multiply(0.5));
-
-        // Add a style class to the ScrollPane for CSS styling
-        scrollPane.getStyleClass().add("transparent-scroll-pane");
+        ScrollPane scrollPane = createPlanesScrollPane();
 
         // --- Main Layout ---
         VBox mainBox = new VBox(40);
@@ -163,147 +93,133 @@ public class StorePage {
     }
 
     /**
+     * Creates the back button.
+     *
+     * @return Configured StackPane representing the back button.
+     */
+    private StackPane createBackButton() {
+        StackPane backButton = buttonFactory.createCustomButton("Back", "Sugar Bomb", 16, 80, 30, "/com/example/demo/images/ButtonText_Small_Round.png");
+        backButton.setOnMouseClicked(e -> {
+            // Navigate back to the main menu
+            MainMenu mainMenu = new MainMenu(stage, controller);
+            mainMenu.show();
+        });
+
+        // Position the back button at top-left
+        StackPane.setAlignment(backButton, Pos.TOP_LEFT);
+        StackPane.setMargin(backButton, new Insets(30, 0, 0, 30)); // 30px from top and left
+
+        return backButton;
+    }
+
+    /**
+     * Creates the title section containing the store title and selection message.
+     *
+     * @return Configured VBox containing titles.
+     */
+    private VBox createTitleSection() {
+        VBox titleVBox = new VBox(10);
+        titleVBox.setAlignment(Pos.TOP_CENTER);
+        titleVBox.setPadding(new Insets(30, 0, 0, 0));
+
+        Label storeTitle = new Label("Welcome to the Plane Store");
+        storeTitle.setFont(fontManager.getFont("Cartoon cookies", 60));
+        storeTitle.getStyleClass().add("title-text");
+
+        Label storeText = new Label("Please choose your own plane");
+        storeText.setFont(fontManager.getFont("Cartoon cookies", 40));
+        storeText.getStyleClass().add("title-text");
+
+        // --- Selection Message Label ---
+        selectionMessageLabel = new Label();
+        selectionMessageLabel.setFont(fontManager.getFont("Pixel Digivolve", 25));
+        selectionMessageLabel.getStyleClass().add("title-text");
+
+        // Initialize the selection message based on current selection
+        int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
+        updateSelectionMessage(selectedPlaneNumber);
+
+        titleVBox.getChildren().addAll(storeTitle, storeText, selectionMessageLabel);
+
+        return titleVBox;
+    }
+
+    /**
+     * Creates the scrollable area containing plane options.
+     *
+     * @return Configured ScrollPane containing plane options.
+     */
+    private ScrollPane createPlanesScrollPane() {
+        TilePane planesBox = new TilePane();
+        planesBox.setAlignment(Pos.CENTER);
+        planesBox.setPadding(new Insets(20));
+        planesBox.setHgap(120); // Horizontal gap between tiles
+        planesBox.setVgap(20); // Vertical gap between tiles
+        planesBox.setPrefColumns(2); // Fixed number of columns to 2
+        planesBox.setMaxWidth(600); // Adjust as needed
+
+        // Load plane images into planesBox
+        String[] planeImages = { "userplane.png", "userplane1.png", "userplane2.png", "userplane3.png", "userplane4.png",
+                "userplane5.png", "userplane6.png" }; // Add more plane images as needed
+        for (String planeImage : planeImages) {
+            PlaneOption planeOption = new PlaneOption(planeImage, this::handlePlaneSelection);
+            planeOptions.add(planeOption);
+            planesBox.getChildren().add(planeOption);
+        }
+
+        // --- ScrollPane for Planes ---
+        ScrollPane scrollPane = new ScrollPane();
+        VBox contentBox = new VBox(planesBox);
+        contentBox.setAlignment(Pos.CENTER);
+        scrollPane.setContent(contentBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setPannable(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        // Set preferred size
+        scrollPane.setPrefWidth(600); // Adjust as needed
+        scrollPane.setPrefHeight(400); // Adjust as needed
+
+        // Bind ScrollPane size to 60% of window width and 50% of window height for responsiveness
+        scrollPane.prefWidthProperty().bind(stage.widthProperty().multiply(0.6));
+        scrollPane.prefHeightProperty().bind(stage.heightProperty().multiply(0.5));
+
+        // Add a style class to the ScrollPane for CSS styling
+        scrollPane.getStyleClass().add("transparent-scroll-pane");
+
+        return scrollPane;
+    }
+
+    /**
+     * Handles the selection of a plane.
+     *
+     * @param selectedPlaneNumber The number of the selected plane.
+     */
+    private void handlePlaneSelection(int selectedPlaneNumber) {
+        // Deselect all other planes
+        for (PlaneOption planeOption : planeOptions) {
+            if (planeOption.getPlaneNumber() != selectedPlaneNumber) {
+                planeOption.deselect();
+            } else {
+                planeOption.select();
+            }
+        }
+
+        // Update the selection message
+        updateSelectionMessage(selectedPlaneNumber);
+
+        // Save the selected plane number in StoreManager
+        StoreManager.getInstance().setSelectedPlaneNumber(selectedPlaneNumber);
+    }
+
+    /**
      * Updates the selection message label based on the selected plane number.
      *
      * @param planeNumber the selected plane number
      */
     private void updateSelectionMessage(int planeNumber) {
         selectionMessageLabel.setText("You have selected plane " + planeNumber);
-    }
-
-    /**
-     * Extracts the plane number from the plane image filename.
-     *
-     * @param planeImageName the plane image filename
-     * @return the extracted plane number
-     */
-    private int getPlaneNumber(String planeImageName) {
-        if (planeImageName.equalsIgnoreCase("userplane.png")) {
-            return 1;
-        }
-        // Extract number from filename, e.g., "userplane3.png" -> 4
-        String numberPart = planeImageName.replaceAll("[^0-9]", "");
-        if (!numberPart.isEmpty()) {
-            try {
-                return Integer.parseInt(numberPart) + 1;
-            } catch (NumberFormatException e) {
-                // If parsing fails, default to 1
-                return 1;
-            }
-        }
-        return 1; // Default plane number
-    }
-
-    /**
-     * Creates a plane option with hover and click effects, including a plane number overlay.
-     *
-     * @param planeImageName the plane image filename
-     * @return the created StackPane representing the plane option
-     */
-    private StackPane createPlaneOption(String planeImageName) {
-        // Load the plane image
-        ImageView planeImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/" + planeImageName)).toExternalForm()));
-        planeImageView.setFitWidth(150); // Adjust width as needed
-        planeImageView.setFitHeight(150); // Adjust height as needed
-        planeImageView.setPreserveRatio(true);
-        planeImageView.setSmooth(true);
-
-        // Create a semi-transparent grey overlay for hover effect
-        Rectangle hoverOverlay = new Rectangle(190, 190);
-        hoverOverlay.setFill(Color.web("#5b6980", 0.4)); // Grey with 40% opacity
-        hoverOverlay.setVisible(false); // Initially invisible
-
-        // Create a dark grey border for selection
-        Rectangle selectionBorder = new Rectangle(190, 190);
-        selectionBorder.setFill(null); // No fill
-        selectionBorder.setStroke(Color.web("#5b6980", 0.4)); // Semi-transparent dark grey stroke
-        selectionBorder.setFill(Color.web("#5b6980", 0.4)); // Grey with 40% opacity
-        selectionBorder.setStrokeWidth(3);
-        selectionBorder.setVisible(false); // Initially not selected
-
-        // Create a Label for the plane number
-        int planeNumber = getPlaneNumber(planeImageName);
-        Label planeNumberLabel = new Label(String.valueOf(planeNumber));
-        planeNumberLabel.setTextFill(Color.WHITE); // Gold color for visibility
-        planeNumberLabel.setFont(fontManager.getFont("Pixel Digivolve", 20)); // Use Pixel Digivolve font
-
-        // Create a StackPane to layer the plane image, hover overlay, selection border, and plane number
-        StackPane stackPane = new StackPane(planeImageView, hoverOverlay, selectionBorder, planeNumberLabel);
-        stackPane.setAlignment(Pos.CENTER);
-        stackPane.setCursor(Cursor.HAND);
-
-        // Position the plane number label in the top-left corner
-        StackPane.setAlignment(planeNumberLabel, Pos.TOP_LEFT);
-        StackPane.setMargin(planeNumberLabel, new Insets(5, 0, 0, 10)); // Adjust margins as needed
-
-        // Bind plane image size to window size for responsiveness
-        planeImageView.fitWidthProperty().bind(stage.widthProperty().multiply(0.15)); // 15% of window width
-        planeImageView.fitHeightProperty().bind(stage.heightProperty().multiply(0.15)); // 15% of window height
-        // Change cursor to hand on hover
-        stackPane.setCursor(Cursor.HAND);
-
-        // Create a single ScaleTransition
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), stackPane);
-        // Handle hover effects
-        stackPane.setOnMouseEntered(e -> {
-            hoverOverlay.setVisible(true);
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.05);
-            scaleTransition.setToY(1.05);
-            scaleTransition.playFromStart();
-        });
-
-        stackPane.setOnMouseExited(e -> {
-            hoverOverlay.setVisible(false);
-            scaleTransition.stop();
-            scaleTransition.setFromX(stackPane.getScaleX());
-            scaleTransition.setFromY(stackPane.getScaleY());
-            scaleTransition.setToX(1.0);
-            scaleTransition.setToY(1.0);
-            scaleTransition.playFromStart();
-        });
-
-        // Handle selection on click
-        stackPane.setOnMouseClicked(e -> {
-            // Deselect all other planes by hiding their selection borders
-            TilePane parent = (TilePane) stackPane.getParent(); // Parent is TilePane
-            for (javafx.scene.Node node : parent.getChildren()) {
-                if (node instanceof StackPane otherPane) {
-                    for (javafx.scene.Node child : otherPane.getChildren()) {
-                        if (child instanceof Rectangle rect) {
-                            // Hide selection border if it's not the current one
-                            if (rect != selectionBorder) {
-                                rect.setVisible(false);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Select this plane by showing its selection border
-            selectionBorder.setVisible(true);
-
-            // Update the selection message
-            updateSelectionMessage(planeNumber);
-
-            // Save the selected plane number in StoreManager
-            StoreManager.getInstance().setSelectedPlaneNumber(planeNumber);
-
-            // Optionally, add a scale transition for visual feedback
-            ScaleTransition selectScale = new ScaleTransition(Duration.millis(200), stackPane);
-            selectScale.setToX(1.1);
-            selectScale.setToY(1.1);
-            selectScale.play();
-
-            // Reset scale after the transition
-            selectScale.setOnFinished(event -> {
-                stackPane.setScaleX(1.0);
-                stackPane.setScaleY(1.0);
-            });
-        });
-
-        return stackPane;
     }
 }
