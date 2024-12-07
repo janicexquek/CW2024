@@ -16,6 +16,7 @@ import com.example.demo.mainmenumanager.StoreManager;
 import com.example.demo.overlay.OverlayManager;
 import com.example.demo.plane.FighterPlane;
 import com.example.demo.plane.UserPlane;
+import com.example.demo.styles.TimeFormatter;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 
@@ -169,7 +170,7 @@ public abstract class LevelParent extends Observable {
 	 */
 	protected abstract void updateCustomDisplay();
 
-	// --------- INITIALIZE SCENE, TIMER, TIMELINE  --------------
+	// --------- INITIALIZE SCENE  --------------
 
 	/**
 	 * Initializes the game scene, including background, friendly units, and overlays.
@@ -605,7 +606,7 @@ public abstract class LevelParent extends Observable {
 		String fastestTimeDisplay;
 		if (existingFastestTime != Long.MAX_VALUE) {
 			// Fastest time exists
-			fastestTimeDisplay = formatTime(existingFastestTime);
+			fastestTimeDisplay = TimeFormatter.formatTime(existingFastestTime);
 		} else {
 			// No fastest time recorded
 			fastestTimeDisplay = "No fastest time recorded";
@@ -624,18 +625,6 @@ public abstract class LevelParent extends Observable {
 		SettingsManager.getInstance().playDefeatSound(); // Play defeat sound
 	}
 
-
-	/**
-	 * Formats time from seconds to MM:SS.
-	 *
-	 * @param totalSeconds the total seconds to format
-	 * @return the formatted time string
-	 */
-	private String formatTime(long totalSeconds) {
-		long minutes = totalSeconds / 60;
-		long seconds = totalSeconds % 60;
-		return String.format("%02d:%02d", minutes, seconds);
-	}
 
 	// ----------------------Getter methods ----------------------------
 
