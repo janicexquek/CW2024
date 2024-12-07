@@ -39,4 +39,11 @@ public class PauseOverlay extends BaseOverlay {
         return new MessageBox(boxWidth, boxHeight, titleText, subtitleText,
                 achievementText, timeText, fastestTimeText);
     }
+    /**
+     * Hides the overlay.
+     */
+    public void hidePauseOverlay() {
+        setVisible(false);
+        setMouseTransparent(true); // Disable interactions
+    }
 }
