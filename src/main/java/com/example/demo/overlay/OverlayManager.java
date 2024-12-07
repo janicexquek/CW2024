@@ -1,4 +1,3 @@
-// OverlayManager.java
 package com.example.demo.overlay;
 
 import com.example.demo.mainmenu.SettingsManager;
@@ -7,6 +6,9 @@ import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.effect.GaussianBlur;
 
+/**
+ * Manages the different overlays in the game, such as pause, win, game over, countdown, and exit overlays.
+ */
 public class OverlayManager {
 
     private final Group root;
@@ -23,6 +25,16 @@ public class OverlayManager {
     private ActiveOverlay activeOverlay = ActiveOverlay.NONE;
     private Runnable startGameCallback;
 
+    /**
+     * Constructs an OverlayManager with the specified parameters.
+     *
+     * @param root the root group to which overlays are added
+     * @param screenWidth the width of the screen
+     * @param screenHeight the height of the screen
+     * @param timeline the game loop timeline
+     * @param resumeGameCallback the callback to resume the game
+     * @param backToMainMenuCallback the callback to return to the main menu
+     */
     public OverlayManager(Group root, double screenWidth, double screenHeight, Timeline timeline,
                           Runnable resumeGameCallback, Runnable backToMainMenuCallback) {
         this.root = root;
@@ -41,6 +53,9 @@ public class OverlayManager {
         root.getChildren().addAll(exitOverlay, pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
     }
 
+    /**
+     * Enum representing the active overlay.
+     */
     public enum ActiveOverlay {
         NONE,
         PAUSE,
@@ -50,11 +65,20 @@ public class OverlayManager {
         EXIT
     }
 
+    /**
+     * Returns the currently active overlay.
+     *
+     * @return the active overlay
+     */
     public ActiveOverlay getActiveOverlay() {
         return activeOverlay;
     }
 
-    // Countdown Management
+    /**
+     * Starts the countdown overlay and pauses the game.
+     *
+     * @param startGameCallback the callback to start the game after the countdown
+     */
     public void startCountdown(Runnable startGameCallback) {
         if (activeOverlay != ActiveOverlay.NONE) {
             return;
@@ -79,6 +103,9 @@ public class OverlayManager {
         SettingsManager.getInstance().muteAllSoundEffects();
     }
 
+    /**
+     * Callback method when the countdown finishes.
+     */
     private void onCountdownFinished() {
         if (activeOverlay != ActiveOverlay.COUNTDOWN) {
             return;
@@ -103,7 +130,9 @@ public class OverlayManager {
         activeOverlay = ActiveOverlay.NONE;
     }
 
-    // Exit Overlay Management
+    /**
+     * Shows the exit overlay.
+     */
     public void showExitOverlay() {
         if (activeOverlay == ActiveOverlay.NONE) {
             exitOverlay.initializeButtons(resumeGameCallback, backToMainMenuCallback, this::hideExitOverlay);
@@ -112,6 +141,9 @@ public class OverlayManager {
         }
     }
 
+    /**
+     * Hides the exit overlay.
+     */
     public void hideExitOverlay() {
         if (activeOverlay == ActiveOverlay.EXIT) {
             exitOverlay.hideExitOverlay();
@@ -119,9 +151,11 @@ public class OverlayManager {
         }
     }
 
-    // Pause Overlay Management
+    /**
+     * Shows the pause overlay.
+     */
     public void showPauseOverlay() {
-        if (activeOverlay ==ActiveOverlay.NONE) {
+        if (activeOverlay == ActiveOverlay.NONE) {
             pauseOverlay.setVisible(true);
             pauseOverlay.setMouseTransparent(false); // Allow interactions with the overlay
             pauseOverlay.toFront(); // Bring to front
@@ -129,6 +163,9 @@ public class OverlayManager {
         }
     }
 
+    /**
+     * Hides the pause overlay.
+     */
     public void hidePauseOverlay() {
         if (activeOverlay != ActiveOverlay.PAUSE) {
             return;
@@ -138,7 +175,17 @@ public class OverlayManager {
         activeOverlay = ActiveOverlay.NONE;
     }
 
-    // Win Overlay Management
+    /**
+     * Shows the win overlay.
+     *
+     * @param backToMainMenuCallback the callback to return to the main menu
+     * @param nextLevelCallback the callback to proceed to the next level
+     * @param restartCallback the callback to restart the current level
+     * @param levelName the name of the current level
+     * @param currentTimeSeconds the current time in seconds
+     * @param fastestTimeSeconds the fastest time in seconds
+     * @param achievementMessage the achievement message to display
+     */
     public void showWinOverlay(Runnable backToMainMenuCallback, Runnable nextLevelCallback, Runnable restartCallback,
                                String levelName, long currentTimeSeconds, long fastestTimeSeconds, String achievementMessage) {
         if (activeOverlay == ActiveOverlay.NONE) {
@@ -153,15 +200,26 @@ public class OverlayManager {
         }
     }
 
+    /**
+     * Hides the win overlay.
+     */
     public void hideWinOverlay() {
         if (activeOverlay == ActiveOverlay.WIN) {
             return;
         }
-            winOverlay.hideWinOverlay();
-            activeOverlay = ActiveOverlay.NONE;
+        winOverlay.hideWinOverlay();
+        activeOverlay = ActiveOverlay.NONE;
     }
 
-    // Game Over Overlay Management
+    /**
+     * Shows the game over overlay.
+     *
+     * @param backToMainMenuCallback the callback to return to the main menu
+     * @param restartCallback the callback to restart the current level
+     * @param levelName the name of the current level
+     * @param currentTimeSeconds the current time in seconds
+     * @param fastestTimeDisplay the display string for the fastest time
+     */
     public void showGameOverOverlay(Runnable backToMainMenuCallback, Runnable restartCallback,
                                     String levelName, long currentTimeSeconds, String fastestTimeDisplay) {
         if (activeOverlay == ActiveOverlay.NONE) {
@@ -174,11 +232,14 @@ public class OverlayManager {
         }
     }
 
+    /**
+     * Hides the game over overlay.
+     */
     public void hideGameOverOverlay() {
         if (activeOverlay == ActiveOverlay.GAME_OVER) {
             return;
         }
-            gameOverOverlay.hideGameOverOverlay();
-            activeOverlay = ActiveOverlay.NONE;
+        gameOverOverlay.hideGameOverOverlay();
+        activeOverlay = ActiveOverlay.NONE;
     }
 }
