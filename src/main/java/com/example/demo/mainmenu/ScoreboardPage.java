@@ -70,6 +70,7 @@ public class ScoreboardPage {
             MainMenu mainMenu = new MainMenu(stage, controller);
             mainMenu.show();
         });
+        backButton.setId("backButton");
 
         // Position the back button at top-left
         StackPane.setAlignment(backButton, Pos.TOP_LEFT);
@@ -94,10 +95,12 @@ public class ScoreboardPage {
         Label levelHeader = new Label("Level");
         levelHeader.setFont(fontManager.getFont("Pixel Digivolve", 24));
         levelHeader.setTextFill(Color.BLACK);
+        levelHeader.setId("levelHeader");
 
         Label timeHeader = new Label("Fastest Time (s)");
         timeHeader.setFont(fontManager.getFont("Pixel Digivolve", 24));
         timeHeader.setTextFill(Color.BLACK);
+        timeHeader.setId("timeHeader");
 
         headers.getChildren().addAll(levelHeader, timeHeader);
 
