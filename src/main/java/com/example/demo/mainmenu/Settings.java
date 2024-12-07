@@ -1,6 +1,7 @@
 package com.example.demo.mainmenu;
 
 import com.example.demo.controller.Controller;
+import com.example.demo.mainmenumanager.SettingsManager;
 import com.example.demo.styles.ButtonFactory;
 import com.example.demo.styles.FontManager;
 import javafx.animation.ScaleTransition;

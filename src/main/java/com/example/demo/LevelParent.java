@@ -9,7 +9,7 @@ import com.example.demo.gamemanager.InputHandler;
 import com.example.demo.gamemanager.SceneManager;
 import com.example.demo.levelview.LevelView;
 import com.example.demo.mainmenumanager.FastestTimesManager;
-import com.example.demo.mainmenu.SettingsManager;
+import com.example.demo.mainmenumanager.SettingsManager;
 import com.example.demo.mainmenu.StoreManager;
 import com.example.demo.overlay.OverlayManager;
 import com.example.demo.plane.FighterPlane;

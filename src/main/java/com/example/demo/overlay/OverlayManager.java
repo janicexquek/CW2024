@@ -1,6 +1,6 @@
 package com.example.demo.overlay;
 
-import com.example.demo.mainmenu.SettingsManager;
+import com.example.demo.mainmenumanager.SettingsManager;
 import com.example.demo.styles.TimeFormatter;
 import javafx.animation.Timeline;
 import javafx.scene.Group;

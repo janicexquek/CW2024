@@ -1,4 +1,4 @@
-package com.example.demo.mainmenu;
+package com.example.demo.mainmenumanager;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
