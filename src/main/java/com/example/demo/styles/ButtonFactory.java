@@ -1,5 +1,3 @@
-// File: com/example/demo/style/ButtonFactory.java
-
 package com.example.demo.styles;
 
 import javafx.animation.FadeTransition;
@@ -15,10 +13,16 @@ import javafx.util.Duration;
 
 import java.util.Objects;
 
+/**
+ * Factory class for creating custom buttons with various styles and effects.
+ */
 public class ButtonFactory {
 
     private final FontManager fontManager;
 
+    /**
+     * Constructs a new ButtonFactory instance.
+     */
     public ButtonFactory() {
         this.fontManager = FontManager.getInstance();
     }
