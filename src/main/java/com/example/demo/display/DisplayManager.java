@@ -16,8 +16,8 @@ import javafx.scene.text.Text;
 public class DisplayManager {
 
     private final Group root;
-    private final HeartDisplay heartDisplay;
-    private final ExitDisplay exitDisplay;
+    protected final HeartDisplay heartDisplay;
+    protected final ExitDisplay exitDisplay;
     private final Text infoDisplay;
     private final FontManager fontManager;
 
