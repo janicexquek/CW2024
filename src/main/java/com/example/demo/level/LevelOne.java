@@ -79,11 +79,10 @@ public class LevelOne extends LevelParent {
      *
      * @param screenWidth the width of the screen
      * @param screenHeight the height of the screen
-     * @param timeline the timeline for animations
      * @return the instantiated LevelView
      */
     @Override
-    protected LevelView instantiateLevelView(double screenWidth, double screenHeight, Timeline timeline) {
+    protected LevelView instantiateLevelView(double screenWidth, double screenHeight) {
         // Pass the pause and resume callbacks to LevelView
         return new LevelView(
                 getRoot(),
@@ -92,8 +91,7 @@ public class LevelOne extends LevelParent {
                 this::pauseGame, // Pause callback
                 this::resumeGame, // Resume callback
                 screenWidth, // Screen width
-                screenHeight, // Screen height
-                timeline // Pass the game loop timeline
+                screenHeight // Screen height
         );
     }
 

@@ -24,10 +24,9 @@ public class LevelViewLevelTwo extends LevelView {
      * @param resumeGameCallback the callback to resume the game
      * @param screenWidth the width of the screen
      * @param screenHeight the height of the screen
-     * @param timeline the timeline for animations
      */
-    public LevelViewLevelTwo(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight, Timeline timeline) {
-        super(root, heartsToDisplay, backToMainMenuCallback, pauseGameCallback, resumeGameCallback, screenWidth, screenHeight, timeline);
+    public LevelViewLevelTwo(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback, Runnable resumeGameCallback, double screenWidth, double screenHeight) {
+        super(root, heartsToDisplay, backToMainMenuCallback, pauseGameCallback, resumeGameCallback, screenWidth, screenHeight);
         this.root = root;
         this.bossShieldImage = new BossShieldImage(SHIELD_X_POSITION, SHIELD_Y_POSITION);
         addImagesToRoot();

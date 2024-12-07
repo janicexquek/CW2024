@@ -3,9 +3,12 @@ package com.example.demo.levelview;
 
 import com.example.demo.display.DisplayManager;
 import com.example.demo.overlay.OverlayManager;
-import javafx.animation.Timeline;
 import javafx.scene.Group;
 
+/**
+ * Manages the UI elements and overlays for a game level.
+ * Delegates specific UI tasks to DisplayManager and OverlayManager.
+ */
 public class LevelView {
 
     private final DisplayManager displayManager;
@@ -14,20 +17,19 @@ public class LevelView {
     /**
      * Constructor for LevelView.
      *
-     * @param root the root group of the scene
-     * @param heartsToDisplay the number of hearts to display for the player's health
+     * @param root                   the root group of the scene
+     * @param heartsToDisplay        the number of hearts to display for the player's health
      * @param backToMainMenuCallback the callback to return to the main menu
-     * @param pauseGameCallback the callback to pause the game
-     * @param resumeGameCallback the callback to resume the game
-     * @param screenWidth the width of the screen
-     * @param screenHeight the height of the screen
-     * @param timeline the timeline for animations
+     * @param pauseGameCallback      the callback to pause the game
+     * @param resumeGameCallback     the callback to resume the game
+     * @param screenWidth            the width of the screen
+     * @param screenHeight           the height of the screen
      */
     public LevelView(Group root, int heartsToDisplay, Runnable backToMainMenuCallback, Runnable pauseGameCallback,
-                     Runnable resumeGameCallback, double screenWidth, double screenHeight, Timeline timeline) {
+                     Runnable resumeGameCallback, double screenWidth, double screenHeight) {
 
         this.displayManager = new DisplayManager(root, heartsToDisplay, screenWidth, screenHeight, pauseGameCallback, this::showExitOverlay);
-        this.overlayManager = new OverlayManager(root, screenWidth, screenHeight, timeline, resumeGameCallback, backToMainMenuCallback);
+        this.overlayManager = new OverlayManager(root, screenWidth, screenHeight, pauseGameCallback, resumeGameCallback, backToMainMenuCallback);
     }
 
     // Delegated Methods to DisplayManager
