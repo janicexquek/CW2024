@@ -94,6 +94,7 @@ public class ExitOverlay extends BaseOverlay {
                 resumeGameCallback.run(); // Resume the game
             }
         });
+        continueButton.setId("continueButton");
 
         mainMenuButton.setOnMouseClicked(e -> {
             if (hideOverlayCallback != null) {
@@ -103,6 +104,7 @@ public class ExitOverlay extends BaseOverlay {
                 backToMainMenuCallback.run(); // Go back to the main menu
             }
         });
+        mainMenuButton.setId("mainMenuButton");
 
         // Create an HBox to hold the buttons horizontally
         HBox buttonBox = new HBox(20); // 20px spacing between buttons
