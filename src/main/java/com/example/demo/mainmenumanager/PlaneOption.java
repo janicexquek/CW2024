@@ -122,6 +122,7 @@ public class PlaneOption extends StackPane {
         // Hover Effects
         this.setOnMouseEntered(e -> {
             hoverOverlay.setVisible(true);
+            hoverOverlay.setId("hoverOverlay");
             scaleTransition.stop();
             scaleTransition.setFromX(this.getScaleX());
             scaleTransition.setFromY(this.getScaleY());
@@ -186,6 +187,7 @@ public class PlaneOption extends StackPane {
      */
     public void select() {
         selectionBorder.setVisible(true);
+        selectionBorder.setId("selectionBorder");
     }
 
     /**
