@@ -1,4 +1,4 @@
-package com.example.demo.mainmenu;
+package com.example.demo.mainmenumanager;
 
 /**
  * Manages the store settings for the game, including the selected plane.

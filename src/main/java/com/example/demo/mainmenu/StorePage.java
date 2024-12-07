@@ -2,6 +2,7 @@ package com.example.demo.mainmenu;
 
 import com.example.demo.controller.Controller;
 import com.example.demo.mainmenumanager.PlaneOption;
+import com.example.demo.mainmenumanager.StoreManager;
 import com.example.demo.styles.ButtonFactory;
 import com.example.demo.styles.FontManager;
 import javafx.geometry.Insets;
