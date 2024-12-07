@@ -30,28 +30,104 @@ import javafx.scene.Scene;
  */
 public abstract class LevelParent extends Observable {
 
+	/**
+	 * The height of the game screen.
+	 */
 	private final double screenHeight;
+
+	/**
+	 * The width of the game screen.
+	 */
 	private final double screenWidth;
+
+	/**
+	 * Flag indicating whether the level has been updated.
+	 */
 	private boolean Updated = false;
+
+	/**
+	 * Flag indicating whether the game is currently paused.
+	 */
 	private boolean isPaused = false;
+
+	/**
+	 * Flag indicating whether the game is over.
+	 */
 	private boolean gameOver = false;
+
+	/**
+	 * The current number of enemies in the level.
+	 */
 	private int currentNumberOfEnemies;
+
+	/**
+	 * The name of the level.
+	 */
 	private String levelName;
+
+	/**
+	 * Handles user input for the level.
+	 */
 	private InputHandler inputHandler;
+
+	/**
+	 * Manages collision detection and handling within the level.
+	 */
 	private CollisionManager collisionManager;
 
-	private final SceneManager sceneManager; // SceneManager instance
+	/**
+	 * Manages scene-related operations such as initializing the scene and background.
+	 */
+	private final SceneManager sceneManager;
+
+	/**
+	 * Timer to track the elapsed time in the game.
+	 */
 	private final GameTimer gameTimer;
-	private final GameStateManager gameStateManager; // New GameStateManager instance
+
+	/**
+	 * Manages the state of the game, including starting, pausing, and stopping the game loop.
+	 */
+	private final GameStateManager gameStateManager;
+
+	/**
+	 * The main game loop that updates the game state periodically.
+	 */
 	private final GameLoop gameLoop;
+
+	/**
+	 * Represents the user's plane in the game.
+	 */
 	private final UserPlane user;
 
+	/**
+	 * List of friendly units (e.g., player's allies) in the level.
+	 */
 	protected final List<ActiveActorDestructible> friendlyUnits;
-	private final List<ActiveActorDestructible> enemyUnits;
-	private final List<ActiveActorDestructible> userProjectiles;
-	private final List<ActiveActorDestructible> enemyProjectiles;
-	protected List<ActiveActorDestructible> allyProjectiles; // New property
 
+	/**
+	 * List of enemy units present in the level.
+	 */
+	private final List<ActiveActorDestructible> enemyUnits;
+
+	/**
+	 * List of projectiles fired by the user.
+	 */
+	private final List<ActiveActorDestructible> userProjectiles;
+
+	/**
+	 * List of projectiles fired by enemies.
+	 */
+	private final List<ActiveActorDestructible> enemyProjectiles;
+
+	/**
+	 * List of projectiles fired by allies.
+	 */
+	protected List<ActiveActorDestructible> allyProjectiles;
+
+	/**
+	 * Manages the visual representation of the level, including overlays and UI elements.
+	 */
 	protected LevelView levelView;
 
 	/**
@@ -227,6 +303,7 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Starts the game after the countdown finishes.
+	 * Initiates the game state and ensures the scene has focus.
 	 */
 	private void startGameAfterCountdown() {
 		// Start the game via GameStateManager
@@ -241,6 +318,7 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Restarts the current level.
+	 * Notifies observers to reload the level based on its class name.
 	 */
 	public void restartGame() {
 		setChanged();
@@ -368,15 +446,17 @@ public abstract class LevelParent extends Observable {
 	 * Updates the game scene, including actor states and collisions.
 	 * This method is called periodically by the game loop to update the state of the game.
 	 * It performs the following actions:
-	 * - Checks if the game is over.
-	 * - Checks if the game over conditions are met.
-	 * - Spawns enemy units.
-	 * - Updates all active actors.
-	 * - Generates enemy fire.
-	 * - Updates the number of enemies.
-	 * - Handles various types of collisions.
-	 * - Removes all destroyed actors from the scene.
-	 * - Updates the LevelView with the latest game state.
+	 * <ul>
+	 *     <li>Checks if the game is over.</li>
+	 *     <li>Checks if the game over conditions are met.</li>
+	 *     <li>Spawns enemy units.</li>
+	 *     <li>Updates all active actors.</li>
+	 *     <li>Generates enemy fire.</li>
+	 *     <li>Updates the number of enemies.</li>
+	 *     <li>Handles various types of collisions.</li>
+	 *     <li>Removes all destroyed actors from the scene.</li>
+	 *     <li>Updates the LevelView with the latest game state.</li>
+	 * </ul>
 	 */
 	private void updateScene() {
 		if (gameOver) return;
@@ -411,7 +491,7 @@ public abstract class LevelParent extends Observable {
 	/**
 	 * Determines if the player can fire projectiles.
 	 *
-	 * @return True if the player can fire, false otherwise.
+	 * @return {@code true} if the player can fire, {@code false} otherwise.
 	 */
 	private boolean canFireProjectiles() {
 		return !gameOver && !isPaused && levelView.getActiveOverlay() == OverlayManager.ActiveOverlay.NONE;
@@ -502,7 +582,6 @@ public abstract class LevelParent extends Observable {
 		sceneManager.getRoot().getChildren().removeAll(destroyedActors);
 		actors.removeAll(destroyedActors);
 	}
-
 
 	// ------------------------- Ally Plane ------------------------
 
@@ -627,13 +706,12 @@ public abstract class LevelParent extends Observable {
 		SettingsManager.getInstance().playDefeatSound(); // Play defeat sound
 	}
 
-
 	// ----------------------Getter methods ----------------------------
 
 	/**
 	 * Returns the user's plane.
 	 *
-	 * @return The UserPlane instance.
+	 * @return The {@link UserPlane} instance.
 	 */
 	protected UserPlane getUser() {
 		return user;
@@ -642,7 +720,7 @@ public abstract class LevelParent extends Observable {
 	/**
 	 * Returns the root group of the scene.
 	 *
-	 * @return The root Group.
+	 * @return The root {@link Group}.
 	 */
 	protected Group getRoot() {
 		return sceneManager.getRoot();
@@ -660,7 +738,7 @@ public abstract class LevelParent extends Observable {
 	/**
 	 * Checks if the user's plane is destroyed.
 	 *
-	 * @return True if the user's plane is destroyed, false otherwise.
+	 * @return {@code true} if the user's plane is destroyed, {@code false} otherwise.
 	 */
 	protected boolean userIsDestroyed() {
 		return user.isDestroyed();
@@ -704,7 +782,7 @@ public abstract class LevelParent extends Observable {
 	/**
 	 * Checks if the game is over.
 	 *
-	 * @return true if the game is over, false otherwise.
+	 * @return {@code true} if the game is over, {@code false} otherwise.
 	 */
 	public boolean isGameOver() {
 		return gameOver;
