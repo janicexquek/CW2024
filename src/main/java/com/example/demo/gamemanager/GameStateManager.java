@@ -1,65 +1,91 @@
+// GameStateManager.java
 package com.example.demo.gamemanager;
-
-import javafx.animation.Timeline;
 
 /**
  * Manages the game's state transitions, including starting, pausing, resuming, and stopping the game.
- * Encapsulates the Timeline and GameTimer to separate game state management from game logic.
+ * Separates game state management from game logic.
  */
 public class GameStateManager {
-
-    private final Timeline timeline;
+    private final GameLoop gameLoop;
     private final GameTimer gameTimer;
+    private boolean isGameOver = false;
 
     /**
-     * Constructs a new GameStateManager with the specified Timeline and GameTimer.
+     * Constructs a new GameStateManager.
      *
-     * @param timeline   The Timeline representing the game loop.
-     * @param gameTimer  The GameTimer tracking the game's elapsed time.
+     * @param gameLoop  The GameLoop instance.
+     * @param gameTimer The GameTimer instance.
      */
-    public GameStateManager(Timeline timeline, GameTimer gameTimer) {
-        this.timeline = timeline;
+    public GameStateManager(GameLoop gameLoop, GameTimer gameTimer) {
+        this.gameLoop = gameLoop;
         this.gameTimer = gameTimer;
     }
 
     /**
-     * Starts the game by playing the timeline and starting the game timer.
+     * Starts the game by starting the loop and timer.
      */
     public void start() {
-        timeline.play();
+        gameLoop.start();
         gameTimer.start();
     }
 
     /**
-     * Pauses the game by pausing the timeline and game timer.
+     * Pauses the game by pausing the loop and timer.
      */
     public void pause() {
-        timeline.pause();
+        gameLoop.pause();
         gameTimer.pause();
     }
 
     /**
-     * Resumes the game by playing the timeline and resuming the game timer.
+     * Resumes the game by resuming the loop and timer.
      */
     public void resume() {
-        timeline.play();
+        gameLoop.resume();
         gameTimer.resume();
     }
 
     /**
-     * Stops the game by stopping the timeline and game timer.
+     * Stops the game by stopping the loop and timer.
      */
     public void stop() {
-        timeline.stop();
+        gameLoop.stop();
         gameTimer.stop();
     }
 
     /**
      * Checks if the game is currently running.
      *
-     * @return true if the timeline is running, false otherwise.
+     * @return true if running, false otherwise.
      */
     public boolean isRunning() {
-        return timeline.getStatus() == Timeline.Status.RUNNING;
+        return gameLoop.isRunning();
+    }
+
+    /**
+     * Marks the game as over.
+     *
+     * @param gameOver True if the game is over, false otherwise.
+     */
+    public void setGameOver(boolean gameOver) {
+        this.isGameOver = gameOver;
+    }
+
+    /**
+     * Checks if the game is over.
+     *
+     * @return true if game over, false otherwise.
+     */
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    /**
+     * Returns the GameTimer instance.
+     *
+     * @return The GameTimer.
+     */
+    public GameTimer getGameTimer() {
+        return gameTimer;
     }
 }

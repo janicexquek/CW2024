@@ -1,8 +1,8 @@
+// OverlayManager.java
 package com.example.demo.overlay;
 
 import com.example.demo.mainmenumanager.SettingsManager;
 import com.example.demo.styles.TimeFormatter;
-import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.effect.GaussianBlur;
 
@@ -17,41 +17,13 @@ public class OverlayManager {
     private final WinOverlay winOverlay;
     private final GameOverOverlay gameOverOverlay;
     private final CountdownOverlay countdownOverlay;
-    private final Timeline timeline;
 
+    private final Runnable pauseGameCallback;
     private final Runnable resumeGameCallback;
     private final Runnable backToMainMenuCallback;
 
     private ActiveOverlay activeOverlay = ActiveOverlay.NONE;
     private Runnable startGameCallback;
-
-    /**
-     * Constructs an OverlayManager with the specified parameters.
-     *
-     * @param root the root group to which overlays are added
-     * @param screenWidth the width of the screen
-     * @param screenHeight the height of the screen
-     * @param timeline the game loop timeline
-     * @param resumeGameCallback the callback to resume the game
-     * @param backToMainMenuCallback the callback to return to the main menu
-     */
-    public OverlayManager(Group root, double screenWidth, double screenHeight, Timeline timeline,
-                          Runnable resumeGameCallback, Runnable backToMainMenuCallback) {
-        this.root = root;
-        this.timeline = timeline;
-
-        // Assign callbacks to instance variables
-        this.resumeGameCallback = resumeGameCallback;
-        this.backToMainMenuCallback = backToMainMenuCallback;
-
-        this.exitOverlay = new ExitOverlay(screenWidth, screenHeight, resumeGameCallback, backToMainMenuCallback, this::hideExitOverlay);
-        this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, resumeGameCallback);
-        this.winOverlay = new WinOverlay(screenWidth, screenHeight);
-        this.gameOverOverlay = new GameOverOverlay(screenWidth, screenHeight);
-        this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
-
-        root.getChildren().addAll(exitOverlay, pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
-    }
 
     /**
      * Enum representing the active overlay.
@@ -66,12 +38,56 @@ public class OverlayManager {
     }
 
     /**
+     * Constructs an OverlayManager with the specified parameters.
+     *
+     * @param root                   the root group to which overlays are added
+     * @param screenWidth            the width of the screen
+     * @param screenHeight           the height of the screen
+     * @param pauseGameCallback      the callback to pause the game
+     * @param resumeGameCallback     the callback to resume the game
+     * @param backToMainMenuCallback the callback to return to the main menu
+     */
+    public OverlayManager(Group root, double screenWidth, double screenHeight,
+                          Runnable pauseGameCallback, Runnable resumeGameCallback,
+                          Runnable backToMainMenuCallback) {
+        this.root = root;
+
+        // Assign callbacks to instance variables
+        this.pauseGameCallback = pauseGameCallback;
+        this.resumeGameCallback = resumeGameCallback;
+        this.backToMainMenuCallback = backToMainMenuCallback;
+
+        this.exitOverlay = new ExitOverlay(screenWidth, screenHeight, resumeGameCallback, backToMainMenuCallback, this::hideExitOverlay);
+        this.pauseOverlay = new PauseOverlay(screenWidth, screenHeight, resumeGameCallback);
+        this.winOverlay = new WinOverlay(screenWidth, screenHeight);
+        this.gameOverOverlay = new GameOverOverlay(screenWidth, screenHeight);
+        this.countdownOverlay = new CountdownOverlay(screenWidth, screenHeight, this::onCountdownFinished);
+
+        root.getChildren().addAll(exitOverlay, pauseOverlay, winOverlay, gameOverOverlay, countdownOverlay);
+
+        // Initially hide all overlays
+        hideAllOverlays();
+    }
+
+    /**
      * Returns the currently active overlay.
      *
      * @return the active overlay
      */
     public ActiveOverlay getActiveOverlay() {
         return activeOverlay;
+    }
+
+    /**
+     * Hides all overlays to ensure none are visible at the start.
+     */
+    public void hideAllOverlays() {
+        exitOverlay.hideExitOverlay();
+        pauseOverlay.hidePauseOverlay();
+        winOverlay.hideWinOverlay();
+        gameOverOverlay.hideGameOverOverlay();
+        countdownOverlay.hideCountdown();
+        activeOverlay = ActiveOverlay.NONE;
     }
 
     /**
@@ -85,10 +101,8 @@ public class OverlayManager {
         }
         this.startGameCallback = startGameCallback;
 
-        // Pause the game loop
-        if (timeline != null) {
-            timeline.pause();
-        }
+        // Pause the game via callback
+        pauseGameCallback.run();
 
         // Apply blur effect to all nodes except the countdownOverlay
         root.getChildren().forEach(node -> {
@@ -117,10 +131,8 @@ public class OverlayManager {
             }
         });
 
-        // Resume the game loop
-        if (timeline != null) {
-            timeline.play();
-        }
+        // Resume the game via callback
+        resumeGameCallback.run();
 
         // Execute the game start callback
         if (startGameCallback != null) {

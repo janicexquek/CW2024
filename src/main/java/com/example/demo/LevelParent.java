@@ -1,3 +1,4 @@
+// LevelParent.java
 package com.example.demo;
 
 import java.util.*;
@@ -7,6 +8,7 @@ import com.example.demo.gamemanager.GameStateManager;
 import com.example.demo.gamemanager.GameTimer;
 import com.example.demo.gamemanager.InputHandler;
 import com.example.demo.gamemanager.SceneManager;
+import com.example.demo.gamemanager.GameLoop;
 import com.example.demo.levelview.LevelView;
 import com.example.demo.mainmenumanager.FastestTimesManager;
 import com.example.demo.mainmenumanager.SettingsManager;
@@ -14,11 +16,8 @@ import com.example.demo.mainmenumanager.StoreManager;
 import com.example.demo.overlay.OverlayManager;
 import com.example.demo.plane.FighterPlane;
 import com.example.demo.plane.UserPlane;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.util.Duration;
 
 /**
  * Abstract base class representing a generic game level.
@@ -28,7 +27,6 @@ import javafx.util.Duration;
  */
 public abstract class LevelParent extends Observable {
 
-	private static final int MILLISECOND_DELAY = 50;
 	private final double screenHeight;
 	private final double screenWidth;
 	private boolean Updated = false;
@@ -40,9 +38,9 @@ public abstract class LevelParent extends Observable {
 	private CollisionManager collisionManager;
 
 	private final SceneManager sceneManager; // SceneManager instance
-	private final Timeline timeline;
 	private final GameTimer gameTimer;
 	private final GameStateManager gameStateManager; // New GameStateManager instance
+	private final GameLoop gameLoop;
 	private final UserPlane user;
 
 	protected final List<ActiveActorDestructible> friendlyUnits;
@@ -65,9 +63,9 @@ public abstract class LevelParent extends Observable {
 	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth, String levelName) {
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
-		this.timeline = new Timeline();
-		this.gameTimer = new GameTimer();
-		this.gameStateManager = new GameStateManager(timeline, gameTimer); // Initialize GameStateManager
+		this.levelName = levelName;
+
+		// Initialize user plane
 		int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();
 		String selectedPlaneFilename = mapPlaneNumberToFilename(selectedPlaneNumber);
 
@@ -77,7 +75,7 @@ public abstract class LevelParent extends Observable {
 		this.enemyUnits = new ArrayList<>();
 		this.userProjectiles = new ArrayList<>();
 		this.enemyProjectiles = new ArrayList<>();
-		this.allyProjectiles = new ArrayList<>(); // Initialize allyProjectiles
+		this.allyProjectiles = new ArrayList<>();
 		this.Updated = false;
 
 		// Initialize SceneManager
@@ -89,6 +87,7 @@ public abstract class LevelParent extends Observable {
 		Group root = this.sceneManager.getRoot();
 		Scene scene = this.sceneManager.getScene();
 
+		// Initialize CollisionManager
 		this.collisionManager = new CollisionManager(
 				this,
 				user,
@@ -102,10 +101,13 @@ public abstract class LevelParent extends Observable {
 				root
 		);
 
-		this.levelView = instantiateLevelView(screenWidth, screenHeight, timeline);
+		// Instantiate LevelView without passing Timeline (assuming LevelView is refactored)
+		this.levelView = instantiateLevelView(screenWidth, screenHeight); // Removed Timeline parameter
+		this.gameLoop = new GameLoop(this::updateScene);
+		this.gameTimer = new GameTimer();
+		this.gameStateManager = new GameStateManager(gameLoop, gameTimer);
+
 		this.currentNumberOfEnemies = 0;
-		this.levelName = levelName;
-		initializeTimeline();
 		friendlyUnits.add(user);
 		SettingsManager.getInstance().resumeMusic();
 	}
@@ -148,10 +150,9 @@ public abstract class LevelParent extends Observable {
 	 *
 	 * @param screenWidth  The width of the game screen.
 	 * @param screenHeight The height of the game screen.
-	 * @param timeline     The game loop timeline.
 	 * @return A new LevelView instance.
 	 */
-	protected abstract LevelView instantiateLevelView(double screenWidth, double screenHeight, Timeline timeline);
+	protected abstract LevelView instantiateLevelView(double screenWidth, double screenHeight);
 
 	/**
 	 * Returns a Runnable callback to navigate back to the main menu.
@@ -186,20 +187,7 @@ public abstract class LevelParent extends Observable {
 		return sceneManager.getScene();
 	}
 
-
-	/**
-	 * Initializes the game timeline (game loop).
-	 * Sets the timeline to run indefinitely and adds a KeyFrame that calls the updateScene method
-	 * at a fixed interval defined by MILLISECOND_DELAY.
-	 */
-	private void initializeTimeline() {
-		timeline.setCycleCount(Timeline.INDEFINITE);
-		KeyFrame gameLoop = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> updateScene());
-		timeline.getKeyFrames().add(gameLoop);
-	}
-
-
-	//  --------- Maps the plane number to its corresponding filename. -----------
+	// ----------------- Maps the plane number to its corresponding filename. -----------
 
 	/**
 	 * Maps the selected plane number to its corresponding image filename.
@@ -238,7 +226,7 @@ public abstract class LevelParent extends Observable {
 	 * Starts the game after the countdown finishes.
 	 */
 	private void startGameAfterCountdown() {
-		// Start the game timeline and timer via GameStateManager
+		// Start the game via GameStateManager
 		gameStateManager.start();
 		// Handle UI focus separately
 		Scene scene = sceneManager.getScene();
@@ -258,7 +246,7 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Stops the game and performs cleanup.
-	 * Stops the game timeline and timer via GameStateManager.
+	 * Stops the game via GameStateManager.
 	 * Removes all destroyed actors, observers, and hides overlays to prevent stacking.
 	 * Also removes overlays from the scene graph.
 	 */
@@ -278,7 +266,7 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Pauses the game.
-	 * Pauses the game timeline and timer via GameStateManager.
+	 * Pauses the game via GameStateManager.
 	 * Also pauses the background music and mutes all sound effects.
 	 */
 	public void pauseGame() {
@@ -290,7 +278,7 @@ public abstract class LevelParent extends Observable {
 
 	/**
 	 * Resumes the game.
-	 * Resumes the game timeline and timer via GameStateManager.
+	 * Resumes the game via GameStateManager.
 	 * Also resumes the background music and unmutes all sound effects.
 	 */
 	public void resumeGame() {
@@ -531,7 +519,7 @@ public abstract class LevelParent extends Observable {
 	 * Handles the win condition for the game.
 	 * Stops the game, updates fastest times, and displays the win overlay.
 	 * If the game is already over, the method returns immediately.
-	 * Otherwise, it stops the game timeline and timer via GameStateManager,
+	 * Otherwise, it stops the game via GameStateManager,
 	 * sets the game over flag, and updates the fastest time if the current time is faster.
 	 * Displays the win overlay with the appropriate achievement message and
 	 * conditional next level callback.
@@ -591,10 +579,10 @@ public abstract class LevelParent extends Observable {
 	}
 
 	/**
-	 * Handles the game over condition for the game.
+	 * Handles the lose condition for the game.
 	 * Stops the game and displays the game over overlay.
 	 * If the game is already over, the method returns immediately.
-	 * Otherwise, it stops the game timeline and timer via GameStateManager,
+	 * Otherwise, it stops the game via GameStateManager,
 	 * sets the game over flag, and updates the fastest time if the current time is faster.
 	 * Displays the game over overlay with the appropriate callbacks.
 	 */
@@ -604,6 +592,7 @@ public abstract class LevelParent extends Observable {
 		gameStateManager.stop();
 		setChanged();
 		SettingsManager.getInstance().stopAllSoundEffects(); // Stop active sound effects
+
 		// Step 1: Retrieve Current Time
 		long currentTimeSeconds = gameTimer.getElapsedTime();
 		String levelName = getLevelName();
