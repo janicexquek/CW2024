@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -24,6 +25,7 @@ import java.util.Objects;
  */
 public class MainMenu {
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background3.jpg";
+    private static final String CLOSE_IMAGE_NAME = "/com/example/demo/images/x.png";
 
     private final Stage stage;
     private final Controller controller;
@@ -31,10 +33,18 @@ public class MainMenu {
     private final FontManager fontManager;
     private final ButtonFactory buttonFactory;
 
+    // Class-level UI components for testing
+    private StackPane statButton;
+    private StackPane storeButton;
+    private StackPane playButton;
+    private StackPane settingsButton;
+    private StackPane instructionsButton;
+    private ImageView closeImageView;
+
     /**
      * Constructor for MainMenu.
      *
-     * @param stage the primary stage for this application
+     * @param stage      the primary stage for this application
      * @param controller the controller to manage interactions
      */
     public MainMenu(Stage stage, Controller controller) {
@@ -61,37 +71,23 @@ public class MainMenu {
         titleLabel.getStyleClass().add("title-text");
 
         // Create custom buttons using ButtonFactory
-        StackPane statButton = buttonFactory.createStickerButton("/com/example/demo/images/statistic.png", 40, 40);
-        statButton.setOnMouseClicked(e -> {
-            ScoreboardPage scoreboardPage = new ScoreboardPage(stage, controller);
-            scoreboardPage.show();
-        });
+        statButton = buttonFactory.createStickerButton("/com/example/demo/images/statistic.png", 40, 40);
+        statButton.setOnMouseClicked(this::handleStatButtonClick);
 
-        // --- Create Store Button ---
-        StackPane storeButton = buttonFactory.createStickerButton("/com/example/demo/images/aircraft.png", 40, 40);
-        storeButton.setOnMouseClicked(e -> {
-            StorePage storePage = new StorePage(stage, controller);
-            storePage.show();
-        });
+        storeButton = buttonFactory.createStickerButton("/com/example/demo/images/aircraft.png", 40, 40);
+        storeButton.setOnMouseClicked(this::handleStoreButtonClick);
 
         HBox stickerButtonLayout = new HBox(20, statButton, storeButton);
         stickerButtonLayout.setAlignment(Pos.CENTER);
 
-        StackPane playButton = buttonFactory.createCustomButton("Play", "Sugar Bomb", 20, 180, 60, "/com/example/demo/images/ButtonText_Large_Round.png");
-        playButton.setOnMouseClicked(e -> controller.startGame());
+        playButton = buttonFactory.createCustomButton("Play", "Sugar Bomb", 20, 180, 60, "/com/example/demo/images/ButtonText_Large_Round.png");
+        playButton.setOnMouseClicked(this::handlePlayButtonClick);
 
-        StackPane settingsButton = buttonFactory.createCustomButton("Settings", "Sugar Bomb", 20, 180, 60, "/com/example/demo/images/ButtonText_Large_Round.png");
-        settingsButton.setOnMouseClicked(e -> {
-            Settings settings = new Settings(stage, controller);
-            settings.show();
-        });
+        settingsButton = buttonFactory.createCustomButton("Settings", "Sugar Bomb", 20, 180, 60, "/com/example/demo/images/ButtonText_Large_Round.png");
+        settingsButton.setOnMouseClicked(this::handleSettingsButtonClick);
 
-        StackPane instructionsButton = buttonFactory.createCustomButton("Instructions", "Sugar Bomb", 20, 180, 60, "/com/example/demo/images/ButtonText_Large_Round.png");
-        instructionsButton.setOnMouseClicked(e -> {
-            // Navigate to the Instructions page
-            InstructionsPage instructionsPage = new InstructionsPage(stage, controller);
-            instructionsPage.show();
-        });
+        instructionsButton = buttonFactory.createCustomButton("Instructions", "Sugar Bomb", 20, 180, 60, "/com/example/demo/images/ButtonText_Large_Round.png");
+        instructionsButton.setOnMouseClicked(this::handleInstructionsButtonClick);
 
         // Arrange buttons in VBox
         VBox buttonLayout = new VBox(20, stickerButtonLayout, playButton, settingsButton, instructionsButton);
@@ -114,9 +110,10 @@ public class MainMenu {
         // Create a StackPane to layer the background and main layout
         StackPane root = new StackPane();
         root.getChildren().addAll(backgroundImageView, mainLayout);
+
         // --- Add the Quit (x.png) Button in Top-Left Corner ---
         // Load the x.png image
-        ImageView closeImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource("/com/example/demo/images/x.png")).toExternalForm()));
+        closeImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResource(CLOSE_IMAGE_NAME)).toExternalForm()));
         closeImageView.setFitWidth(30); // Adjust size as needed
         closeImageView.setFitHeight(30);
         closeImageView.setPreserveRatio(true);
@@ -127,7 +124,7 @@ public class MainMenu {
         StackPane.setMargin(closeImageView, new Insets(40, 0, 160, 40)); // 40px from top and left
 
         // Add click handler to close the stage
-        closeImageView.setOnMouseClicked(e -> stage.close());
+        closeImageView.setOnMouseClicked(this::handleCloseButtonClick);
 
         // Add the closeImageView to the root StackPane
         root.getChildren().add(closeImageView);
@@ -145,5 +142,110 @@ public class MainMenu {
         }
         stage.setScene(scene);
         stage.show();
+    }
+
+    /**
+     * Handles the Play button click event.
+     *
+     * @param event the mouse event
+     */
+    private void handlePlayButtonClick(MouseEvent event) {
+        controller.startGame();
+    }
+
+    /**
+     * Handles the Settings button click event.
+     *
+     * @param event the mouse event
+     */
+    private void handleSettingsButtonClick(MouseEvent event) {
+        Settings settings = new Settings(stage, controller);
+        settings.show();
+    }
+
+    /**
+     * Handles the Instructions button click event.
+     *
+     * @param event the mouse event
+     */
+    private void handleInstructionsButtonClick(MouseEvent event) {
+        InstructionsPage instructionsPage = new InstructionsPage(stage, controller);
+        instructionsPage.show();
+    }
+
+    /**
+     * Handles the Statistics button click event.
+     *
+     * @param event the mouse event
+     */
+    private void handleStatButtonClick(MouseEvent event) {
+        ScoreboardPage scoreboardPage = new ScoreboardPage(stage, controller);
+        scoreboardPage.show();
+    }
+
+    /**
+     * Handles the Store button click event.
+     *
+     * @param event the mouse event
+     */
+    private void handleStoreButtonClick(MouseEvent event) {
+        StorePage storePage = new StorePage(stage, controller);
+        storePage.show();
+    }
+
+    /**
+     * Handles the Close button click event.
+     *
+     * @param event the mouse event
+     */
+    private void handleCloseButtonClick(MouseEvent event) {
+        stage.close();
+    }
+
+    // --- Getter Methods for Testing ---
+
+    /**
+     * Gets the Play button.
+     *
+     * @return the Play button as a StackPane
+     */
+    public StackPane getPlayButton() {
+        return playButton;
+    }
+
+    /**
+     * Gets the Settings button.
+     *
+     * @return the Settings button as a StackPane
+     */
+    public StackPane getSettingsButton() {
+        return settingsButton;
+    }
+
+    /**
+     * Gets the Instructions button.
+     *
+     * @return the Instructions button as a StackPane
+     */
+    public StackPane getInstructionsButton() {
+        return instructionsButton;
+    }
+
+    /**
+     * Gets the Statistics button.
+     *
+     * @return the Statistics button as a StackPane
+     */
+    public StackPane getStatButton() {
+        return statButton;
+    }
+
+    /**
+     * Gets the Close button ImageView.
+     *
+     * @return the Close button as an ImageView
+     */
+    public ImageView getCloseImageView() {
+        return closeImageView;
     }
 }
