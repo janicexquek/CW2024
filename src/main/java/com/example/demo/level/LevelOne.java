@@ -1,10 +1,8 @@
 package com.example.demo.level;
 
 import com.example.demo.ActiveActorDestructible;
-import com.example.demo.LevelParent;
 import com.example.demo.levelview.LevelView;
 import com.example.demo.plane.EnemyPlane;
-import javafx.animation.Timeline;
 
 /**
  * Class representing the first level of the game.

@@ -1,10 +1,8 @@
 package com.example.demo.level;
 
-import com.example.demo.LevelParent;
 import com.example.demo.levelview.LevelView;
 import com.example.demo.levelview.LevelViewLevelTwo;
 import com.example.demo.plane.BossPlane;
-import javafx.animation.Timeline;
 
 /**
  * Class representing the second level of the game.

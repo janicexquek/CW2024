@@ -2,7 +2,7 @@ package com.example.demo.gamemanager;
 import java.util.*;
 
 import com.example.demo.ActiveActorDestructible;
-import com.example.demo.LevelParent;
+import com.example.demo.level.LevelParent;
 import com.example.demo.plane.UserPlane;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;

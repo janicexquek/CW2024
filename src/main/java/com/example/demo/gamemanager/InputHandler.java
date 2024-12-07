@@ -1,6 +1,6 @@
 package com.example.demo.gamemanager;
 
-import com.example.demo.LevelParent;
+import com.example.demo.level.LevelParent;
 import com.example.demo.plane.UserPlane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;

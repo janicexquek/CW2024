@@ -1,8 +1,10 @@
 // LevelParent.java
-package com.example.demo;
+package com.example.demo.level;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import com.example.demo.ActiveActorDestructible;
 import com.example.demo.gamemanager.CollisionManager;
 import com.example.demo.gamemanager.GameStateManager;
 import com.example.demo.gamemanager.GameTimer;

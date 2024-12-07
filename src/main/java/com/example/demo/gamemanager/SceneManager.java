@@ -1,6 +1,5 @@
 package com.example.demo.gamemanager;
 
-import com.example.demo.LevelParent;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 

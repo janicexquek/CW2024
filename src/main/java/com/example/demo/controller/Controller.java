@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.example.demo.LevelParent;
+import com.example.demo.level.LevelParent;
 import com.example.demo.mainmenu.MainMenu;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;

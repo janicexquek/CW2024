@@ -2,13 +2,11 @@
 package com.example.demo.level;
 
 import com.example.demo.ActiveActorDestructible;
-import com.example.demo.LevelParent;
 import com.example.demo.levelview.LevelView;
 import com.example.demo.plane.AllyPlane;
 import com.example.demo.plane.EnemyPlane;
 import com.example.demo.plane.IntermediatePlane;
 import com.example.demo.plane.UserPlane;
-import javafx.animation.Timeline;
 import javafx.scene.Group;
 
 import java.util.List;
