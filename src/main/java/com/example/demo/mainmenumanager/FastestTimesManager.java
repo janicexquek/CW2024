@@ -16,6 +16,13 @@ public class FastestTimesManager {
     private static final String PREF_FASTEST_TIMES = "fastestTimes";
 
     /**
+     * Clears all fastest times from the manager.
+     */
+    public void clearAllFastestTimes() {
+        fastestTimes.clear();
+        prefs.remove(PREF_FASTEST_TIMES); // Clear persisted data
+    }
+    /**
      * Private constructor to enforce singleton pattern.
      * Initializes the fastest times map and loads data from preferences.
      */
