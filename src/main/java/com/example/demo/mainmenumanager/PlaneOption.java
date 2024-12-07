@@ -1,4 +1,4 @@
-package com.example.demo.mainmenu;
+package com.example.demo.mainmenumanager;
 
 import com.example.demo.styles.FontManager;
 import javafx.animation.ScaleTransition;
