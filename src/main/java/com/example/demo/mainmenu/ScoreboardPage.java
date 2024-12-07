@@ -3,6 +3,7 @@ package com.example.demo.mainmenu;
 import com.example.demo.controller.Controller;
 import com.example.demo.styles.ButtonFactory;
 import com.example.demo.styles.FontManager;
+import com.example.demo.styles.TimeFormatter; // Import TimeFormatter
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -130,7 +131,7 @@ public class ScoreboardPage {
             levelLabel.setTextFill(Color.BLACK);
 
             long timeValue = fastestTimes.getOrDefault(levelName, Long.MAX_VALUE);
-            String timeStr = timeValue < Long.MAX_VALUE ? formatTime(timeValue) : "N/A";
+            String timeStr = timeValue < Long.MAX_VALUE ? TimeFormatter.formatTime(timeValue) : "N/A";
             Label timeLabel = new Label(timeStr);
             timeLabel.setFont(fontManager.getFont("Pixel Digivolve", 20));
             timeLabel.setTextFill(Color.BLACK);
@@ -164,17 +165,5 @@ public class ScoreboardPage {
 
         stage.setScene(scene);
         stage.show();
-    }
-
-    /**
-     * Formats the time from seconds to a mm:ss format.
-     *
-     * @param totalSeconds the total time in seconds
-     * @return the formatted time string
-     */
-    private String formatTime(long totalSeconds) {
-        long minutes = totalSeconds / 60;
-        long seconds = totalSeconds % 60;
-        return String.format("%02d:%02d", minutes, seconds);
     }
 }
