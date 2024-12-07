@@ -1,5 +1,5 @@
 // File: FastestTimesManager.java
-package com.example.demo.mainmenu;
+package com.example.demo.mainmenumanager;
 
 import java.util.HashMap;
 import java.util.Map;

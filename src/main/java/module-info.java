@@ -17,4 +17,5 @@ module com.example.demo {
     opens com.example.demo.gamemanager to javafx.fxml;
     opens com.example.demo.levelview to javafx.fxml;
     opens com.example.demo.styles to javafx.fxml;
+    opens com.example.demo.mainmenumanager to javafx.fxml;
 }

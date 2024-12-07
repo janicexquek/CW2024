@@ -8,7 +8,7 @@ import com.example.demo.gamemanager.GameTimer;
 import com.example.demo.gamemanager.InputHandler;
 import com.example.demo.gamemanager.SceneManager;
 import com.example.demo.levelview.LevelView;
-import com.example.demo.mainmenu.FastestTimesManager;
+import com.example.demo.mainmenumanager.FastestTimesManager;
 import com.example.demo.mainmenu.SettingsManager;
 import com.example.demo.mainmenu.StoreManager;
 import com.example.demo.overlay.OverlayManager;

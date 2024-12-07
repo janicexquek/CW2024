@@ -1,6 +1,7 @@
 package com.example.demo.mainmenu;
 
 import com.example.demo.controller.Controller;
+import com.example.demo.mainmenumanager.FastestTimesManager;
 import com.example.demo.styles.ButtonFactory;
 import com.example.demo.styles.FontManager;
 import com.example.demo.styles.TimeFormatter; // Import TimeFormatter
