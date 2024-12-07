@@ -60,7 +60,7 @@ public class StorePage {
 
         // --- Back Button ---
         StackPane backButton = createBackButton();
-
+        backButton.setId("backButton");
         // --- Store Title and Selection Message ---
         VBox titleVBox = createTitleSection();
 
@@ -136,6 +136,7 @@ public class StorePage {
         selectionMessageLabel = new Label();
         selectionMessageLabel.setFont(fontManager.getFont("Pixel Digivolve", 25));
         selectionMessageLabel.getStyleClass().add("title-text");
+        selectionMessageLabel.setId("selectionMessage");
 
         // Initialize the selection message based on current selection
         int selectedPlaneNumber = StoreManager.getInstance().getSelectedPlaneNumber();

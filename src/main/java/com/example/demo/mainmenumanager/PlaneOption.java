@@ -40,6 +40,8 @@ public class PlaneOption extends StackPane {
         this.planeImageName = planeImageName;
         this.planeNumber = extractPlaneNumber(planeImageName);
         this.onSelectCallback = onSelectCallback;
+        this.getStyleClass().add("plane-option"); // Add a style class
+        this.setId("plane-option-" + planeNumber); // Add a unique ID
 
         // Initialize UI Components
         ImageView planeImageView = createPlaneImageView();
