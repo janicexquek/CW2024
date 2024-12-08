@@ -3,6 +3,7 @@ package com.example.demo.level;
 import com.example.demo.ActiveActorDestructible;
 import com.example.demo.levelview.LevelView;
 import com.example.demo.plane.EnemyPlane;
+import com.example.demo.overlay.OverlayManager;
 
 /**
  * Class representing the first level of the game.
@@ -10,12 +11,13 @@ import com.example.demo.plane.EnemyPlane;
  */
 public class LevelOne extends LevelParent {
 
+    public static final int KILLS_TO_ADVANCE = 10; // 10
+    public static final int PLAYER_INITIAL_HEALTH = 5;
+
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg";
     private static final String NEXT_LEVEL = "com.example.demo.level.LevelTwo";
     private static final int TOTAL_ENEMIES = 5;
-    private static final int KILLS_TO_ADVANCE = 10; // 10
-    private static final double ENEMY_SPAWN_PROBABILITY = .20;
-    private static final int PLAYER_INITIAL_HEALTH = 5;
+    private static final double ENEMY_SPAWN_PROBABILITY = 0.20;
     private static final double Y_UPPER_BOUND = 80;
     private static final double Y_LOWER_BOUND = 650.0;
 
@@ -23,7 +25,7 @@ public class LevelOne extends LevelParent {
      * Constructor for LevelOne.
      *
      * @param screenHeight the height of the screen
-     * @param screenWidth the width of the screen
+     * @param screenWidth  the width of the screen
      */
     public LevelOne(double screenHeight, double screenWidth) {
         super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH, "LEVEL ONE");
@@ -75,7 +77,7 @@ public class LevelOne extends LevelParent {
     /**
      * Instantiates the level view for Level One.
      *
-     * @param screenWidth the width of the screen
+     * @param screenWidth  the width of the screen
      * @param screenHeight the height of the screen
      * @return the instantiated LevelView
      */
@@ -130,5 +132,14 @@ public class LevelOne extends LevelParent {
      */
     private boolean userHasReachedKillTarget() {
         return getUser().getNumberOfKills() >= KILLS_TO_ADVANCE;
+    }
+
+    /**
+     * Exposes the active overlay by delegating to LevelView.
+     *
+     * @return the active overlay
+     */
+    public OverlayManager.ActiveOverlay getActiveOverlay() {
+        return levelView.getActiveOverlay();
     }
 }

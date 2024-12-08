@@ -176,4 +176,35 @@ public class LevelView {
     public OverlayManager.ActiveOverlay getActiveOverlay() {
         return overlayManager.getActiveOverlay();
     }
+    /**
+     * Returns the current kill count text by delegating to DisplayManager.
+     *
+     * @return the kill count text
+     */
+    public String getKillCountText() {
+        return displayManager.getKillCountText();
+    }
+
+
+    public String getBossHealthText() {
+        return displayManager.getBossHealthText();
+    }
+
+    /**
+     * Returns the level name.
+     *
+     * @return the level name
+     */
+    public String getLevelName() {
+        return "LEVEL ONE"; // Alternatively, you can pass and store the level name if dynamic
+    }
+
+    /**
+     * Returns the DisplayManager instance.
+     *
+     * @return the DisplayManager
+     */
+    public DisplayManager getDisplayManager() {
+        return displayManager;
+    }
 }

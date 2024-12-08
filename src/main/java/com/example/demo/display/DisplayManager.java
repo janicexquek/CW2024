@@ -138,4 +138,22 @@ public class DisplayManager {
     public void bringInfoDisplayToFront() {
         infoDisplay.toFront();
     }
+
+    /**
+     * Returns the current kill count text.
+     *
+     * @return the kill count text
+     */
+    public String getKillCountText() {
+        return infoDisplay.getText();
+    }
+
+    /**
+     * Returns the current boss health text.
+     *
+     * @return the boss health text
+     */
+    public String getBossHealthText() {
+        return infoDisplay.getText();
+    }
 }
