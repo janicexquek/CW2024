@@ -68,7 +68,8 @@ public class IntermediatePlane extends FighterPlane {
     public void takeDamage() {
         this.health -= 1;
         if (this.health <= 0) {
-            this.destroy();
+            setDestroyedBy(DestroyedBy.USER_PROJECTILE); // Explicitly set destruction cause
+            super.destroy(); // Call the parent class destroy
         }
     }
 
