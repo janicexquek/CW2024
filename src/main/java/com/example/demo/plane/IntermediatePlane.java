@@ -71,4 +71,21 @@ public class IntermediatePlane extends FighterPlane {
             this.destroy();
         }
     }
+
+    /**
+     * Moves the actor horizontally by teh given velocity.
+     * @param velocity the amount to move the actor horizontally
+     */
+    protected void moveHorizontally(double velocity) {
+        setLayoutX(getLayoutX() + velocity); // Adjust the layoutX position
+    }
+
+
+    /**
+     * Returns the health of the master plane.
+     */
+    public int getHealth() {
+        return this.health;
+    }
+
 }
