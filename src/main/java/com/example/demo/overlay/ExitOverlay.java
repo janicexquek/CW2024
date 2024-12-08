@@ -40,6 +40,11 @@ public class ExitOverlay extends BaseOverlay {
         this.hideOverlayCallback = hideOverlayCallback;
     }
 
+    /**
+     * Creates the message box for the exit overlay.
+     *
+     * @return the created message box as a StackPane
+     */
     @Override
     protected StackPane createMessageBox() {
         // Define message box parameters

@@ -79,7 +79,7 @@ public class LevelFour extends LevelParent {
         final int TOTAL_ENEMIES = 7; // Adjust based on desired difficulty
 
         for (int i = 0; i < TOTAL_ENEMIES - currentNumberOfEnemies; i++) {
-            double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND- Y_UPPER_BOUND);
+            double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
             ActiveActorDestructible enemy;
 
             // Randomly decide to spawn a Normal or Intermediate Plane
@@ -166,6 +166,12 @@ public class LevelFour extends LevelParent {
 
         super.removeAllDestroyedActors();
     }
+
+    /**
+     * Sets the random supplier for testing purposes.
+     *
+     * @param randomSupplier the random supplier to set
+     */
     public void setRandomSupplier(Supplier<Double> randomSupplier) {
         this.randomSupplier = randomSupplier;
     }
