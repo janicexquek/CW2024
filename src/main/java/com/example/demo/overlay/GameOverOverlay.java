@@ -76,7 +76,9 @@ public class GameOverOverlay extends BaseOverlay {
 
         // Create the buttons using ButtonFactory
         StackPane backButton = buttonFactory.createCustomButton("Main Menu", "Sugar Bomb", 16, 150, 60, "/com/example/demo/images/ButtonText_Small_Blue_Round.png");
+        backButton.setId("mainMenuButton");
         StackPane restartButton = buttonFactory.createCustomButton("Restart", "Sugar Bomb", 16, 150, 60, "/com/example/demo/images/ButtonText_Small_Blue_Round.png");
+        restartButton.setId("restartButton");
 
         // Assign actions to the buttons
         backButton.setOnMouseClicked(e -> {
