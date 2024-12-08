@@ -80,11 +80,14 @@ public class WinOverlay extends BaseOverlay {
 
         // Create the buttons using ButtonFactory
         StackPane backButton = buttonFactory.createCustomButton("Main Menu", "Sugar Bomb", 16, 150, 60, "/com/example/demo/images/ButtonText_Small_Blue_Round.png");
+        backButton.setId("mainMenuButton");
         StackPane restartButton = buttonFactory.createCustomButton("Restart", "Sugar Bomb", 16, 150, 60, "/com/example/demo/images/ButtonText_Small_Blue_Round.png");
+        restartButton.setId("restartButton");
         StackPane nextButton = null;
         Label completedMessage = null; // Declare outside the if block
         if (nextCallback != null) {
             nextButton = buttonFactory.createCustomButton("Next Level", "Sugar Bomb", 16, 150, 60, "/com/example/demo/images/ButtonText_Small_Blue_Round.png");
+            nextButton.setId("nextButton");
         } else {
             completedMessage = new Label("Congratulations!\nYou have completed all levels.");
             completedMessage.setTextFill(Color.WHITE);
