@@ -163,18 +163,20 @@ public class LevelThree extends LevelParent {
 
     /**
      * Spawns normal planes based on the spawn probability.
+     * Ensures the total number of normal planes does not exceed the defined limit.
      */
     protected void spawnNormalPlanes() {
         int TOTAL_NORMAL_PLANES = 5;
         for (int i = 0; i < TOTAL_NORMAL_PLANES - getCurrentNumberOfEnemies(); i++) {
-                double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
-                ActiveActorDestructible normalPlane = new EnemyPlane(getScreenWidth(), yPos);
-                addEnemyUnit(normalPlane);
+            double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
+            ActiveActorDestructible normalPlane = new EnemyPlane(getScreenWidth(), yPos);
+            addEnemyUnit(normalPlane);
         }
     }
 
     /**
      * Spawns intermediate planes based on the spawn probability.
+     * Ensures the total number of intermediate planes does not exceed the defined limit.
      */
     private void spawnIntermediatePlanes() {
         int TOTAL_INTERMEDIATE_PLANES = 3;
@@ -188,6 +190,7 @@ public class LevelThree extends LevelParent {
 
     /**
      * Spawns master planes based on the spawn probability.
+     * Ensures the total number of master planes does not exceed the defined limit.
      */
     private void spawnMasterPlanes() {
         int TOTAL_MASTER_PLANES = 2;

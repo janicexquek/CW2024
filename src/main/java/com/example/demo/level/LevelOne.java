@@ -60,6 +60,7 @@ public class LevelOne extends LevelParent {
 
     /**
      * Spawns enemy units based on the current number of enemies and a spawn probability.
+     * Ensures the total number of enemies does not exceed the defined limit.
      */
     @Override
     protected void spawnEnemyUnits() {
