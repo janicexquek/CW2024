@@ -709,6 +709,14 @@ public abstract class LevelParent extends Observable {
 	// ----------------------Getter methods ----------------------------
 
 	/**
+	 * Returns the current number of friendly units in the level.
+	 * @return the current number of friendly units
+	 */
+	public List<ActiveActorDestructible> getFriendlyUnits() {
+		return friendlyUnits;
+	}
+
+	/**
 	 * Returns the user's plane.
 	 *
 	 * @return The {@link UserPlane} instance.

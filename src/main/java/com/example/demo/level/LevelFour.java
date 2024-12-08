@@ -3,6 +3,7 @@ package com.example.demo.level;
 
 import com.example.demo.ActiveActorDestructible;
 import com.example.demo.levelview.LevelView;
+import com.example.demo.overlay.OverlayManager;
 import com.example.demo.plane.AllyPlane;
 import com.example.demo.plane.EnemyPlane;
 import com.example.demo.plane.IntermediatePlane;
@@ -10,6 +11,7 @@ import com.example.demo.plane.UserPlane;
 import javafx.scene.Group;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -23,6 +25,8 @@ public class LevelFour extends LevelParent {
     private static final int PLAYER_INITIAL_HEALTH = 5;
     private static final double Y_UPPER_BOUND = 80;
     private static final double Y_LOWER_BOUND = 580.0;
+    private Supplier<Double> randomSupplier = Math::random; // Default to Math.random
+
     // Win conditions
     private static final int NORMAL_PLANES_TO_DESTROY = 15;
     private static final int INTERMEDIATE_PLANES_TO_DESTROY = 8;
@@ -67,28 +71,24 @@ public class LevelFour extends LevelParent {
 
     // ------------------------ spawn enemy plane & intermediate plane -------------------------
     /**
-     * Spawns enemy units based on the current number of enemies and a spawn probability.
+     * Spawns enemy units based on the current number of enemies in the game.
      */
     @Override
     protected void spawnEnemyUnits() {
         int currentNumberOfEnemies = getCurrentNumberOfEnemies();
         final int TOTAL_ENEMIES = 7; // Adjust based on desired difficulty
-        final double ENEMY_SPAWN_PROBABILITY = 0.25;
 
         for (int i = 0; i < TOTAL_ENEMIES - currentNumberOfEnemies; i++) {
-            if (Math.random() < ENEMY_SPAWN_PROBABILITY) {
-                double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND- Y_UPPER_BOUND);
-                ActiveActorDestructible enemy;
+            double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND- Y_UPPER_BOUND);
+            ActiveActorDestructible enemy;
 
-                // Randomly decide to spawn a Normal or Intermediate Plane
-                if (Math.random() < 0.7) { // 70% Normal Planes
-                    enemy = new EnemyPlane(getScreenWidth(), yPos);
-                } else { // 30% Intermediate Planes
-                    enemy = new IntermediatePlane(getScreenWidth(), yPos);
-                }
-
-                addEnemyUnit(enemy);
+            // Randomly decide to spawn a Normal or Intermediate Plane
+            if (Math.random() < 0.7) { // 70% Normal Planes
+                enemy = new EnemyPlane(getScreenWidth(), yPos);
+            } else { // 30% Intermediate Planes
+                enemy = new IntermediatePlane(getScreenWidth(), yPos);
             }
+            addEnemyUnit(enemy);
         }
     }
     /**
@@ -166,15 +166,17 @@ public class LevelFour extends LevelParent {
 
         super.removeAllDestroyedActors();
     }
-
+    public void setRandomSupplier(Supplier<Double> randomSupplier) {
+        this.randomSupplier = randomSupplier;
+    }
     // --------------- decide either activate Ally plane or Shield -------------------
     /**
      * Decides and activates an ability (either shield or ally plane) based on a random probability.
      */
-    private void decideAndActivateAbility() {
+    protected void decideAndActivateAbility() {
         abilityActivated = true; // Ensure single activation
 
-        double probability = Math.random(); // 0.0 to 1.0
+        double probability = randomSupplier.get(); // Use the supplier for test control
 
         if (probability < 0.5) { // 50% chance for Shield
             activateShield();
@@ -196,7 +198,7 @@ public class LevelFour extends LevelParent {
     /**
      * Spawns an ally plane and adds it to the game.
      */
-    private void spawnAllyPlane() {
+    protected void spawnAllyPlane() {
         // Pass 'this::addAllyProjectile' as the projectile addition callback
         activeAllyPlane = new AllyPlane(this::addAllyProjectile, this::deactivateAllyPlane);
         friendlyUnits.add(activeAllyPlane);
@@ -236,4 +238,13 @@ public class LevelFour extends LevelParent {
         }
         levelView.updateCustomInfo(info + shieldInfo + allyInfo);
     }
+    /**
+     * Exposes the active overlay by delegating to LevelView.
+     *
+     * @return the active overlay
+     */
+    public OverlayManager.ActiveOverlay getActiveOverlay() {
+        return levelView.getActiveOverlay();
+    }
+
 }
