@@ -2,6 +2,7 @@ package com.example.demo.level;
 
 import com.example.demo.ActiveActorDestructible;
 import com.example.demo.levelview.LevelView;
+import com.example.demo.overlay.OverlayManager;
 import com.example.demo.plane.EnemyPlane;
 import com.example.demo.plane.IntermediatePlane;
 import com.example.demo.plane.MasterPlane;
@@ -22,14 +23,14 @@ public class LevelThree extends LevelParent {
     private static final double Y_LOWER_BOUND = 600.0;
 
     // Wave Management
-    private int normalPlanesDestroyed = 0;
+    protected int normalPlanesDestroyed = 0;
     private static final int NORMAL_TO_INTERMEDIATE_DESTROYED = 10; // Destroy 10 normal planes to spawn intermediates
 
-    private boolean intermediateWaveActive = false;
-    private int intermediatePlanesDestroyed = 0;
+    protected boolean intermediateWaveActive = false;
+    protected int intermediatePlanesDestroyed = 0;
     private static final int INTERMEDIATE_TO_MASTER_DESTROYED = 5; // Destroy 5 intermediate planes to spawn masters
 
-    private boolean masterWaveActive = false;
+    protected boolean masterWaveActive = false;
     private int masterPlanesDestroyed = 0;
     private static final int MASTER_TO_WIN_DESTROYED = 2; // Destroy 5 intermediate planes to spawn masters
 
@@ -50,7 +51,7 @@ public class LevelThree extends LevelParent {
     protected void checkIfGameOver() {
         if (userIsDestroyed()) {
             loseGame();
-        } else if (masterWaveActive && masterPlanesDestroyed >= 2) { // Assuming you want to destroy all Master Planes
+        } else if (masterWaveActive && masterPlanesDestroyed >= 2) {
             winGame();
         }
     }
@@ -79,7 +80,7 @@ public class LevelThree extends LevelParent {
      *
      * @return the number of master planes
      */
-    private int getCurrentNumberOfMasterPlanes() {
+    protected int getCurrentNumberOfMasterPlanes() {
         return (int) getEnemyUnits().stream()
                 .filter(enemy -> enemy instanceof MasterPlane)
                 .count();
@@ -163,15 +164,12 @@ public class LevelThree extends LevelParent {
     /**
      * Spawns normal planes based on the spawn probability.
      */
-    private void spawnNormalPlanes() {
+    protected void spawnNormalPlanes() {
         int TOTAL_NORMAL_PLANES = 5;
-        double ENEMY_SPAWN_PROBABILITY = 0.25;
         for (int i = 0; i < TOTAL_NORMAL_PLANES - getCurrentNumberOfEnemies(); i++) {
-            if (Math.random() < ENEMY_SPAWN_PROBABILITY) {
                 double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
                 ActiveActorDestructible normalPlane = new EnemyPlane(getScreenWidth(), yPos);
                 addEnemyUnit(normalPlane);
-            }
         }
     }
 
@@ -180,15 +178,11 @@ public class LevelThree extends LevelParent {
      */
     private void spawnIntermediatePlanes() {
         int TOTAL_INTERMEDIATE_PLANES = 3;
-        double ENEMY_SPAWN_PROBABILITY = 0.15;
         int currentIntermediatePlanes = getCurrentNumberOfIntermediatePlanes();
-
         for (int i = 0; i < TOTAL_INTERMEDIATE_PLANES - currentIntermediatePlanes; i++) {
-            if (Math.random() < ENEMY_SPAWN_PROBABILITY) {
-                double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
-                ActiveActorDestructible intermediatePlane = new IntermediatePlane(getScreenWidth(), yPos);
-                addEnemyUnit(intermediatePlane);
-            }
+            double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
+            ActiveActorDestructible intermediatePlane = new IntermediatePlane(getScreenWidth(), yPos);
+            addEnemyUnit(intermediatePlane);
         }
     }
 
@@ -197,15 +191,11 @@ public class LevelThree extends LevelParent {
      */
     private void spawnMasterPlanes() {
         int TOTAL_MASTER_PLANES = 2;
-        double ENEMY_SPAWN_PROBABILITY = 0.10;
         int currentMasterPlanes = getCurrentNumberOfMasterPlanes();
-
         for (int i = 0; i < TOTAL_MASTER_PLANES - currentMasterPlanes; i++) {
-            if (Math.random() < ENEMY_SPAWN_PROBABILITY) {
-                double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
-                ActiveActorDestructible masterPlane = new MasterPlane(getScreenWidth(), yPos);
-                addEnemyUnit(masterPlane);
-            }
+            double yPos = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
+            ActiveActorDestructible masterPlane = new MasterPlane(getScreenWidth(), yPos);
+            addEnemyUnit(masterPlane);
         }
     }
 
@@ -254,5 +244,23 @@ public class LevelThree extends LevelParent {
             status = "Wave 3: Destroy " + Math.max(remaining, 0) + " Master Planes";
         }
         levelView.updateCustomInfo(status);
+    }
+
+    /**
+     * Exposes the active overlay by delegating to LevelView.
+     *
+     * @return the active overlay
+     */
+    public OverlayManager.ActiveOverlay getActiveOverlay() {
+        return levelView.getActiveOverlay();
+    }
+
+    /**
+     * Getter for the number of destroyed master planes.
+     *
+     * @return The number of master planes destroyed.
+     */
+    public int getMasterPlanesDestroyed() {
+        return masterPlanesDestroyed;
     }
 }
