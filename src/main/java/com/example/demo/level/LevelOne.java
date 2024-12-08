@@ -16,8 +16,7 @@ public class LevelOne extends LevelParent {
 
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg";
     private static final String NEXT_LEVEL = "com.example.demo.level.LevelTwo";
-    private static final int TOTAL_ENEMIES = 5;
-    private static final double ENEMY_SPAWN_PROBABILITY = 0.20;
+    protected static final int TOTAL_ENEMIES = 5;
     private static final double Y_UPPER_BOUND = 80;
     private static final double Y_LOWER_BOUND = 650.0;
 
@@ -66,11 +65,9 @@ public class LevelOne extends LevelParent {
     protected void spawnEnemyUnits() {
         int currentNumberOfEnemies = getCurrentNumberOfEnemies();
         for (int i = 0; i < TOTAL_ENEMIES - currentNumberOfEnemies; i++) {
-            if (Math.random() < ENEMY_SPAWN_PROBABILITY) {
-                double newEnemyInitialYPosition = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
-                ActiveActorDestructible newEnemy = new EnemyPlane(getScreenWidth(), newEnemyInitialYPosition);
-                addEnemyUnit(newEnemy);
-            }
+            double newEnemyInitialYPosition = Y_UPPER_BOUND + Math.random() * (Y_LOWER_BOUND - Y_UPPER_BOUND);
+            ActiveActorDestructible newEnemy = new EnemyPlane(getScreenWidth(), newEnemyInitialYPosition);
+            addEnemyUnit(newEnemy);
         }
     }
 

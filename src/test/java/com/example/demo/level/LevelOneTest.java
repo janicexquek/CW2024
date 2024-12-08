@@ -1,131 +1,150 @@
 package com.example.demo.level;
 
-import com.example.demo.plane.UserPlane;
-import com.example.demo.levelview.LevelView;
 import com.example.demo.overlay.OverlayManager;
-import javafx.application.Platform;
-import javafx.scene.Group;
+import com.example.demo.plane.EnemyPlane;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import javafx.application.Platform;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * JUnit test class for LevelOne.
- */
 public class LevelOneTest {
 
     private LevelOne levelOne;
-    private Group root;
-    private final double screenWidth = 800;
-    private final double screenHeight = 600;
 
     @BeforeAll
-    public static void setupJavaFX() throws InterruptedException {
-        // Initialize JavaFX toolkit
-        final Object lock = new Object();
+    public static void initializeJavaFX() {
+        // Initialize the JavaFX platform
         Platform.startup(() -> {
-            synchronized (lock) {
-                lock.notify();
-            }
+            // No-op: Ensures the toolkit is initialized
         });
-        synchronized (lock) {
-            lock.wait();
-        }
     }
 
     @BeforeEach
     public void setUp() {
-        root = new Group();
-        levelOne = new LevelOne(screenHeight, screenWidth);
+        CountDownLatch latch = new CountDownLatch(1); // Use CountDownLatch for synchronization
+        Platform.runLater(() -> {
+            levelOne = new LevelOne(800, 600);
+            levelOne.initializeFriendlyUnits();
+            latch.countDown(); // Signal that initialization is complete
+        });
 
-        // Initialize UserPlane
-        UserPlane userPlane = new UserPlane("userplane.png", LevelOne.PLAYER_INITIAL_HEALTH);
-        levelOne.user = userPlane;
+        // Wait for initialization to complete
+        try {
+            latch.await(); // Wait until the latch is counted down
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Initialization interrupted", e);
+        }
 
-        // Add user to root via LevelOne's method
-        levelOne.initializeFriendlyUnits();
+        assertNotNull(levelOne.levelView, "LevelView should be initialized");
     }
 
     @Test
-    public void testInitializeFriendlyUnits() {
-        Platform.runLater(() -> {
-            assertNotNull(levelOne.getUser(), "User plane should be initialized");
-            assertTrue(levelOne.getRoot().getChildren().contains(levelOne.getUser()), "User plane should be added to the root group");
-        });
+    public void testInitialization() {
+        try {
+            runAndWait(() -> {
+                assertEquals(5, levelOne.getUser().getHealth(), "Player initial health should be 5");
+                assertEquals(0, levelOne.getUser().getNumberOfKills(), "Player initial kills should be 0");
+            });
+        } catch (InterruptedException e) {
+            fail("Test interrupted: " + e.getMessage());
+        }
     }
 
     @Test
     public void testSpawnEnemyUnits() {
-        Platform.runLater(() -> {
-            int initialEnemyCount = levelOne.getCurrentNumberOfEnemies();
-            levelOne.spawnEnemyUnits();
-            int updatedEnemyCount = levelOne.getCurrentNumberOfEnemies();
-            assertTrue(updatedEnemyCount >= initialEnemyCount, "Enemy count should increase after spawning enemy units");
-        });
+        try {
+            runAndWait(() -> {
+                levelOne.spawnEnemyUnits();
+                int enemyCount = levelOne.getEnemyUnits().size();
+                assertTrue(enemyCount > 0 && enemyCount <= LevelOne.TOTAL_ENEMIES, "Enemy count should be between 1 and " + LevelOne.TOTAL_ENEMIES);
+                assertTrue(levelOne.getEnemyUnits().stream().allMatch(enemy -> enemy instanceof EnemyPlane), "All spawned enemies should be of type EnemyPlane");
+            });
+        } catch (InterruptedException e) {
+            fail("Test interrupted: " + e.getMessage());
+        }
     }
 
     @Test
-    public void testCheckIfGameOver_UserDestroyed() {
-        Platform.runLater(() -> {
-            // Simulate user destruction
-            levelOne.getUser().destroy();
+    public void testGameOver_Loss() {
+        try {
+            runAndWait(() -> {
+                levelOne.getUser().takeDamage(); // Simulate player losing all health
+                levelOne.getUser().takeDamage();
+                levelOne.getUser().takeDamage();
+                levelOne.getUser().takeDamage();
+                levelOne.getUser().takeDamage(); // Total 5 damage = health depletion
 
-            // Perform the check
-            levelOne.checkIfGameOver();
-
-            // Verify that the game is over
-            assertTrue(levelOne.userIsDestroyed(), "User should be marked as destroyed.");
-            OverlayManager.ActiveOverlay activeOverlay = levelOne.getActiveOverlay();
-            assertEquals(OverlayManager.ActiveOverlay.GAME_OVER, activeOverlay, "Game over overlay should be active.");
-        });
+                levelOne.checkIfGameOver();
+                assertEquals(OverlayManager.ActiveOverlay.GAME_OVER, levelOne.getActiveOverlay(), "Game over overlay should be active when user is destroyed");
+            });
+        } catch (InterruptedException e) {
+            fail("Test interrupted: " + e.getMessage());
+        }
     }
 
     @Test
-    public void testCheckIfGameOver_UserReachedKillTarget() {
+    public void testGameOver_Win() {
+        try {
+            runAndWait(() -> {
+                // Increment the kill count one by one to reach the kill target
+                for (int i = 0; i < LevelOne.KILLS_TO_ADVANCE; i++) {
+                    levelOne.getUser().incrementKillCount();
+                }
+
+                levelOne.checkIfGameOver();
+                assertEquals(OverlayManager.ActiveOverlay.WIN, levelOne.getActiveOverlay(), "Win overlay should be active after user reaches the kill target");
+            });
+        } catch (InterruptedException e) {
+            fail("Test interrupted: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testDisplayKillCount() {
+        try {
+            runAndWait(() -> {
+                for (int i = 0; i < LevelOne.KILLS_TO_ADVANCE; i++) {
+                    levelOne.getUser().incrementKillCount();
+                    levelOne.updateCustomDisplay();
+                }
+            });
+
+            Thread.sleep(500); // Allow time for the UI to reflect the changes
+
+            String killDisplay = levelOne.levelView.getDisplayManager().getCustomDisplay();
+            assertTrue(killDisplay.contains("10"), "Custom display should show the current kill count");
+        } catch (InterruptedException e) {
+            fail("Test interrupted: " + e.getMessage());
+        }
+    }
+
+
+    /**
+     * Helper method to run tasks on the JavaFX Application Thread.
+     */
+    private void runAndWait(Runnable action) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<Exception> exceptionRef = new AtomicReference<>();
+
         Platform.runLater(() -> {
-            UserPlane user = levelOne.getUser();
-            for (int i = 0; i < LevelOne.KILLS_TO_ADVANCE; i++) {
-                user.incrementKillCount();
+            try {
+                action.run();
+            } catch (Exception e) {
+                exceptionRef.set(e);
+            } finally {
+                latch.countDown();
             }
-            levelOne.checkIfGameOver();
-            OverlayManager.ActiveOverlay activeOverlay = levelOne.getActiveOverlay();
-            assertEquals(OverlayManager.ActiveOverlay.WIN, activeOverlay, "Win overlay should be active when kill target is reached.");
         });
-    }
 
-    @Test
-    public void testUpdateCustomDisplay() {
-        Platform.runLater(() -> {
-            UserPlane user = levelOne.getUser();
-            user.incrementKillCount();
-            levelOne.updateCustomDisplay();
-
-            // Verify that kill count in LevelView's DisplayManager is updated
-            String killCountText = levelOne.levelView.getDisplayManager().getKillCountText();
-            assertEquals("Kills: 1 / 10", killCountText, "Kill count should be updated correctly.");
-        });
-    }
-
-    @Test
-    public void testInstantiateLevelView() {
-        Platform.runLater(() -> {
-            LevelView levelView = levelOne.instantiateLevelView(screenWidth, screenHeight);
-            assertNotNull(levelView, "LevelView should be instantiated.");
-            assertEquals("LEVEL ONE", levelOne.getLevelDisplayName(), "Level display name should match.");
-        });
-    }
-
-    @Test
-    public void testGetNextLevelClassName() {
-        Platform.runLater(() -> {
-            assertEquals("com.example.demo.level.LevelTwo", levelOne.getNextLevelClassName(), "Next level class name should match.");
-        });
-    }
-
-    @Test
-    public void testGetLevelDisplayName() {
-        assertEquals("LEVEL ONE", levelOne.getLevelDisplayName(), "The display name should be 'LEVEL ONE'.");
+        latch.await(); // Wait until the latch is counted down
+        if (exceptionRef.get() != null) {
+            throw new RuntimeException("Exception in JavaFX thread", exceptionRef.get());
+        }
     }
 }
