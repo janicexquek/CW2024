@@ -37,4 +37,13 @@ public class BossProjectile extends Projectile {
     public void updateActor() {
         updatePosition();
     }
+
+    /**
+     * Moves the actor horizontally by the specified velocity.
+     * @param velocity the amount to move the actor horizontally
+     */
+    protected void moveHorizontally(double velocity) {
+        setLayoutX(getLayoutX() + velocity);
+    }
+
 }
