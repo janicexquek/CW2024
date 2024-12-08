@@ -143,7 +143,7 @@ public class BossPlane extends FighterPlane {
      * Updates the shield state.
      * Activates or deactivates the shield based on probabilities and frame count.
      */
-    private void updateShield() {
+    protected void updateShield() {
         if (isShielded) framesWithShieldActivated++;
         else if (shieldShouldBeActivated()) activateShield();
         if (shieldExhausted()) deactivateShield();
@@ -208,7 +208,7 @@ public class BossPlane extends FighterPlane {
     /**
      * Activates the shield.
      */
-    private void activateShield() {
+    protected void activateShield() {
         isShielded = true;
         bossShieldImage.showShield(); // Show the shield image
     }
@@ -216,7 +216,7 @@ public class BossPlane extends FighterPlane {
     /**
      * Deactivates the shield.
      */
-    private void deactivateShield() {
+    protected void deactivateShield() {
         isShielded = false;
         framesWithShieldActivated = 0;
         bossShieldImage.hideShield(); // Hide the shield image
