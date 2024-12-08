@@ -38,4 +38,23 @@ public class LevelViewLevelTwo extends LevelView {
     private void addImagesToRoot() {
         root.getChildren().addAll(bossShieldImage);
     }
+
+    /**
+     * Updates the boss health display.
+     *
+     * @param currentHealth the current health of the boss
+     */
+    @Override
+    public void updateBossHealth(int currentHealth) {
+        super.updateBossHealth(currentHealth);
+    }
+
+    /**
+     * Retrieves the current boss health text.
+     *
+     * @return the boss health text
+     */
+    public String getBossHealthText() {
+        return super.getBossHealthText();
+    }
 }

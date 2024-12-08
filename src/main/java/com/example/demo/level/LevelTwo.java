@@ -2,6 +2,7 @@ package com.example.demo.level;
 
 import com.example.demo.levelview.LevelView;
 import com.example.demo.levelview.LevelViewLevelTwo;
+import com.example.demo.overlay.OverlayManager;
 import com.example.demo.plane.BossPlane;
 
 /**
@@ -12,8 +13,8 @@ public class LevelTwo extends LevelParent {
 
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background2.jpg";
     private static final String NEXT_LEVEL = "com.example.demo.level.LevelThree";
-    private static final int PLAYER_INITIAL_HEALTH = 5;
-    private final BossPlane bossPlane;
+    protected static final int PLAYER_INITIAL_HEALTH = 5;
+    protected final BossPlane bossPlane;
     private LevelViewLevelTwo levelView;
 
     /**
@@ -117,5 +118,14 @@ public class LevelTwo extends LevelParent {
     @Override
     protected String getLevelDisplayName() {
         return "LEVEL TWO";
+    }
+
+    /**
+     * Exposes the active overlay by delegating to LevelView.
+     *
+     * @return the active overlay
+     */
+    public OverlayManager.ActiveOverlay getActiveOverlay() {
+        return levelView.getActiveOverlay();
     }
 }

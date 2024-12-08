@@ -98,7 +98,7 @@ public abstract class LevelParent extends Observable {
 	/**
 	 * Represents the user's plane in the game.
 	 */
-	private final UserPlane user;
+	protected UserPlane user;
 
 	/**
 	 * List of friendly units (e.g., player's allies) in the level.
@@ -786,5 +786,13 @@ public abstract class LevelParent extends Observable {
 	 */
 	public boolean isGameOver() {
 		return gameOver;
+	}
+	/**
+	 * Returns the LevelView instance.
+	 *
+	 * @return the LevelView instance
+	 */
+	public LevelView getLevelView() {
+		return levelView;
 	}
 }
