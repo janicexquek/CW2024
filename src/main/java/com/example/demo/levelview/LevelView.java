@@ -185,9 +185,22 @@ public class LevelView {
         return displayManager.getKillCountText();
     }
 
-
+    /**
+     * Returns the boss health text by delegating to DisplayManager.
+     *
+     * @return the boss health text
+     */
     public String getBossHealthText() {
         return displayManager.getBossHealthText();
+    }
+
+    /**
+     * Returns the custom display text by delegating to DisplayManager.
+     *
+     * @return the custom display text
+     */
+    public String getCustomDisplay() {
+        return displayManager.getCustomDisplay();
     }
 
     /**

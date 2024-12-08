@@ -47,6 +47,7 @@ public abstract class ActiveActorDestructible extends ActiveActor implements Des
         if (destroyedBy == DestroyedBy.NONE) {
             destroyedBy = DestroyedBy.PENETRATION; // Default cause if not set
         }
+        this.isDestroyed = true; // Ensure the object is marked as destroyed
         setDestroyed();
     }
 

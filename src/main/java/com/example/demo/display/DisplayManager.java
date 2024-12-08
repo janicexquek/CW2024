@@ -156,4 +156,13 @@ public class DisplayManager {
     public String getBossHealthText() {
         return infoDisplay.getText();
     }
+
+    /**
+     * Returns the current boss health text.
+     *
+     * @return the boss health text
+     */
+    public String getCustomDisplay() {
+        return infoDisplay.getText();
+    }
 }
