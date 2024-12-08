@@ -18,6 +18,8 @@ public class AllyProjectile extends Projectile {
      */
     public AllyProjectile(double initialYPos) {
         super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, initialYPos);
+        setLayoutX(INITIAL_X_POSITION); // Set initial X position
+        setLayoutY(initialYPos);        // Set initial Y position
     }
 
     /**
@@ -26,9 +28,8 @@ public class AllyProjectile extends Projectile {
      */
     @Override
     public void updatePosition() {
-        moveHorizontally(HORIZONTAL_VELOCITY);
+        setLayoutX(getLayoutX() + HORIZONTAL_VELOCITY); // Ensure layoutX is modified
     }
-
     /**
      * Updates the state of the ally projectile.
      * Handles position update.
