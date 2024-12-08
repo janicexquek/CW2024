@@ -19,7 +19,7 @@ public class UserPlane extends FighterPlane {
     private static final int IMAGE_HEIGHT = 40;
     private static final int VERTICAL_VELOCITY = 8;
     private static final int PROJECTILE_X_POSITION = 110;
-    private static final int PROJECTILE_Y_POSITION_OFFSET = 5;
+    private static final int PROJECTILE_Y_POSITION_OFFSET = 20;
     public static final int MAX_SHIELD_DAMAGE = 5; // Maximum damage the shield can absorb
 
     // Variables
@@ -167,7 +167,9 @@ public class UserPlane extends FighterPlane {
      */
     @Override
     public ActiveActorDestructible fireProjectile() {
-        return new UserProjectile(PROJECTILE_X_POSITION, getProjectileYPosition(PROJECTILE_Y_POSITION_OFFSET));
+        double projectileX = getLayoutX() + PROJECTILE_X_POSITION; // X offset
+        double projectileY = getLayoutY() + getTranslateY() + PROJECTILE_Y_POSITION_OFFSET; // Y offset
+        return new UserProjectile(projectileX, projectileY);
     }
 
     /**
