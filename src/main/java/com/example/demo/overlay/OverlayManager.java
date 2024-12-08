@@ -120,7 +120,7 @@ public class OverlayManager {
     /**
      * Callback method when the countdown finishes.
      */
-    private void onCountdownFinished() {
+    protected void onCountdownFinished() {
         if (activeOverlay != ActiveOverlay.COUNTDOWN) {
             return;
         }
