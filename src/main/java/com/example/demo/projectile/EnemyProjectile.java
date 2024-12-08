@@ -45,4 +45,12 @@ public class EnemyProjectile extends Projectile {
     public void takeDamage() {
         destroy(); // This will mark the projectile as destroyed
     }
+
+    /**
+     * Moves the actor horizontally by the specified velocity.
+     * @param velocity the amount to move the actor horizontally
+     */
+    protected void moveHorizontally(double velocity) {
+        setLayoutX(getLayoutX() + velocity);
+    }
 }
