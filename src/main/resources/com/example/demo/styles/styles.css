@@ -1,0 +1,41 @@
+/* styles.css */
+
+/* Custom Button Style */
+.custom-button-hover {
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
+}
+
+/* Button Label Style */
+.button-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
+}
+
+/* All Title Text */
+.title-text {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 4, 0, 0, 2);
+}
+
+/* Make ScrollPane transparent */
+.transparent-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.transparent-scroll-pane .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+/* Optional: Style the ScrollBar if desired */
+.transparent-scroll-pane .scroll-bar .thumb {
+    -fx-background-color: #888888;
+}
+
+.transparent-scroll-pane .scroll-bar .thumb:hover {
+    -fx-background-color: #aaaaaa;
+}
