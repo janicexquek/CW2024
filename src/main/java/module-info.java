@@ -1,13 +1,10 @@
 module com.example.demo {
-    requires java.base; // Required by default
-    requires org.testfx;
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.media;
     requires javafx.graphics;
     requires java.prefs;
-    requires org.junit.jupiter.api; // Add this for JUnit 5
-    requires org.apiguardian.api; // Add this for annotations used by JUnit
+    requires org.apiguardian.api;
 
     opens com.example.demo to javafx.fxml;
     exports com.example.demo.controller;

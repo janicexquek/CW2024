@@ -14,13 +14,13 @@
     <junit.version>5.9.2</junit.version>
     <testfx.version>4.0.16-alpha</testfx.version>
     <javafx.version>19.0.2</javafx.version>
-    <javafx.classifier>mac-aarch64</javafx.classifier> <!-- Use 'mac' if on Intel Mac -->
+    <javafx.classifier>mac-aarch64</javafx.classifier>
     <maven.compiler.source>19</maven.compiler.source>
     <maven.compiler.target>19</maven.compiler.target>
   </properties>
 
   <dependencies>
-    <!-- JavaFX Dependencies with Correct Version and Classifier -->
+    <!-- JavaFX Dependencies -->
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-swing</artifactId>
-      <version>${javafx.version}</version>
+      <version>${javafx.version}</version> <!-- Updated to use ${javafx.version} -->
       <classifier>${javafx.classifier}</classifier>
     </dependency>
 
@@ -96,31 +96,34 @@
       <version>5.5.0</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- API Guardian (Required for JUnit) -->
     <dependency>
       <groupId>org.apiguardian</groupId>
       <artifactId>apiguardian-api</artifactId>
       <version>1.1.2</version>
-      <scope>provided</scope>
+      <scope>compile</scope> <!-- Retained only with compile scope -->
     </dependency>
-    <dependency>
-      <groupId>org.testfx</groupId>
-      <artifactId>testfx-core</artifactId>
-      <version>4.0.16-alpha</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>5.10.2</version>
-      <scope>compile</scope>
-    </dependency>
-
   </dependencies>
 
 
 
   <build>
     <plugins>
+      <!-- Maven Javadoc Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.4.1</version> <!-- Latest stable version -->
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <additionalOptions>
+            --add-modules=javafx.controls,javafx.fxml,javafx.media,javafx.graphics,java.prefs,org.junit.jupiter.api,org.testfx.junit5,org.testfx.core
+          </additionalOptions>
+        </configuration>
+      </plugin>
+
+      <!-- Maven Compiler Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -130,6 +133,8 @@
           <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
+
+      <!-- JavaFX Maven Plugin -->
       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
@@ -155,9 +160,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M7</version>
+        <version>3.0.0</version> <!-- Updated to stable version -->
         <configuration>
-          <useModulePath>false</useModulePath>
+          <useModulePath>true</useModulePath> <!-- Changed to true for module support -->
           <argLine>
             --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
             --add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
