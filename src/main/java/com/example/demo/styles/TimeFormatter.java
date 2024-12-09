@@ -1,5 +1,7 @@
 package com.example.demo.styles;
-
+/**
+ * This class responsible formats time from seconds to MM:SS
+ */
 public class TimeFormatter {
     /**
      * Formats time from seconds to MM:SS.
