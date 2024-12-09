@@ -15,7 +15,7 @@ public class LevelTwo extends LevelParent {
     private static final String NEXT_LEVEL = "com.example.demo.level.LevelThree";
     protected static final int PLAYER_INITIAL_HEALTH = 5;
     protected final BossPlane bossPlane;
-    private LevelViewLevelTwo levelView;
+    protected LevelViewLevelTwo levelView;
 
     /**
      * Constructor for LevelTwo.
