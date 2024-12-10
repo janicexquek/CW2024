@@ -14,7 +14,6 @@
     <junit.version>5.9.2</junit.version>
     <testfx.version>4.0.16-alpha</testfx.version>
     <javafx.version>19.0.2</javafx.version>
-    <javafx.classifier>mac-aarch64</javafx.classifier>
     <maven.compiler.source>19</maven.compiler.source>
     <maven.compiler.target>19</maven.compiler.target>
   </properties>
@@ -25,25 +24,21 @@
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
       <version>${javafx.version}</version>
-      <classifier>${javafx.classifier}</classifier>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
       <version>${javafx.version}</version>
-      <classifier>${javafx.classifier}</classifier>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-media</artifactId>
       <version>${javafx.version}</version>
-      <classifier>${javafx.classifier}</classifier>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-swing</artifactId>
       <version>${javafx.version}</version> <!-- Updated to use ${javafx.version} -->
-      <classifier>${javafx.classifier}</classifier>
     </dependency>
 
     <!-- JUnit 5 Dependencies -->
@@ -71,14 +66,6 @@
       <groupId>org.testfx</groupId>
       <artifactId>testfx-core</artifactId>
       <version>${testfx.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Monocle for Headless Testing -->
-    <dependency>
-      <groupId>org.testfx</groupId>
-      <artifactId>openjfx-monocle</artifactId>
-      <version>jdk-11+26</version>
       <scope>test</scope>
     </dependency>
 
@@ -145,6 +132,10 @@
             <id>default-cli</id>
             <configuration>
               <mainClass>com.example.demo.controller.Main</mainClass>
+              <jvmArgs>
+                --add-exports=javafx.base/com.sun.javafx=javafx.media
+                --add-opens=javafx.media/javafx.scene.media=ALL-UNNAMED
+              </jvmArgs>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>
