@@ -21,6 +21,24 @@
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
+## Table of Contents
+1. [Details](#details)
+2. [Compilation Instructions](#compilation-instructions)
+3. [Features](#features)
+    - [Implemented and Working Properly](#implemented-and-working-properly)
+    - [Implemented but Not Working Properly](#implemented-but-not-working-properly)
+    - [Features Not Implemented](#features-not-implemented)
+4. [New Java Classes](#new-java-classes)
+5. [Modified Java Classes](#modified-java-classes)
+6. [Unexpected Problems](#unexpected-problems)
+7. Details in Each Level
+    - [Level One](#levelone-summary)
+    - [Level Two](#leveltwo-summary)
+    - [Level Three](#levelthree-summary)
+    - [Level Four](#levelfour-summary)
+8. [Screenshots for 'Sky Battle' Game](#screenshots-for-sky-battle-game)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Features
 ## Implemented and Working Properly
@@ -276,8 +294,22 @@
 
 **Outcome:**
 - **Result:** The issue persists intermittently. While the initial collision between user and enemy projectiles now correctly flags the enemy projectile for destruction, it occasionally fails to remove the projectile from the screen until a subsequent collision occurs.
-- **Benefits:** Partial improvement in collision handling, reducing the frequency of stationary enemy projectiles.
 - **Remaining Issues:** The destruction logic does not consistently execute immediately upon collision, leading to occasional instances where enemy projectiles remain on-screen longer than intended.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### **4.  Background Image Misalignment on Other Computers & Delayed Sound Effects in JavaFX 21
+
+| **Aspect**                | **JavaFX 19**                                   | **JavaFX 21**                                   |
+|---------------------------|-------------------------------------------------|-------------------------------------------------|
+| **My Computer**           | Background image and music worked well with no issues. | Background image displayed perfectly, but music experienced a ~1-second delay (e.g., bullet sound not simultaneous). |
+| **Other Computer**        | Background image showed **misalignment**, but music played well. | Both background image and music worked correctly, with consistent visuals and sound playback. |
+| **Music**                 | Played instantly and in sync across actions (e.g., shooting bullets). | Experienced a noticeable ~1-second delay, especially during rapid actions like shooting bullets. |
+| **Background Image**      | Aligned and displayed correctly on my computer, but misaligned on others. | Fully aligned and consistent across all computers. | 
+
+**Outcome:**
+- **Result:** I am still using JavaFX 19 as it works on my computer perfectly with background image and music.
+- **Remaining Issues:** Other computers may face some issue for Background image showed **misalignment**.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -868,7 +900,7 @@ This avoids visual artifacts or logic errors in the game loop.
 - Communicate any unexpected challenges or issues you encountered during the assignment.
 - Describe how you addressed or attempted to resolve them.
 
-#### **Problem 1: Adding Ally Projectiles and Ally Planes Properly**
+#### **Problem 1: Adding Ally Projectiles and Ally Planes Properly**(Fix)
 - **Challenge**:
   - Integrating ally planes and projectiles into the game presented several challenges.
   - Ally planes needed to function autonomously, firing projectiles at appropriate intervals, avoiding collisions, and interacting with enemy units dynamically.
@@ -901,7 +933,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 2: Collision Logic Complexity**
+#### **Problem 2: Collision Logic Complexity**(Fix)
 - **Issue Description**:
   - Adding ally projectiles and planes significantly increased the complexity of collision detection. Managing interactions between multiple entities 
     (user, allies, enemies, and their projectiles) was difficult to debug and ensure correctness.
@@ -915,7 +947,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 3. Exit Button Not Positioned in the Top-Right Corner of the Screen**
+#### **Problem 3. Exit Button Not Positioned in the Top-Right Corner of the Screen**(Fix)
 
 **Problem Description:**
 - **Issue:** The exit button intended to be prominently displayed in the top-right corner of each game level was appearing behind the background image, making it inaccessible and invisible to players.
@@ -933,7 +965,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 4. Kill Count Logic Miscounting**
+#### **Problem 4. Kill Count Logic Miscounting**(Fix)
 **Problem Description:**
 - **Issue:** The kill count was inaccurately tracking player performance by counting events unrelated to user actions. Initially, the system incremented the kill count not only when enemies were destroyed by user-fired projectiles but also when planes were penetrated or collided with the user plane.
 - **Impact:** This led to inflated and unreliable kill statistics, affecting gameplay balance and player feedback mechanisms.
@@ -960,7 +992,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 5. Enemy Shield Image Not Displaying Initially**
+#### **Problem 5. Enemy Shield Image Not Displaying Initially**(Fix)
 **Problem Description:**
 - **Issue:** The enemy shield image does not appear at the start of the game.
 
@@ -978,7 +1010,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 6. Enemy Projectile Image Size Causing Kill Count Miscounts**
+#### **Problem 6. Enemy Projectile Image Size Causing Kill Count Miscounts**(Fix)
 
 **Problem Description:**
 - **Issue:** The enemy projectile images (`.png` files) were too large, causing non-hitting projectiles to still register as hits due to their size.
@@ -995,7 +1027,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 7. Win Overlay Not Displaying Immediately After Kill Count Achievement in Level One**
+#### **Problem 7. Win Overlay Not Displaying Immediately After Kill Count Achievement in Level One**(Fix)
 
 **Problem Description:**
 - **Issue:** In Level One, after the player achieved the required kill count (e.g., hitting 2 enemies), the Win Overlay did not display immediately. Instead, it awaited additional enemy interactions, causing delays in level completion.
@@ -1013,7 +1045,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 8. Boss Shield Activates Only Once Before Deactivating**
+#### **Problem 8. Boss Shield Activates Only Once Before Deactivating**(Fix)
 
 **Problem Description:**
 - **Issue:** The boss shield was only activating once during gameplay and subsequently deactivated, limiting its intended defensive functionality.
@@ -1035,7 +1067,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 9. Overlay Display Issues Allowing Projectile Firing**
+#### **Problem 9. Overlay Display Issues Allowing Projectile Firing**(Fix)
 
 **Problem Description:**
 - **Issue:** When invoking overlays such as Win Overlay, Game Over Overlay, Countdown Overlay, or Exit Overlay, the game still allowed projectile firing, disrupting the intended pause in gameplay.
@@ -1056,7 +1088,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 10. Overlay Not Displaying in Front of Background Image**
+#### **Problem 10. Overlay Not Displaying in Front of Background Image**(Fix)
 
 **Problem Description:**
 - **Issue:** Overlays such as Win Overlay, Game Over Overlay, and others were appearing behind the background image, making them invisible or partially obscured.
@@ -1074,7 +1106,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 11. Info Display Positioned Behind Heart Display**
+#### **Problem 11. Info Display Positioned Behind Heart Display**(Fix)
 
 **Problem Description:**
 - **Issue:** The information display intended to show kill counts and other stats was appearing behind the heart display, making it partially or fully invisible.
@@ -1096,7 +1128,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 12. User Shield Functionality Not Working Properly**
+#### **Problem 12. User Shield Functionality Not Working Properly**(Fix)
 
 **Problem Description:**
 - **Issue:** The user's shield was not functioning as intended. Specifically, it was supposed to absorb up to 5 hits from enemy projectiles without affecting the user's health and only decrease user health upon collisions with enemy planes.
@@ -1121,7 +1153,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 13. Ally Projectiles Firing Excessively or Not Firing at All**
+#### **Problem 13. Ally Projectiles Firing Excessively or Not Firing at All**(Fix)
 
 **Problem Description:**
 - **Issue:** Ally projectiles were either not firing as intended or were firing excessively, disrupting gameplay balance and user experience.
@@ -1144,7 +1176,7 @@ This avoids visual artifacts or logic errors in the game loop.
 
 ---
 
-#### **Problem 14. Game Over Overlay Showing Random Fastest Times Instead of Accurate Data**
+#### **Problem 14. Game Over Overlay Showing Random Fastest Times Instead of Accurate Data**(Fix)
 
 **Problem Description:**
 - **Issue:** Upon triggering the Game Over Overlay, the fastest time display was showing random or incorrect times instead of the actual fastest completion times.
@@ -1161,40 +1193,6 @@ This avoids visual artifacts or logic errors in the game loop.
 **Outcome:**
 - **Result:** The Game Over Overlay now accurately displays the player's current time and the fastest recorded time for each level.
 - **Benefits:** Enhanced reliability of game statistics, improved player feedback, and increased trust in the game's performance tracking.
-
----
-
-
-#### **Problem : Background Music Stopping Intermittently**
-- **Issue Description**:
-The background music in the game sometimes stops playing and does not loop again. 
-This behavior seems inconsistent but is more likely to happen when the game ends around the same time the music track finishes.
-
-**Possible Causes**:
-1.  Music Playback State Conflict:
-- When the game ends, a method (e.g., stopGame() or winGame()) might be stopping or pausing the music, interfering with the natural looping of the audio.
-
-2. Event Timing Issue:
-- If the game-ending logic (e.g., stopping sound effects) overlaps with the exact moment the music reaches its end, 
-it might cause the loop flag to reset or the media player to stop entirely.
-
-3. MediaPlayer Lifecycle Issue:
-JavaFX's MediaPlayer occasionally has timing quirks, especially if play() or stop() is called rapidly or conflicting state changes occur.
-
-4. Loop Flag Reset:
-- The loop configuration for the background music might not persist when the music is restarted (e.g., after stop() is called).
-
-**Attempted Solutions**:
-1. Checked Background Music Settings
-Reviewed the SettingsManager to ensure the background music is properly set to loop. Confirmed that:
-- setCycleCount(MediaPlayer.INDEFINITE) is applied.
-- The MediaPlayer instance is not being reinitialized unnecessarily.
-2. Debugged Game Ending Logic
-- Verified that no unexpected stop() or pause() calls were affecting the background music during game-ending methods (winGame(), loseGame(), etc.).
-3. Handled Overlapping Events
-- Ensured that background music handling is decoupled from game-ending logic. Updated methods like stopGame() to:
-- Avoid stopping music unless explicitly required.
-- Resume the music state immediately if it was unintentionally paused or stopped.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
